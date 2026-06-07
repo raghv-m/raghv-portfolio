@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: raghv-portfolio
+    runtime: node
+    plan: starter          # free tier — upgrade to starter+ for persistent disk
+    region: oregon
+    branch: main
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false          # set in Render dashboard — libsql://... for Turso
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: NEXTAUTH_URL
+        sync: false          # https://your-render-app.onrender.com
+      - key: NEXTAUTH_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: MAIL_PROVIDER
+        value: resend
+      - key: RESEND_API_KEY
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: CONTACT_RECEIVER_EMAIL
+        sync: false
+      - key: NEXT_PUBLIC_BASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false

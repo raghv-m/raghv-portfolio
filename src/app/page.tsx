@@ -1,65 +1,219 @@
-import Image from "next/image";
+"use client";
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { ArrowRight, Download, ChevronDown } from "lucide-react";
+import TerminalAnimation from "@/components/home/TerminalAnimation";
+import SkillMarquee from "@/components/home/SkillMarquee";
+import MetricsDashboard from "@/components/home/MetricsDashboard";
 
-export default function Home() {
+const HeroScene = dynamic(() => import("@/components/three/HeroScene"), { ssr: false });
+
+const TYPING_ROLES = [
+  "Cybersecurity Analyst",
+  "SOC Operations",
+  "Threat Detection",
+  "Incident Response",
+  "Blue Team Defender",
+  "Linux Administration",
+  "Secure Development",
+];
+
+function TypingRole() {
+  const [index, setIndex] = useState(0);
+  const [displayed, setDisplayed] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const target = TYPING_ROLES[index];
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (!deleting && displayed.length < target.length) {
+      timeout = setTimeout(() => setDisplayed(target.slice(0, displayed.length + 1)), 60);
+    } else if (!deleting && displayed.length === target.length) {
+      timeout = setTimeout(() => setDeleting(true), 2000);
+    } else if (deleting && displayed.length > 0) {
+      timeout = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 30);
+    } else if (deleting && displayed.length === 0) {
+      setDeleting(false);
+      setIndex((i) => (i + 1) % TYPING_ROLES.length);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayed, deleting, index]);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <span className="text-[var(--gold)] terminal-cursor">
+      {displayed || " "}
+    </span>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen">
+      {/* ── Hero ──────────────────────────────────────────────────── */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden grid-bg pt-14 pb-24">
+        {/* 3D background */}
+        <div className="absolute inset-0 z-0">
+          <HeroScene />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Radial gradient overlay */}
+        <div className="absolute inset-0 z-0" style={{
+          background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.9) 100%)"
+        }} />
+
+        <div className="relative z-10 max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left — text */}
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-6"
+            >
+              <span className="font-mono text-[10px] tracking-[0.3em] text-[var(--gold-muted)] uppercase">
+                Edmonton, Alberta · Available for SOC Roles
+              </span>
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-4 tracking-tight"
+            >
+              Raghav<br />
+              <span className="gradient-white-gold">Mahajan</span>
+            </motion.h1>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="font-display text-lg text-[var(--text-muted)] mb-8 h-7"
+            >
+              <TypingRole />
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              className="text-[var(--text-muted)] text-base leading-relaxed max-w-md mb-10"
+            >
+              Building defensive security systems through real-world home lab operations,
+              SOC-style threat analysis, and secure software development.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+              className="flex flex-wrap gap-3"
+            >
+              <Link href="/projects" className="btn-gold">
+                View My Work <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+              <a href="/contact" className="btn-ghost">
+                <Download className="w-3.5 h-3.5" /> Resume
+              </a>
+            </motion.div>
+          </div>
+
+          {/* Right — terminal */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <TerminalAnimation />
+
+            {/* Status bar */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.2 }}
+              className="mt-4 glass rounded-lg px-4 py-2.5 flex flex-wrap gap-4"
+            >
+              {[
+                { dot: "var(--green)", label: "ISC2 CC · PASSED" },
+                { dot: "var(--gold)", label: "Security+ · In Progress" },
+                { dot: "var(--blue)", label: "50+ Labs Completed" },
+              ].map((s) => (
+                <div key={s.label} className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: s.dot }} />
+                  <span className="font-mono text-[10px] text-[var(--text-muted)]">{s.label}</span>
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
-      </main>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 scroll-indicator">
+          <span className="font-mono text-[9px] text-[#333] tracking-widest">SCROLL</span>
+          <ChevronDown className="w-4 h-4 text-[#333]" />
+        </div>
+      </section>
+
+      {/* ── Marquee ───────────────────────────────────────────────── */}
+      <SkillMarquee />
+
+      {/* ── Metrics ───────────────────────────────────────────────── */}
+      <section className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-10"
+          >
+            <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--gold-muted)] mb-2">BY THE NUMBERS</p>
+            <h2 className="font-display text-2xl font-bold text-[var(--text)]">Active Defender Profile</h2>
+          </motion.div>
+          <MetricsDashboard />
+        </div>
+      </section>
+
+      {/* ── Quick links ───────────────────────────────────────────── */}
+      <section className="py-16 px-6 border-t border-[#1a1a1a]">
+        <div className="max-w-5xl mx-auto grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            { href: "/homelab", label: "Home Lab", desc: "4-node enterprise simulation · Wazuh SIEM · Attack/defense ops", color: "var(--gold)" },
+            { href: "/cybersecurity", label: "Cybersecurity Skills", desc: "MITRE ATT&CK · Detection · Active Directory · GRC", color: "var(--blue)" },
+            { href: "/certifications", label: "Certifications", desc: "ISC2 CC · Google Cert · Security+ in progress", color: "var(--green)" },
+            { href: "/experience", label: "Experience", desc: "Security operations · Freelance dev · Linux admin", color: "var(--gold)" },
+            { href: "/career", label: "Career Roadmap", desc: "SOC L1 → Security Engineer → Architect", color: "var(--blue)" },
+            { href: "/contact", label: "Get in Touch", desc: "Open for SOC Analyst and Blue Team roles", color: "var(--green)" },
+          ].map((card) => (
+            <motion.div
+              key={card.href}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <Link
+                href={card.href}
+                className="block glass rounded-xl p-5 card-lift group h-full"
+              >
+                <div className="w-1 h-6 rounded-full mb-4" style={{ background: card.color }} />
+                <p className="font-display text-sm font-semibold text-[var(--text)] mb-1 group-hover:text-[var(--gold)] transition-colors">
+                  {card.label}
+                </p>
+                <p className="text-[var(--text-muted)] text-xs leading-relaxed">{card.desc}</p>
+                <div className="mt-4 flex items-center gap-1 text-[10px] font-mono text-[var(--text-muted)] group-hover:text-[var(--gold)] transition-colors">
+                  EXPLORE <ArrowRight className="w-3 h-3" />
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
-import { Mail, MapPin, Globe, Send, Lock, CheckCircle } from "lucide-react";
+import { Mail, MapPin, Globe, Send, Lock, CheckCircle, AlertCircle } from "lucide-react";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
@@ -9,19 +9,41 @@ const GithubIcon = () => (
   </svg>
 );
 
+const SUBJECTS = ["Job Opportunity", "Collaboration", "General Inquiry", "Other"] as const;
+
 export default function ContactSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
-  const [sent, setSent] = useState(false);
-  const [sending, setSending] = useState(false);
+  const [csrf, setCsrf] = useState("");
+  const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/csrf").then((r) => r.json()).then((d) => setCsrf(d.token)).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSending(true);
-    await new Promise((r) => setTimeout(r, 1800));
-    setSending(false);
-    setSent(true);
+    setState("sending");
+    setError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, _csrf: csrf }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setState("done");
+      } else {
+        setError(data.error || "Something went wrong. Please try again.");
+        setState("error");
+      }
+    } catch {
+      setError("Network error. Please email directly at raaghvv0508@gmail.com");
+      setState("error");
+    }
   };
 
   return (
@@ -127,7 +149,7 @@ export default function ContactSection() {
             <div className="flex items-center gap-2 glass rounded-lg px-4 py-3">
               <Lock className="w-3.5 h-3.5 text-[#7c3aed]" />
               <p className="font-mono text-[10px] text-[#475569]">
-                Messages transmitted over HTTPS · TLS 1.3 · End-to-end encrypted
+                HTTPS · CSRF protected · TLS 1.3 · IP hashed
               </p>
             </div>
           </motion.div>
@@ -154,7 +176,7 @@ export default function ContactSection() {
               </div>
 
               <div className="p-6">
-                {sent ? (
+                {state === "done" ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -175,7 +197,6 @@ export default function ContactSection() {
                     {[
                       { key: "name", label: "YOUR NAME", placeholder: "John Doe", type: "text" },
                       { key: "email", label: "EMAIL ADDRESS", placeholder: "john@example.com", type: "email" },
-                      { key: "subject", label: "SUBJECT", placeholder: "SOC Opportunity / Collaboration / General", type: "text" },
                     ].map((field) => (
                       <div key={field.key}>
                         <label className="font-mono text-[9px] text-[#475569] tracking-wider block mb-1.5">
@@ -194,6 +215,23 @@ export default function ContactSection() {
 
                     <div>
                       <label className="font-mono text-[9px] text-[#475569] tracking-wider block mb-1.5">
+                        SUBJECT
+                      </label>
+                      <select
+                        required
+                        value={form.subject}
+                        onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                        className="w-full bg-[rgba(0,10,30,0.6)] border border-[rgba(0,212,255,0.15)] rounded-lg px-4 py-2.5 text-[#e2e8f0] text-sm font-mono focus:outline-none focus:border-[rgba(0,212,255,0.4)] transition-all"
+                      >
+                        <option value="" disabled>Select a subject...</option>
+                        {SUBJECTS.map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="font-mono text-[9px] text-[#475569] tracking-wider block mb-1.5">
                         MESSAGE
                       </label>
                       <textarea
@@ -206,12 +244,19 @@ export default function ContactSection() {
                       />
                     </div>
 
+                    {state === "error" && (
+                      <div className="flex items-center gap-2 font-mono text-[10px] text-[#ff4444] bg-[rgba(255,68,68,0.08)] px-3 py-2 rounded border border-[rgba(255,68,68,0.2)]">
+                        <AlertCircle className="w-3 h-3 shrink-0" />
+                        {error}
+                      </div>
+                    )}
+
                     <button
                       type="submit"
-                      disabled={sending}
+                      disabled={state === "sending"}
                       className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-mono text-xs tracking-wider transition-all duration-300 border border-[rgba(0,212,255,0.4)] text-[#00d4ff] hover:bg-[rgba(0,212,255,0.08)] hover:shadow-[0_0_20px_rgba(0,212,255,0.2)] disabled:opacity-50"
                     >
-                      {sending ? (
+                      {state === "sending" ? (
                         <>
                           <motion.span
                             animate={{ rotate: 360 }}

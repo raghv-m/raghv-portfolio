@@ -22,6 +22,9 @@ model Post {
   notifySubscribers Boolean  @default(false)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  @@index([published, createdAt])
+  @@index([category])
 }
 
 model ContactSubmission {
@@ -33,6 +36,8 @@ model ContactSubmission {
   ipHash    String
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  @@index([read, createdAt])
 }
 
 model Subscriber {
@@ -42,6 +47,8 @@ model Subscriber {
   active           Boolean  @default(true)
   unsubscribeToken String   @unique @default(cuid())
   subscribedAt     DateTime @default(now())
+
+  @@index([active])
 }
 
 model JobApplication {

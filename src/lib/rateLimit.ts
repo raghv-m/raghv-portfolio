@@ -1,4 +1,5 @@
 import { RateLimiterMemory } from "rate-limiter-flexible";
+import { createHmac } from "crypto";
 
 const limiters: Record<string, RateLimiterMemory> = {};
 
@@ -12,7 +13,6 @@ function getLimiter(key: string, points: number, duration: number) {
 export async function rateLimit(
   ip: string,
   route: "contact" | "posts" | "admin",
-  req?: Request
 ): Promise<{ success: boolean; msBeforeNext?: number }> {
   const configs = {
     contact: { points: 3, duration: 3600 },   // 3/hour
@@ -42,13 +42,10 @@ export function getClientIp(req: Request): string {
 }
 
 export function hashIp(ip: string): string {
-  const salt = process.env.IP_HASH_SALT || "default-salt";
-  // Simple hash for SQLite (no crypto module issues)
-  let hash = 0;
-  const str = ip + salt;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
-    hash |= 0;
+  const salt = process.env.IP_HASH_SALT;
+  if (!salt) {
+    if (process.env.NODE_ENV === "production") throw new Error("IP_HASH_SALT must be set in production");
+    console.warn("[rateLimit] IP_HASH_SALT not set — using dev fallback");
   }
-  return Math.abs(hash).toString(16).padStart(8, "0");
+  return createHmac("sha256", salt ?? "dev-insecure-fallback").update(ip).digest("hex");
 }

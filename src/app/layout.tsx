@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { validateEnv } from "@/lib/env";
+
+if (process.env.NODE_ENV === "production") validateEnv();
 import AnimatedCursor from "@/components/cursor/AnimatedCursor";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";

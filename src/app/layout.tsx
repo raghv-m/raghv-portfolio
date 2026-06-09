@@ -4,7 +4,6 @@ import "./globals.css";
 import { validateEnv } from "@/lib/env";
 
 if (process.env.NODE_ENV === "production") validateEnv();
-import AnimatedCursor from "@/components/cursor/AnimatedCursor";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AlertTicker from "@/components/layout/AlertTicker";
@@ -58,7 +57,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <body className="grain bg-[#0a0a0a] text-[#f5f5f5] antialiased overflow-x-hidden">
-        <AnimatedCursor />
         <Navbar />
         <main className="relative z-10">{children}</main>
         <Footer />

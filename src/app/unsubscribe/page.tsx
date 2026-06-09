@@ -11,7 +11,7 @@ export default async function UnsubscribePage({ searchParams }: { searchParams: 
           <>
             <CheckCircle className="w-12 h-12 mx-auto mb-4" style={{ color: "var(--green)" }} />
             <h1 className="font-display text-2xl font-bold text-[var(--text)] mb-3">Unsubscribed</h1>
-            <p className="text-[var(--text-muted)] mb-6">You've been removed from Raghav's Cyber Daily. No more emails.</p>
+            <p className="text-[var(--text-muted)] mb-6">You&apos;ve been removed from Raghav&apos;s Cyber Daily. No more emails.</p>
           </>
         ) : (
           <>

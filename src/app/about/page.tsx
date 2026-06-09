@@ -2,7 +2,7 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Download } from "lucide-react";
 
 const STAGES = [
   {
@@ -87,11 +87,11 @@ Every OWASP vulnerability I studied became concrete when I was the one patching 
     period: "2024–Present",
     color: "var(--gold)",
     accent: "var(--gold)",
-    narrative: `This is where everything converged. ISC2 CC. Google Cybersecurity. A home lab running on real hardware — Windows Server 2022 domain controller, Ubuntu web server, Kali Linux attack box, Wazuh SIEM. Not a virtual sandbox. A production-grade simulation lab I built myself.
+    narrative: `This is where everything converged. ISC2 CC. Google Cybersecurity. CompTIA Security+. A home lab running on real hardware — Windows Server 2022 domain controller, Ubuntu web server, Kali Linux attack box, Wazuh SIEM. Not a virtual sandbox. A production-grade simulation lab I built myself.
 
 I'm running Wazuh agents on every endpoint. I write detection rules. I generate attack traffic and watch it hit the SIEM. I run Nmap, Hydra, and Gobuster against my own network and see exactly what the defender sees on the other side.
 
-Security+ is in progress. TryHackMe SOC Level 1 is 65% complete. Every lab builds the muscle memory for the role I'm targeting. I don't want to study security — I want to practice it. The home lab is where that happens.`,
+Security+ is earned. TryHackMe SOC Level 1 is 65% complete. Every lab builds the muscle memory for the role I'm targeting. I don't want to study security — I want to practice it. The home lab is where that happens.`,
     icon: (
       <svg viewBox="0 0 120 120" className="w-24 h-24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <rect x="20" y="35" width="80" height="55" rx="4" strokeOpacity="0.4" />
@@ -240,11 +240,23 @@ function StageSection({ stage, index }: { stage: typeof STAGES[0]; index: number
 }
 
 export default function AboutPage() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 80]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="pt-32 pb-16 px-6 text-center section">
-        <div className="max-w-3xl mx-auto">
+      <section ref={heroRef} className="pt-32 pb-16 px-6 text-center section relative overflow-hidden">
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{ y: heroY, opacity: heroOpacity }}
+        >
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(212,160,23,0.04) 0%, transparent 70%)" }} />
+        </motion.div>
+        <div className="max-w-3xl mx-auto relative z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-4">ABOUT</p>
             <h1 className="font-display text-5xl sm:text-6xl font-bold mb-6 leading-[1.05]">
@@ -294,7 +306,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--gold-muted)] mb-4">WHAT'S NEXT</p>
+            <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--gold-muted)] mb-4">WHAT&apos;S NEXT</p>
             <h2 className="font-display text-3xl font-bold mb-4">
               Ready to see the <span className="gradient-gold">work</span>?
             </h2>
@@ -305,6 +317,14 @@ export default function AboutPage() {
               <Link href="/projects" className="btn-gold">
                 View Projects <ArrowRight className="w-3.5 h-3.5" />
               </Link>
+              <a
+                href="/resume.pdf"
+                download="Raghav_Mahajan_Resume.pdf"
+                className="btn-ghost flex items-center gap-2"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Download Resume
+              </a>
               <Link href="/homelab" className="btn-ghost">
                 Explore the Home Lab
               </Link>

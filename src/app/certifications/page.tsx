@@ -43,12 +43,11 @@ const CERTS = [
   {
     name: "CompTIA Security+ SY0-701",
     issuer: "CompTIA",
-    status: "IN PROGRESS",
-    date: "Exam: Jun/Jul 2026",
-    progress: 55,
+    status: "EARNED",
+    date: "2025",
     value: "Industry-standard security certification. Covers threats, vulnerabilities, architecture, identity management, risk management, and cryptography.",
-    color: "var(--gold)",
-    glow: "rgba(212,160,23,0.15)",
+    color: "var(--green)",
+    glow: "rgba(0,255,136,0.2)",
   },
   {
     name: "CompTIA CySA+ CS0-003",

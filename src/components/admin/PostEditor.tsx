@@ -1,7 +1,7 @@
 "use client";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Eye, Bold, Code, Minus, AlertTriangle, Lightbulb, Info, XCircle, Hash, List, Upload, X } from "lucide-react";
+import { Save, Eye, Bold, Code, Minus, AlertTriangle, Lightbulb, Info, XCircle, Hash, List, X } from "lucide-react";
 
 interface PostData {
   id?: string;
@@ -57,7 +57,7 @@ export default function PostEditor({ initial }: Props) {
   const autoSlug = (title: string) =>
     title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-  const insert = (before: string, after = "", placeholder = "text") => {
+  const insert = useCallback((before: string, after = "", placeholder = "text") => {
     const ta = textareaRef.current;
     if (!ta) return;
     const start = ta.selectionStart;
@@ -69,9 +69,9 @@ export default function PostEditor({ initial }: Props) {
       ta.focus();
       ta.setSelectionRange(start + before.length, start + before.length + sel.length);
     }, 0);
-  };
+  }, [set]);
 
-  const TOOLBAR = [
+  const TOOLBAR = useMemo(() => [
     { icon: Bold, label: "Bold", action: () => insert("**", "**") },
     { icon: Code, label: "Inline code", action: () => insert("`", "`") },
     { icon: Hash, label: "Heading", action: () => insert("\n## ", "", "Heading") },
@@ -81,7 +81,7 @@ export default function PostEditor({ initial }: Props) {
     { icon: AlertTriangle, label: "Callout warning", action: () => insert("\n<Callout type=\"warning\">\n", "\n</Callout>\n", "Warning text") },
     { icon: XCircle, label: "Callout danger", action: () => insert("\n<Callout type=\"danger\">\n", "\n</Callout>\n", "Danger text") },
     { icon: Lightbulb, label: "Callout tip", action: () => insert("\n<Callout type=\"tip\">\n", "\n</Callout>\n", "Tip text") },
-  ];
+  ], [insert, set, data.content]);
 
   const addTag = () => {
     const t = tagInput.trim().toLowerCase();
@@ -141,6 +141,7 @@ export default function PostEditor({ initial }: Props) {
           <div>
             {/* Toolbar */}
             <div className="flex flex-wrap gap-1 mb-2 p-2 glass rounded-xl">
+              {/* eslint-disable-next-line react-hooks/refs */}
               {TOOLBAR.map(({ icon: Icon, label, action }) => (
                 <button key={label} title={label} onClick={action} className="p-1.5 rounded hover:bg-[rgba(212,160,23,0.08)] text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors">
                   <Icon className="w-4 h-4" />

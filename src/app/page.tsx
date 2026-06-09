@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Download, ChevronDown } from "lucide-react";
 import TerminalAnimation from "@/components/home/TerminalAnimation";
@@ -36,8 +36,10 @@ function TypingRole() {
     } else if (deleting && displayed.length > 0) {
       timeout = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 30);
     } else if (deleting && displayed.length === 0) {
-      setDeleting(false);
-      setIndex((i) => (i + 1) % TYPING_ROLES.length);
+      timeout = setTimeout(() => {
+        setDeleting(false);
+        setIndex((i) => (i + 1) % TYPING_ROLES.length);
+      }, 0);
     }
 
     return () => clearTimeout(timeout);
@@ -51,21 +53,27 @@ function TypingRole() {
 }
 
 export default function HomePage() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 60]);
+
   return (
     <div className="min-h-screen">
       {/* ── Hero ──────────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden grid-bg pt-14 pb-24">
-        {/* 3D background */}
-        <div className="absolute inset-0 z-0">
+      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden grid-bg pt-14 pb-24">
+        {/* 3D background with parallax scale */}
+        <motion.div className="absolute inset-0 z-0" style={{ scale: heroScale }}>
           <HeroScene />
-        </div>
+        </motion.div>
 
         {/* Radial gradient overlay */}
         <div className="absolute inset-0 z-0" style={{
           background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.9) 100%)"
         }} />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center w-full">
           {/* Left — text */}
           <div>
             <motion.div
@@ -140,7 +148,7 @@ export default function HomePage() {
             >
               {[
                 { dot: "var(--green)", label: "ISC2 CC · PASSED" },
-                { dot: "var(--gold)", label: "Security+ · In Progress" },
+                { dot: "var(--green)", label: "Security+ · EARNED 2025" },
                 { dot: "var(--blue)", label: "50+ Labs Completed" },
               ].map((s) => (
                 <div key={s.label} className="flex items-center gap-1.5">
@@ -150,7 +158,7 @@ export default function HomePage() {
               ))}
             </motion.div>
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* Scroll indicator */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 scroll-indicator">
@@ -185,7 +193,7 @@ export default function HomePage() {
           {[
             { href: "/homelab", label: "Home Lab", desc: "4-node enterprise simulation · Wazuh SIEM · Attack/defense ops", color: "var(--gold)" },
             { href: "/cybersecurity", label: "Cybersecurity Skills", desc: "MITRE ATT&CK · Detection · Active Directory · GRC", color: "var(--blue)" },
-            { href: "/certifications", label: "Certifications", desc: "ISC2 CC · Google Cert · Security+ in progress", color: "var(--green)" },
+            { href: "/certifications", label: "Certifications", desc: "ISC2 CC · Google Cert · Security+ EARNED", color: "var(--green)" },
             { href: "/experience", label: "Experience", desc: "Security operations · Freelance dev · Linux admin", color: "var(--gold)" },
             { href: "/career", label: "Career Roadmap", desc: "SOC L1 → Security Engineer → Architect", color: "var(--blue)" },
             { href: "/contact", label: "Get in Touch", desc: "Open for SOC Analyst and Blue Team roles", color: "var(--green)" },

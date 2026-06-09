@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
-import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
-import { ChevronDown, Star, CheckCircle, Clock, Target, Crosshair } from "lucide-react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { ChevronDown, Star, Crosshair } from "lucide-react";
 import Link from "next/link";
 
 const NODES = [
@@ -15,7 +15,7 @@ const NODES = [
     badge: "YOU ARE HERE",
     desc: "Building the foundation in physical security operations while aggressively pursuing cybersecurity knowledge. Every shift at ADESA and Covenant Health is a lesson in incident response, access control, and documentation. The SOC mindset begins here.",
     skills: ["Incident Reporting", "Access Control", "SIEM Fundamentals", "Active Directory", "Linux Admin", "Python", "TCP/IP Networking"],
-    certs: ["ISC2 CC ✓", "Google Cybersecurity ✓", "Security+ (in progress)"],
+    certs: ["ISC2 CC ✓", "Google Cybersecurity ✓", "Security+ ✓"],
     note: "The guard booth teaches the same mindset as the SOC — monitor, detect, respond, document.",
   },
   {
@@ -88,7 +88,7 @@ const SKILLS = [
 const CERTS = [
   { name: "Google Cybersecurity", abbr: "GCC", status: "DONE" },
   { name: "ISC2 CC", abbr: "CC", status: "DONE" },
-  { name: "Security+", abbr: "SEC+", status: "IN_PROGRESS" },
+  { name: "Security+", abbr: "SEC+", status: "DONE" },
   { name: "CySA+", abbr: "CySA+", status: "PLANNED" },
   { name: "eJPT", abbr: "eJPT", status: "PLANNED" },
   { name: "OSCP", abbr: "OSCP", status: "GOAL", star: true },
@@ -104,33 +104,27 @@ const STATUS_STYLE = {
   VISION: { border: "rgba(138,105,20,0.3)", bg: "rgba(138,105,20,0.04)", text: "var(--gold-muted)", dot: "var(--gold-muted)" },
 };
 
-// Animated background particles
+const PARTICLE_DATA = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  w: Math.random() * 3 + 1,
+  h: Math.random() * 3 + 1,
+  left: `${Math.random() * 100}%`,
+  top: `${Math.random() * 100}%`,
+  driftX: Math.random() * 20 - 10,
+  duration: Math.random() * 8 + 6,
+  delay: Math.random() * 4,
+}));
+
 function FloatingParticles() {
-  const particles = Array.from({ length: 20 }, (_, i) => i);
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((i) => (
+      {PARTICLE_DATA.map((p) => (
         <motion.div
-          key={i}
+          key={p.id}
           className="absolute rounded-full"
-          style={{
-            width: Math.random() * 3 + 1,
-            height: Math.random() * 3 + 1,
-            background: "rgba(212,160,23,0.4)",
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-          }}
-          animate={{
-            y: [0, -30, 0],
-            x: [0, Math.random() * 20 - 10, 0],
-            opacity: [0.2, 0.6, 0.2],
-          }}
-          transition={{
-            duration: Math.random() * 8 + 6,
-            repeat: Infinity,
-            delay: Math.random() * 4,
-            ease: "easeInOut",
-          }}
+          style={{ width: p.w, height: p.h, background: "rgba(212,160,23,0.4)", left: p.left, top: p.top }}
+          animate={{ y: [0, -30, 0], x: [0, p.driftX, 0], opacity: [0.2, 0.6, 0.2] }}
+          transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "easeInOut" }}
         />
       ))}
     </div>
@@ -260,7 +254,7 @@ function NodeGraph() {
                         </div>
 
                         <div className="glass-gold rounded-lg px-4 py-3">
-                          <p className="font-mono text-[10px] text-[var(--gold)] italic">"{node.note}"</p>
+                          <p className="font-mono text-[10px] text-[var(--gold)] italic">&ldquo;{node.note}&rdquo;</p>
                         </div>
                       </div>
                     </motion.div>

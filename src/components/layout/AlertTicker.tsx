@@ -7,7 +7,7 @@ const ALERTS = [
   "[ALERT] Hydra brute-force detected · admin@192.168.56.101 · BLOCKED",
   "[INFO] SPL query executed · index=security · 4,892 events returned",
   "[INFO] ISC2 CC · PASSED · 2024 · Credential active",
-  "[INFO] CompTIA Security+ SY0-701 · Exam prep · Target: June/July 2026",
+  "[INFO] CompTIA Security+ SY0-701 · PASSED · 2025 · Credential active",
   "[WARN] Gobuster scan detected · /api/admin · 403 returned · Alert fired",
   "[INFO] Wireshark PCAP capture · eth0 · 12,441 packets · Saved",
   "[INFO] System status · LEARNING · BUILDING · AVAILABLE FOR SOC ROLES",

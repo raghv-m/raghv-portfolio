@@ -1,6 +1,9 @@
 "use client";
+import dynamic from "next/dynamic";
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
+
+const CyberSphere = dynamic(() => import("@/components/three/CyberSphere"), { ssr: false });
 import { Shield, Eye, Zap, Lock, ChevronRight } from "lucide-react";
 
 // MITRE ATT&CK techniques simplified — 12 tactics, select techniques per tactic
@@ -119,20 +122,29 @@ export default function CybersecurityPage() {
   const matrixInView = useInView(matrixRef, { once: true, margin: "-80px" });
 
   return (
-    <div className="min-h-screen pt-24 pb-32">
+    <div className="min-h-screen pb-32">
+      {/* 3D hero section */}
+      <section className="relative min-h-[52vh] flex items-center overflow-hidden pt-24">
+        <div className="absolute inset-0 z-0 opacity-40">
+          <CyberSphere />
+        </div>
+        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.92) 100%)" }} />
+        <div className="relative z-10 max-w-6xl mx-auto px-6 w-full">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CYBERSECURITY</p>
+            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
+              Threat <span className="gradient-gold">Operations</span>
+            </h1>
+            <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
+              Blue team fundamentals, SIEM operations, and hands-on offensive tooling.
+              Built through real home lab exercises, not just theory.
+            </p>
+            <div className="glow-line mt-6 max-w-24" />
+          </motion.div>
+        </div>
+      </section>
+
       <div className="max-w-6xl mx-auto px-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-16">
-          <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CYBERSECURITY</p>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-            Threat <span className="gradient-gold">Operations</span>
-          </h1>
-          <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-            Blue team fundamentals, SIEM operations, and hands-on offensive tooling.
-            Built through real home lab exercises, not just theory.
-          </p>
-          <div className="glow-line mt-6 max-w-24" />
-        </motion.div>
 
         {/* Quick stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">

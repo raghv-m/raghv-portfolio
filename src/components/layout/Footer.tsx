@@ -91,7 +91,7 @@ export default function Footer() {
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="font-mono text-[10px] text-[#333]">
-            © 2025 Raghav Mahajan · Edmonton, AB · ISC2 CC · Security+ In Progress
+            © 2025 Raghav Mahajan · Edmonton, AB · ISC2 CC · Security+ EARNED
           </p>
           <p className="font-mono text-[10px] text-[#333]">
             Built with Next.js · Framer Motion · Three.js

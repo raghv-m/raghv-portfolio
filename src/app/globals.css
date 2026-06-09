@@ -33,11 +33,7 @@ body {
   color: var(--text);
   font-family: var(--font-inter), system-ui, sans-serif;
   overflow-x: hidden;
-  cursor: none;
 }
-
-/* Hide default cursor site-wide — custom cursor handles it */
-* { cursor: none !important; }
 
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
@@ -309,12 +305,6 @@ body {
 }
 
 /* ── Mobile overrides ────────────────────────────────────────── */
-@media (pointer: coarse) {
-  /* Restore default cursor on touch devices */
-  body { cursor: auto; }
-  * { cursor: auto !important; }
-  a, button, [role="button"], label, input, textarea, select { cursor: pointer !important; }
-}
 
 @media (max-width: 767px) {
   /* Consistent horizontal padding */

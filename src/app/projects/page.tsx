@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Shield, Code2, Server, Brain } from "lucide-react";
+import { Shield, Code2, Server, Brain } from "lucide-react";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">

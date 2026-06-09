@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, Menu, X } from "lucide-react";
+import { Shield, Menu, X, Download } from "lucide-react";
 
 const LINKS = [
   { href: "/about", label: "About" },
@@ -21,6 +21,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 40 });
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 30);
@@ -28,7 +30,10 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setOpen(false));
+    return () => cancelAnimationFrame(raf);
+  }, [pathname]);
 
   return (
     <>
@@ -40,6 +45,11 @@ export default function Navbar() {
           scrolled ? "bg-[rgba(10,10,10,0.95)] backdrop-blur-xl border-b border-[#222]" : "bg-transparent"
         }`}
       >
+        {/* Scroll progress bar */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-[1px] origin-left"
+          style={{ scaleX, background: "linear-gradient(90deg, var(--gold), var(--gold-light))" }}
+        />
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
@@ -75,12 +85,21 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Status + mobile toggle */}
+          {/* Status + resume + mobile toggle */}
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] pulse-green" />
               <span className="font-mono text-[10px] text-[var(--green)] tracking-wider">AVAILABLE</span>
             </div>
+            <a
+              href="/resume.pdf"
+              download="Raghav_Mahajan_Resume.pdf"
+              className="hidden sm:flex items-center gap-1.5 font-mono text-[10px] px-3 py-1.5 rounded transition-all hover:border-[var(--gold)] hover:text-[var(--gold)]"
+              style={{ border: "1px solid var(--border)", color: "var(--text-muted)" }}
+            >
+              <Download className="w-3 h-3" />
+              Resume
+            </a>
             <button
               className="lg:hidden text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               onClick={() => setOpen(!open)}
@@ -132,11 +151,21 @@ export default function Navbar() {
                   </Link>
                 ))}
               </nav>
-              <div className="px-6 pb-8 pt-4 border-t border-[#222]">
+              <div className="px-6 pb-8 pt-4 border-t border-[#222] flex flex-col gap-4">
                 <div className="flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" style={{ boxShadow: "0 0 6px rgba(0,255,136,0.6)" }} />
                   <span className="font-mono text-[10px] text-[var(--green)] tracking-wider">AVAILABLE FOR SOC ROLES</span>
                 </div>
+                <a
+                  href="/resume.pdf"
+                  download="Raghav_Mahajan_Resume.pdf"
+                  className="flex items-center justify-center gap-2 min-h-[44px] font-mono text-xs rounded transition-all"
+                  style={{ border: "1px solid var(--gold)", color: "var(--gold)", background: "rgba(212,160,23,0.06)" }}
+                  onClick={() => setOpen(false)}
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download Resume
+                </a>
               </div>
             </motion.div>
           </>

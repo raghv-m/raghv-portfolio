@@ -31,7 +31,7 @@ export default function SubscribeWidget({ compact = false }: { compact?: boolean
     return (
       <div className={`flex items-center gap-2 ${compact ? "text-sm" : ""}`}>
         <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "var(--green)" }} />
-        <span className="text-[var(--text-muted)]">You're in. Check your inbox.</span>
+        <span className="text-[var(--text-muted)]">You&apos;re in. Check your inbox.</span>
       </div>
     );
   }
@@ -58,7 +58,7 @@ export default function SubscribeWidget({ compact = false }: { compact?: boolean
   return (
     <div className="glass rounded-2xl p-8 text-center" style={{ border: "1px solid rgba(212,160,23,0.15)" }}>
       <Mail className="w-8 h-8 mx-auto mb-4" style={{ color: "var(--gold)" }} />
-      <h3 className="font-display text-xl font-bold text-[var(--text)] mb-2">Raghav's Cyber Daily</h3>
+      <h3 className="font-display text-xl font-bold text-[var(--text)] mb-2">Raghav&apos;s Cyber Daily</h3>
       <p className="text-[var(--text-muted)] text-sm mb-6">Writeups, homelab experiments, and notes on breaking into offensive security — no spam, ever.</p>
       <form onSubmit={submit} className="space-y-3 max-w-sm mx-auto">
         <input type="text" placeholder="Your name (optional)" value={name} onChange={e => setName(e.target.value)} className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--gold)] placeholder:text-[var(--border)]" />

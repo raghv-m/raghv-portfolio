@@ -21,16 +21,22 @@ export function proxy(request: NextRequest) {
   );
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
   headers.set("Cross-Origin-Resource-Policy", "same-origin");
+  const isDev = process.env.NODE_ENV === "development";
   headers.set(
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
+      isDev
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+        : "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob:",
-      "connect-src 'self'",
+      isDev
+        ? "connect-src 'self' ws: wss:"
+        : "connect-src 'self'",
       "frame-ancestors 'none'",
+      "worker-src blob:",
     ].join("; ")
   );
 

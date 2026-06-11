@@ -137,6 +137,7 @@ body {
 .marquee-track {
   display: inline-flex;
   animation: marquee 30s linear infinite;
+  will-change: transform;
 }
 .marquee-track:hover { animation-play-state: paused; }
 
@@ -151,7 +152,7 @@ body {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-.ticker-content { animation: ticker 50s linear infinite; }
+.ticker-content { animation: ticker 50s linear infinite; will-change: transform; }
 
 /* ── Section spacing ─────────────────────────────────────────── */
 .section { padding: 7rem 1.5rem; }

@@ -37,7 +37,8 @@ function SparklesInner(props: SparklesProps) {
           options={{
             background: { color: { value: background || "transparent" } },
             fullScreen: { enable: false, zIndex: 1 },
-            fpsLimit: 60,
+            fpsLimit: 30,
+            pauseOnBlur: true,
             interactivity: {
               events: {
                 onClick: { enable: true, mode: "push" },
@@ -88,7 +89,7 @@ function SparklesInner(props: SparklesProps) {
               },
               links: { enable: false },
             },
-            detectRetina: true,
+            detectRetina: false,
           }}
         />
       )}

@@ -3,10 +3,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Globe, Lock, CheckCircle, Download } from "lucide-react";
 import dynamic from "next/dynamic";
-const SparklesCore = dynamic(
-  () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
-  { ssr: false }
-);
 const SmokeBackground = dynamic(
   () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
   { ssr: false }
@@ -59,33 +55,14 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen pb-40 section">
-      {/* Smoke + stars hero with bottom fade */}
-      <div className="relative pt-24 pb-20 overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            maskImage: "linear-gradient(to bottom, black 0%, black 72%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 72%, transparent 100%)",
-          }}
-        >
-          <div className="absolute inset-0 opacity-60">
-            <SmokeBackground smokeColor="#00ff88" />
-          </div>
-          <div className="absolute inset-0">
-            <SparklesCore
-              background="transparent"
-              minSize={0.3}
-              maxSize={1.1}
-              particleDensity={40}
-              particleColor="#00ff88"
-              speed={0.4}
-              className="w-full h-full"
-            />
-          </div>
+    <div className="min-h-screen pb-40">
+      {/* Hero — mirrors the Career page: green smoke bleeds to the very top, no gap */}
+      <section className="relative pt-32 pb-16 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-35">
+          <SmokeBackground smokeColor="#22c55e" />
         </div>
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0) 0%, rgba(10,10,10,0.78) 100%)" }} />
+          style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.97) 100%)" }} />
         <div className="max-w-5xl mx-auto px-6 relative z-10 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CONTACT</p>
@@ -106,10 +83,9 @@ export default function ContactPage() {
             <div className="glow-line mt-6 max-w-24 mx-auto" />
           </motion.div>
         </div>
-      </div>
+      </section>
 
       <div className="max-w-5xl mx-auto px-6">
-        <div className="mb-10" />
         <div className="grid lg:grid-cols-5 gap-10">
           {/* Info panel — 2 cols */}
           <motion.div

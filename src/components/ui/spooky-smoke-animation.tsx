@@ -169,8 +169,17 @@ export const SmokeBackground: React.FC<SmokeBackgroundProps> = ({
 
     let animId: number;
     let lastFrame = 0;
+    let offscreen = false;
+
+    const obs = new IntersectionObserver(
+      ([entry]) => { offscreen = !entry.isIntersecting; },
+      { threshold: 0 }
+    );
+    obs.observe(canvas);
+
     const loop = (now: number) => {
       animId = requestAnimationFrame(loop);
+      if (document.hidden || offscreen) return;
       if (now - lastFrame < 33) return;
       lastFrame = now;
       renderer.render(now);
@@ -180,6 +189,7 @@ export const SmokeBackground: React.FC<SmokeBackgroundProps> = ({
     return () => {
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animId);
+      obs.disconnect();
       renderer.reset();
     };
   }, []);

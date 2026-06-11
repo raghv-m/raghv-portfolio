@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/purity */
 "use client";
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -132,15 +132,39 @@ function Rings() {
 }
 
 export default function HeroScene() {
+  const [isVisible, setIsVisible] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onVis = () => setIsVisible(!document.hidden);
+    document.addEventListener("visibilitychange", onVis);
+
+    const obs = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting && !document.hidden),
+      { threshold: 0 }
+    );
+    if (containerRef.current) obs.observe(containerRef.current);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVis);
+      obs.disconnect();
+    };
+  }, []);
+
   return (
-    <Canvas
-      className="absolute inset-0"
-      camera={{ position: [0, 0, 10], fov: 55 }}
-      style={{ background: "transparent" }}
-    >
-      <ambientLight intensity={0.2} />
-      <ParticleField />
-      <Rings />
-    </Canvas>
+    <div ref={containerRef} className="absolute inset-0">
+      <Canvas
+        className="absolute inset-0"
+        camera={{ position: [0, 0, 10], fov: 55 }}
+        style={{ background: "transparent" }}
+        dpr={[1, 2]}
+        performance={{ min: 0.5 }}
+        frameloop={isVisible ? "always" : "never"}
+      >
+        <ambientLight intensity={0.2} />
+        <ParticleField />
+        <Rings />
+      </Canvas>
+    </div>
   );
 }

@@ -7,7 +7,10 @@ import { ArrowRight, Download, ChevronDown } from "lucide-react";
 import TerminalAnimation from "@/components/home/TerminalAnimation";
 import SkillMarquee from "@/components/home/SkillMarquee";
 import MetricsDashboard from "@/components/home/MetricsDashboard";
-import { SparklesCore } from "@/components/ui/sparkles";
+const SparklesCore = dynamic(
+  () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
+  { ssr: false }
+);
 
 const HeroScene = dynamic(() => import("@/components/three/HeroScene"), { ssr: false });
 const SmokeBackground = dynamic(

@@ -3,7 +3,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Server, Shield, Terminal, Globe, AlertTriangle, CheckCircle, Activity } from "lucide-react";
 import dynamic from "next/dynamic";
-import { SparklesCore } from "@/components/ui/sparkles";
+const SparklesCore = dynamic(
+  () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
+  { ssr: false }
+);
 const SmokeBackground = dynamic(
   () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
   { ssr: false }

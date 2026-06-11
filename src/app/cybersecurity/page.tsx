@@ -2,7 +2,10 @@
 import dynamic from "next/dynamic";
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { SparklesCore } from "@/components/ui/sparkles";
+const SparklesCore = dynamic(
+  () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
+  { ssr: false }
+);
 
 const CyberSphere = dynamic(() => import("@/components/three/CyberSphere"), { ssr: false });
 import { Shield, Eye, Zap, Lock, ChevronRight } from "lucide-react";

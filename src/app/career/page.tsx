@@ -4,7 +4,10 @@ import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { ChevronDown, Star, Crosshair } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { SparklesCore } from "@/components/ui/sparkles";
+const SparklesCore = dynamic(
+  () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
+  { ssr: false }
+);
 import { MetalButton } from "@/components/ui/liquid-glass-button";
 
 const SmokeBackground = dynamic(

@@ -63,10 +63,11 @@ class Renderer {
   }
 
   updateScale() {
-    const dpr = Math.max(1, window.devicePixelRatio);
-    const { innerWidth: width, innerHeight: height } = window;
-    this.canvas.width = width * dpr;
-    this.canvas.height = height * dpr;
+    const dpr = Math.min(Math.max(1, window.devicePixelRatio), 2);
+    const width = this.canvas.offsetWidth || this.canvas.parentElement?.clientWidth || window.innerWidth;
+    const height = this.canvas.offsetHeight || this.canvas.parentElement?.clientHeight || window.innerHeight;
+    this.canvas.width = Math.round(width * dpr);
+    this.canvas.height = Math.round(height * dpr);
     this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
   }
 
@@ -167,11 +168,14 @@ export const SmokeBackground: React.FC<SmokeBackgroundProps> = ({
     window.addEventListener("resize", handleResize);
 
     let animId: number;
+    let lastFrame = 0;
     const loop = (now: number) => {
-      renderer.render(now);
       animId = requestAnimationFrame(loop);
+      if (now - lastFrame < 33) return;
+      lastFrame = now;
+      renderer.render(now);
     };
-    loop(0);
+    animId = requestAnimationFrame(loop);
 
     return () => {
       window.removeEventListener("resize", handleResize);

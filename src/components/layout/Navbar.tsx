@@ -6,15 +6,15 @@ import { usePathname } from "next/navigation";
 import { Shield, Menu, X, Download } from "lucide-react";
 
 const LINKS = [
-  { href: "/about", label: "About" },
-  { href: "/cybersecurity", label: "Cybersecurity" },
-  { href: "/projects", label: "Projects" },
-  { href: "/homelab", label: "Home Lab" },
-  { href: "/experience", label: "Experience" },
-  { href: "/certifications", label: "Certs" },
-  { href: "/career", label: "Career" },
-  { href: "/blog", label: "Blog" },
-  { href: "/contact", label: "Contact" },
+ { href: "/about", label: "About" },
+{ href: "/experience", label: "Experience" },
+{ href: "/career", label: "Career" },
+{ href: "/certifications", label: "Certs" },
+{ href: "/cybersecurity", label: "Cybersecurity" },
+{ href: "/homelab", label: "Home Lab" },
+{ href: "/projects", label: "Projects" },
+{ href: "/blog", label: "Blog" },
+{ href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {

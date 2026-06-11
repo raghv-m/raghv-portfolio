@@ -2,6 +2,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Server, Shield, Terminal, Globe, AlertTriangle, CheckCircle, Activity } from "lucide-react";
+import dynamic from "next/dynamic";
+import { SparklesCore } from "@/components/ui/sparkles";
+const SmokeBackground = dynamic(
+  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
+  { ssr: false }
+);
 
 const NODES = [
   {
@@ -218,20 +224,49 @@ export default function HomelabPage() {
   const activeNode = NODES.find((n) => n.id === selected);
 
   return (
-    <div className="min-h-screen pt-24 pb-32">
+    <div className="min-h-screen pb-32">
+      {/* Smoke + stars hero with bottom fade */}
+      <div className="relative pt-24 pb-16 overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
+          }}
+        >
+          <div className="absolute inset-0 opacity-35">
+            <SmokeBackground smokeColor="#00ff88" />
+          </div>
+          <div className="absolute inset-0">
+            <SparklesCore
+              background="transparent"
+              minSize={0.3}
+              maxSize={1.1}
+              particleDensity={40}
+              particleColor="#00ff88"
+              speed={0.4}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.96) 100%)" }} />
+        <div className="max-w-6xl mx-auto px-6 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-2">
+            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">HOME LAB</p>
+            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
+              HomeLab <span className="gradient-gold">Corp</span>
+            </h1>
+            <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
+              4-node enterprise security simulation. Real hardware. Real domain. Real attacks.
+              Monitored by Wazuh SIEM — generating authentic blue team experience.
+            </p>
+            <div className="glow-line mt-6 max-w-24" />
+          </motion.div>
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto px-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-12">
-          <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">HOME LAB</p>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-            HomeLab <span className="gradient-gold">Corp</span>
-          </h1>
-          <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-            4-node enterprise security simulation. Real hardware. Real domain. Real attacks.
-            Monitored by Wazuh SIEM — generating authentic blue team experience.
-          </p>
-          <div className="glow-line mt-6 max-w-24" />
-        </motion.div>
 
         {/* Status bar */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10">

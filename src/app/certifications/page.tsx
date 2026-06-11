@@ -1,6 +1,13 @@
 "use client";
 import { motion } from "framer-motion";
-import { CheckCircle, Clock, Target } from "lucide-react";
+import { CheckCircle, Clock, Target, Award } from "lucide-react";
+import dynamic from "next/dynamic";
+import { SparklesCore } from "@/components/ui/sparkles";
+
+const SmokeBackground = dynamic(
+  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
+  { ssr: false }
+);
 
 const CERTS = [
   {
@@ -53,7 +60,7 @@ const CERTS = [
     name: "CompTIA CySA+ CS0-003",
     issuer: "CompTIA",
     status: "PLANNED",
-    date: "After Security+",
+    date: "2026 Target",
     value: "Cybersecurity Analyst certification — threat detection, analysis, and response. Direct path to SOC Tier 2 readiness.",
     color: "var(--text-muted)",
     glow: "rgba(136,136,136,0.1)",
@@ -92,19 +99,68 @@ const STATUS_COLOR = {
 
 export default function CertificationsPage() {
   return (
-    <div className="min-h-screen pt-24 pb-32">
+    <div className="min-h-screen pb-32">
+      {/* ── Sparkles Hero ──────────────────────────────────────── */}
+      <div className="relative pt-24 pb-16 overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          }}
+        >
+          <div className="absolute inset-0 opacity-20">
+            <SmokeBackground smokeColor="#d4a017" />
+          </div>
+          <div className="absolute inset-0">
+            <SparklesCore
+              background="transparent"
+              minSize={0.4}
+              maxSize={1.4}
+              particleDensity={70}
+              particleColor="#d4a017"
+              speed={0.5}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse 70% 80% at 50% 0%, transparent 0%, rgba(10,10,10,0.85) 100%)" }} />
+
+        <div className="max-w-5xl mx-auto px-6 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6">
+            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CERTIFICATIONS</p>
+            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
+              Credential <span className="gradient-gold">Arsenal</span>
+            </h1>
+            <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
+              A structured certification path from foundational credentials to expert-level recognition.
+            </p>
+            <div className="glow-line mt-6 max-w-24" />
+          </motion.div>
+
+          {/* Earned stats bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-wrap gap-4 mt-8"
+          >
+            {[
+              { icon: Award, label: "4 Certs Earned", color: "var(--green)" },
+              { icon: Clock, label: "1 In Progress", color: "var(--gold)" },
+              { icon: Target, label: "3 Planned", color: "var(--text-muted)" },
+            ].map(({ icon: Icon, label, color }) => (
+              <div key={label} className="glass rounded-lg px-4 py-2.5 flex items-center gap-2.5">
+                <Icon className="w-3.5 h-3.5" style={{ color }} />
+                <span className="font-mono text-[10px] tracking-wider text-[var(--text-muted)]">{label}</span>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </div>
+
       <div className="max-w-5xl mx-auto px-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-16">
-          <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CERTIFICATIONS</p>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-            Credential <span className="gradient-gold">Arsenal</span>
-          </h1>
-          <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-            A structured certification path from foundational credentials to expert-level recognition.
-          </p>
-          <div className="glow-line mt-6 max-w-24" />
-        </motion.div>
 
         {/* Legend */}
         <div className="flex gap-5 mb-10">

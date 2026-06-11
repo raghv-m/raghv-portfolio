@@ -3,6 +3,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Tag, Clock, ArrowRight, Star } from "lucide-react";
+import dynamic from "next/dynamic";
+const SmokeBackground = dynamic(
+  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
+  { ssr: false }
+);
 
 type Post = {
   id: string;
@@ -23,21 +28,30 @@ export default function BlogContent({ posts }: { posts: Post[] }) {
   const filtered = filter === "All" ? posts : posts.filter((p) => p.category === filter);
 
   return (
-    <div className="min-h-screen pt-24 pb-32">
-      <div className="max-w-4xl mx-auto px-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-12">
-          <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">BLOG</p>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-            Field <span className="gradient-gold">Notes</span>
-          </h1>
-          <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-            Technical writeups from the home lab — detection engineering, cert study notes,
-            tool deep dives, and the non-traditional path into cybersecurity.
-          </p>
-          <div className="glow-line mt-6 max-w-24" />
-        </motion.div>
+    <div className="min-h-screen pb-32">
+      {/* Smoke hero */}
+      <div className="relative pt-24 pb-16 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-35">
+          <SmokeBackground smokeColor="#d4a017" />
+        </div>
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.96) 100%)" }} />
+        <div className="max-w-4xl mx-auto px-6 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-2">
+            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">BLOG</p>
+            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
+              Field <span className="gradient-gold">Notes</span>
+            </h1>
+            <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
+              Technical writeups from the home lab — detection engineering, cert study notes,
+              tool deep dives, and the non-traditional path into cybersecurity.
+            </p>
+            <div className="glow-line mt-6 max-w-24" />
+          </motion.div>
+        </div>
+      </div>
 
+      <div className="max-w-4xl mx-auto px-6">
         {/* Category filter */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}

@@ -3,6 +3,14 @@ import { useState, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { ChevronDown, Star, Crosshair } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+import { SparklesCore } from "@/components/ui/sparkles";
+import { MetalButton } from "@/components/ui/liquid-glass-button";
+
+const SmokeBackground = dynamic(
+  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
+  { ssr: false }
+);
 
 const NODES = [
   {
@@ -358,6 +366,28 @@ export default function CareerPage() {
     <div className="min-h-screen pb-32">
       {/* Hero */}
       <section className="relative min-h-[50vh] flex items-center pt-32 pb-20 px-6 overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          }}
+        >
+          <div className="absolute inset-0 opacity-20">
+            <SmokeBackground smokeColor="#d4a017" />
+          </div>
+          <div className="absolute inset-0">
+            <SparklesCore
+              background="transparent"
+              minSize={0.3}
+              maxSize={1.2}
+              particleDensity={50}
+              particleColor="#d4a017"
+              speed={0.4}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
         <FloatingParticles />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>

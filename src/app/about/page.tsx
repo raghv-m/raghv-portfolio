@@ -3,6 +3,13 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Download } from "lucide-react";
+import dynamic from "next/dynamic";
+import { SparklesCore } from "@/components/ui/sparkles";
+
+const SmokeBackground = dynamic(
+  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
+  { ssr: false }
+);
 
 const STAGES = [
   {
@@ -249,12 +256,35 @@ export default function AboutPage() {
     <div className="min-h-screen">
       {/* Hero */}
       <section ref={heroRef} className="pt-32 pb-16 px-6 text-center section relative overflow-hidden">
+        {/* Smoke + sparkles with bottom fade */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          }}
+        >
+          <div className="absolute inset-0 opacity-20">
+            <SmokeBackground smokeColor="#d4a017" />
+          </div>
+          <div className="absolute inset-0">
+            <SparklesCore
+              background="transparent"
+              minSize={0.3}
+              maxSize={1.1}
+              particleDensity={45}
+              particleColor="#d4a017"
+              speed={0.5}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
         <motion.div
           className="absolute inset-0 pointer-events-none"
           style={{ y: heroY, opacity: heroOpacity }}
         >
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(212,160,23,0.04) 0%, transparent 70%)" }} />
+            style={{ background: "radial-gradient(circle, rgba(212,160,23,0.06) 0%, transparent 70%)" }} />
         </motion.div>
         <div className="max-w-3xl mx-auto relative z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
@@ -317,13 +347,8 @@ export default function AboutPage() {
               <Link href="/projects" className="btn-gold">
                 View Projects <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-              <a
-                href="/resume.pdf"
-                download="Raghav_Mahajan_Resume.pdf"
-                className="btn-ghost flex items-center gap-2"
-              >
-                <Download className="w-3.5 h-3.5" />
-                Download Resume
+              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="btn-ghost">
+                <Download className="w-3.5 h-3.5" /> Download Resume
               </a>
               <Link href="/homelab" className="btn-ghost">
                 Explore the Home Lab

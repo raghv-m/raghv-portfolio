@@ -2,6 +2,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Shield, Code2, Server, Brain } from "lucide-react";
+import dynamic from "next/dynamic";
+import { SparklesCore } from "@/components/ui/sparkles";
+const SmokeBackground = dynamic(
+  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
+  { ssr: false }
+);
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
@@ -248,20 +254,49 @@ export default function ProjectsPage() {
   const filtered = filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.category === filter);
 
   return (
-    <div className="min-h-screen pt-24 pb-32">
+    <div className="min-h-screen pb-32">
+      {/* Smoke + stars hero with bottom fade */}
+      <div className="relative pt-24 pb-16 overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
+          }}
+        >
+          <div className="absolute inset-0 opacity-40">
+            <SmokeBackground smokeColor="#d4a017" />
+          </div>
+          <div className="absolute inset-0">
+            <SparklesCore
+              background="transparent"
+              minSize={0.3}
+              maxSize={1.2}
+              particleDensity={45}
+              particleColor="#d4a017"
+              speed={0.4}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.95) 100%)" }} />
+        <div className="max-w-6xl mx-auto px-6 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-2">
+            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">PROJECTS</p>
+            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
+              Operational <span className="gradient-gold">Evidence</span>
+            </h1>
+            <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
+              11 projects spanning security engineering, full-stack development, and infrastructure operations.
+              Built in the home lab, shipped to production, and documented in detail.
+            </p>
+            <div className="glow-line mt-6 max-w-24" />
+          </motion.div>
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto px-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-12">
-          <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">PROJECTS</p>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-            Operational <span className="gradient-gold">Evidence</span>
-          </h1>
-          <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-            11 projects spanning security engineering, full-stack development, and infrastructure operations.
-            Built in the home lab, shipped to production, and documented in detail.
-          </p>
-          <div className="glow-line mt-6 max-w-24" />
-        </motion.div>
 
         {/* Category filter */}
         <motion.div

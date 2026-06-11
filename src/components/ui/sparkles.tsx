@@ -1,16 +1,15 @@
 "use client";
-import React, { useId, useEffect, useState } from "react";
-import Particles, { initParticlesEngine } from "@tsparticles/react";
-import type { Container, SingleOrMultiple } from "@tsparticles/engine";
+import React, { useId, useCallback } from "react";
+import Particles, { ParticlesProvider, useParticlesProvider } from "@tsparticles/react";
+import type { Engine, SingleOrMultiple } from "@tsparticles/engine";
 import { loadSlim } from "@tsparticles/slim";
 import { cn } from "@/lib/utils";
 import { motion, useAnimation } from "framer-motion";
 
-type ParticlesProps = {
+type SparklesProps = {
   id?: string;
   className?: string;
   background?: string;
-  particleSize?: number;
   minSize?: number;
   maxSize?: number;
   speed?: number;
@@ -18,40 +17,19 @@ type ParticlesProps = {
   particleDensity?: number;
 };
 
-export const SparklesCore = (props: ParticlesProps) => {
-  const {
-    id,
-    className,
-    background,
-    minSize,
-    maxSize,
-    speed,
-    particleColor,
-    particleDensity,
-  } = props;
-  const [init, setInit] = useState(false);
-
-  useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-    }).then(() => {
-      setInit(true);
-    });
-  }, []);
-
+function SparklesInner(props: SparklesProps) {
+  const { id, className, background, minSize, maxSize, speed, particleColor, particleDensity } = props;
+  const { loaded } = useParticlesProvider();
   const controls = useAnimation();
-
-  const particlesLoaded = async (container?: Container) => {
-    if (container) {
-      controls.start({ opacity: 1, transition: { duration: 1 } });
-    }
-  };
-
   const generatedId = useId();
+
+  const particlesLoaded = useCallback(async () => {
+    controls.start({ opacity: 1, transition: { duration: 1 } });
+  }, [controls]);
 
   return (
     <motion.div animate={controls} className={cn("opacity-0", className)}>
-      {init && (
+      {loaded && (
         <Particles
           id={id || generatedId}
           className="h-full w-full"
@@ -72,9 +50,7 @@ export const SparklesCore = (props: ParticlesProps) => {
               },
             },
             particles: {
-              color: {
-                value: particleColor || "#d4a017",
-              },
+              color: { value: particleColor || "#d4a017" },
               move: {
                 direction: "none",
                 enable: true,
@@ -107,7 +83,6 @@ export const SparklesCore = (props: ParticlesProps) => {
               },
               effect: {
                 close: true,
-                fill: true,
                 options: {},
                 type: {} as SingleOrMultiple<string> | undefined,
               },
@@ -119,4 +94,16 @@ export const SparklesCore = (props: ParticlesProps) => {
       )}
     </motion.div>
   );
-};
+}
+
+export function SparklesCore(props: SparklesProps) {
+  const init = useCallback(async (engine: Engine) => {
+    await loadSlim(engine);
+  }, []);
+
+  return (
+    <ParticlesProvider init={init}>
+      <SparklesInner {...props} />
+    </ParticlesProvider>
+  );
+}

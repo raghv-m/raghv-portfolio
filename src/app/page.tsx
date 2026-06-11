@@ -7,8 +7,13 @@ import { ArrowRight, Download, ChevronDown } from "lucide-react";
 import TerminalAnimation from "@/components/home/TerminalAnimation";
 import SkillMarquee from "@/components/home/SkillMarquee";
 import MetricsDashboard from "@/components/home/MetricsDashboard";
+import { SparklesCore } from "@/components/ui/sparkles";
 
 const HeroScene = dynamic(() => import("@/components/three/HeroScene"), { ssr: false });
+const SmokeBackground = dynamic(
+  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
+  { ssr: false }
+);
 
 const TYPING_ROLES = [
   "Cybersecurity Analyst",
@@ -68,6 +73,30 @@ export default function HomePage() {
           <HeroScene />
         </motion.div>
 
+        {/* Smoke + sparkles layer with bottom fade */}
+        <div
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 0%, black 65%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 65%, transparent 100%)",
+          }}
+        >
+          <div className="absolute inset-0 opacity-20">
+            <SmokeBackground smokeColor="#d4a017" />
+          </div>
+          <div className="absolute inset-0">
+            <SparklesCore
+              background="transparent"
+              minSize={0.4}
+              maxSize={1.2}
+              particleDensity={60}
+              particleColor="#d4a017"
+              speed={0.6}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+
         {/* Radial gradient overlay */}
         <div className="absolute inset-0 z-0" style={{
           background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.9) 100%)"
@@ -125,7 +154,7 @@ export default function HomePage() {
               <Link href="/projects" className="btn-gold">
                 View My Work <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-              <a href="/contact" className="btn-ghost">
+              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="btn-ghost">
                 <Download className="w-3.5 h-3.5" /> Resume
               </a>
             </motion.div>

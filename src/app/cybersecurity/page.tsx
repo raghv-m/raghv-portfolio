@@ -2,6 +2,7 @@
 import dynamic from "next/dynamic";
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { SparklesCore } from "@/components/ui/sparkles";
 
 const CyberSphere = dynamic(() => import("@/components/three/CyberSphere"), { ssr: false });
 import { Shield, Eye, Zap, Lock, ChevronRight } from "lucide-react";
@@ -125,8 +126,27 @@ export default function CybersecurityPage() {
     <div className="min-h-screen pb-32">
       {/* 3D hero section */}
       <section className="relative min-h-[52vh] flex items-center overflow-hidden pt-24">
-        <div className="absolute inset-0 z-0 opacity-40">
-          <CyberSphere />
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+          }}
+        >
+          <div className="absolute inset-0 opacity-40">
+            <CyberSphere />
+          </div>
+          <div className="absolute inset-0 pointer-events-none">
+            <SparklesCore
+              background="transparent"
+              minSize={0.3}
+              maxSize={1.2}
+              particleDensity={45}
+              particleColor="#d4a017"
+              speed={0.5}
+              className="w-full h-full"
+            />
+          </div>
         </div>
         <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.92) 100%)" }} />
         <div className="relative z-10 max-w-6xl mx-auto px-6 w-full">

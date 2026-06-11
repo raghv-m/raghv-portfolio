@@ -2,6 +2,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Globe, Lock, CheckCircle, Download } from "lucide-react";
+import dynamic from "next/dynamic";
+import { SparklesCore } from "@/components/ui/sparkles";
+const SmokeBackground = dynamic(
+  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
+  { ssr: false }
+);
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
@@ -50,30 +56,57 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-40 section">
-      <div className="max-w-5xl mx-auto px-6">
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-16 text-center">
-          <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CONTACT</p>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-            Establish <span className="gradient-gold">Connection</span>
-          </h1>
-
-          {/* Availability badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 }}
-            className="inline-flex items-center gap-2 glass-gold rounded-full px-5 py-2 mt-2"
-          >
-            <span className="w-2 h-2 rounded-full bg-[var(--green)] pulse-green" />
-            <span className="font-mono text-[11px] text-[var(--green)] tracking-wider">
-              AVAILABLE FOR OPPORTUNITIES — 2025/2026
-            </span>
+    <div className="min-h-screen pb-40 section">
+      {/* Smoke + stars hero with bottom fade */}
+      <div className="relative pt-24 pb-16 overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
+          }}
+        >
+          <div className="absolute inset-0 opacity-40">
+            <SmokeBackground smokeColor="#00ff88" />
+          </div>
+          <div className="absolute inset-0">
+            <SparklesCore
+              background="transparent"
+              minSize={0.3}
+              maxSize={1.1}
+              particleDensity={40}
+              particleColor="#00ff88"
+              speed={0.4}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.1) 0%, rgba(10,10,10,0.97) 100%)" }} />
+        <div className="max-w-5xl mx-auto px-6 relative z-10 text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CONTACT</p>
+            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
+              Establish <span className="gradient-gold">Connection</span>
+            </h1>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+              className="inline-flex items-center gap-2 glass-gold rounded-full px-5 py-2 mt-2"
+            >
+              <span className="w-2 h-2 rounded-full bg-[var(--green)] pulse-green" />
+              <span className="font-mono text-[11px] text-[var(--green)] tracking-wider">
+                AVAILABLE FOR OPPORTUNITIES — 2025/2026
+              </span>
+            </motion.div>
+            <div className="glow-line mt-6 max-w-24 mx-auto" />
           </motion.div>
-          <div className="glow-line mt-6 max-w-24 mx-auto" />
-        </motion.div>
+        </div>
+      </div>
 
+      <div className="max-w-5xl mx-auto px-6">
+        <div className="mb-10" />
         <div className="grid lg:grid-cols-5 gap-10">
           {/* Info panel — 2 cols */}
           <motion.div
@@ -130,8 +163,8 @@ export default function ContactPage() {
             </div>
 
             {/* Resume download */}
-            <a href="mailto:raaghvv0508@gmail.com?subject=Resume%20Request" className="btn-gold w-full justify-center">
-              <Download className="w-3.5 h-3.5" /> Request Resume
+            <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="btn-gold w-full justify-center">
+              <Download className="w-3.5 h-3.5" /> Download Resume
             </a>
 
             {/* Security notice */}

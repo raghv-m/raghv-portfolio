@@ -1,39 +1,48 @@
+/* eslint-disable react-hooks/purity */
 "use client";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Stars, Float } from "@react-three/drei";
 import * as THREE from "three";
-
-function buildParticleData(count: number) {
-  const pos = new Float32Array(count * 3);
-  const nodes: [number, number, number][] = [];
-  for (let i = 0; i < count; i++) {
-    const x = (Math.random() - 0.5) * 22;
-    const y = (Math.random() - 0.5) * 12;
-    const z = (Math.random() - 0.5) * 8;
-    pos[i * 3] = x; pos[i * 3 + 1] = y; pos[i * 3 + 2] = z;
-    nodes.push([x, y, z]);
-  }
-  const connPts: number[] = [];
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const dx = nodes[i][0] - nodes[j][0], dy = nodes[i][1] - nodes[j][1], dz = nodes[i][2] - nodes[j][2];
-      if (Math.sqrt(dx*dx + dy*dy + dz*dz) < 4.5) connPts.push(...nodes[i], ...nodes[j]);
-    }
-  }
-  const connGeom = new THREE.BufferGeometry();
-  connGeom.setAttribute("position", new THREE.BufferAttribute(new Float32Array(connPts), 3));
-  return { positions: pos, connGeom };
-}
-
-const DESKTOP_PARTICLES = buildParticleData(180);
-const MOBILE_PARTICLES  = buildParticleData(30);
 
 function ParticleField() {
   const { mouse } = useThree();
-  const { positions, connGeom } = typeof window !== "undefined" && window.innerWidth < 768
-    ? MOBILE_PARTICLES
-    : DESKTOP_PARTICLES;
+
+  const { positions, connections } = useMemo(() => {
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+    const count = isMobile ? 30 : 180;
+    const pos = new Float32Array(count * 3);
+    const nodes: [number, number, number][] = [];
+
+    for (let i = 0; i < count; i++) {
+      // eslint-disable-next-line react-hooks/purity
+      const x = (Math.random() - 0.5) * 22;
+      const y = (Math.random() - 0.5) * 12;
+      const z = (Math.random() - 0.5) * 8;
+      pos[i * 3] = x;
+      pos[i * 3 + 1] = y;
+      pos[i * 3 + 2] = z;
+      nodes.push([x, y, z]);
+    }
+
+    const connPts: number[] = [];
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const dx = nodes[i][0] - nodes[j][0];
+        const dy = nodes[i][1] - nodes[j][1];
+        const dz = nodes[i][2] - nodes[j][2];
+        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (dist < 4.5) connPts.push(...nodes[i], ...nodes[j]);
+      }
+    }
+
+    return { positions: pos, connections: new Float32Array(connPts) };
+  }, []);
+
+  const connGeom = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(connections, 3));
+    return g;
+  }, [connections]);
 
   return (
     <RotatingGroup positions={positions} connGeom={connGeom} mouse={mouse} />
@@ -128,15 +137,10 @@ export default function HeroScene() {
       className="absolute inset-0"
       camera={{ position: [0, 0, 10], fov: 55 }}
       style={{ background: "transparent" }}
-      gl={{ antialias: false, powerPreference: "high-performance" }}
-      dpr={[1, 1.5]}
     >
       <ambientLight intensity={0.2} />
-      <Stars radius={80} depth={60} count={3000} factor={3} saturation={0} fade speed={0.5} />
-      <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.4}>
-        <Rings />
-      </Float>
       <ParticleField />
+      <Rings />
     </Canvas>
   );
 }

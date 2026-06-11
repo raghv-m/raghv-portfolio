@@ -12,7 +12,7 @@ const postSchema = z.object({
   content: z.string().min(1),
   category: z.string().min(1),
   tags: z.array(z.string()).default([]),
-  coverImage: z.string().optional().nullable(),
+  coverImage: z.string().url().startsWith("https://").optional().nullable().or(z.literal("").transform(() => null)),
   published: z.boolean().default(false),
   featured: z.boolean().default(false),
   readTime: z.number().int().min(1).optional().nullable(),

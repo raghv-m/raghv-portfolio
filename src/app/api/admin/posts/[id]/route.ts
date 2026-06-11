@@ -12,7 +12,7 @@ const updateSchema = z.object({
   content: z.string().min(1).optional(),
   category: z.string().min(1).optional(),
   tags: z.array(z.string()).optional(),
-  coverImage: z.string().optional().nullable(),
+  coverImage: z.string().url().startsWith("https://").optional().nullable().or(z.literal("").transform(() => null)),
   published: z.boolean().optional(),
   featured: z.boolean().optional(),
   readTime: z.number().int().min(1).optional().nullable(),

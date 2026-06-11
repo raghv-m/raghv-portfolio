@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { sendWelcomeEmail } from "@/lib/mail";
+import { rateLimit, getClientIp } from "@/lib/rateLimit";
 
 const subscribeSchema = z.object({
   email: z.string().email(),
@@ -10,6 +11,16 @@ const subscribeSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const limit = await rateLimit(ip, "subscribe");
+  if (!limit.success) {
+    const retryAfter = Math.ceil((limit.msBeforeNext ?? 3600000) / 1000);
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } }
+    );
+  }
+
   let body: unknown;
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
 

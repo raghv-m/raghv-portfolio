@@ -12,12 +12,13 @@ function getLimiter(key: string, points: number, duration: number) {
 
 export async function rateLimit(
   ip: string,
-  route: "contact" | "posts" | "admin",
+  route: "contact" | "subscribe" | "posts" | "admin",
 ): Promise<{ success: boolean; msBeforeNext?: number }> {
   const configs = {
-    contact: { points: 3, duration: 3600 },   // 3/hour
-    posts:   { points: 100, duration: 60 },   // 100/min
-    admin:   { points: 20, duration: 60 },    // 20/min
+    contact:   { points: 3,   duration: 3600 }, // 3/hour
+    subscribe: { points: 5,   duration: 3600 }, // 5/hour
+    posts:     { points: 100, duration: 60 },   // 100/min
+    admin:     { points: 20,  duration: 60 },   // 20/min
   };
 
   const { points, duration } = configs[route];

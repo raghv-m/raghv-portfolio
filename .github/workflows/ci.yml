@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history for secret scan)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ── Secret scanning ─────────────────────────────────────────
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── Dependency auditing ─────────────────────────────────────
+      - name: npm audit (fail on high/critical)
+        run: npm audit --audit-level=high
+
+      # ── Static checks ───────────────────────────────────────────
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: ESLint
+        run: npm run lint
+
+      # ── Build validation ────────────────────────────────────────
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Build
+        run: npm run build
+        env:
+          # Build-time placeholders — validateEnv() skips during build,
+          # runtime secrets live only in Vercel/Render.
+          DATABASE_URL: "file:./dev.db"
+          NEXT_PUBLIC_SITE_URL: "https://raghv.dev"
+          NEXT_PUBLIC_BASE_URL: "https://raghv.dev"
+
+  # Optional: Snyk — add SNYK_TOKEN secret to enable, job is skipped otherwise
+  snyk:
+    name: snyk
+    runs-on: ubuntu-latest
+    if: ${{ vars.SNYK_ENABLED == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high

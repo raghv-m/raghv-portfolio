@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { rateLimit } from "@/lib/rateLimit";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -13,14 +14,24 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        // Rate limit per email: 5 attempts per 15 minutes
+        const limit = await rateLimit(credentials.email.toLowerCase(), "login");
+        if (!limit.success) {
+          console.warn(`[auth] rate limited login for ${credentials.email}`);
+          return null;
+        }
+
         const adminEmail = process.env.ADMIN_EMAIL;
         const adminHash = process.env.ADMIN_PASSWORD_HASH;
-
         if (!adminEmail || !adminHash) return null;
-        if (credentials.email !== adminEmail) return null;
 
+        // Always call bcrypt.compare to equalize timing between known/unknown emails
+        // (prevents inferring valid emails via response-time differences)
         const valid = await bcrypt.compare(credentials.password, adminHash);
-        if (!valid) return null;
+        if (credentials.email !== adminEmail || !valid) {
+          console.warn(`[auth] failed login for ${credentials.email}`);
+          return null;
+        }
 
         return { id: "admin", email: adminEmail, name: "Admin" };
       },

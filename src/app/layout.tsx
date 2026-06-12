@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { validateEnv } from "@/lib/env";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 if (process.env.NODE_ENV === "production") validateEnv();
 import Navbar from "@/components/layout/Navbar";
@@ -62,6 +64,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <AlertTicker />
         <NewsletterModal />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

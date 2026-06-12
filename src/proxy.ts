@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const response = NextResponse.next();
-
   const headers = response.headers;
 
   headers.set("X-Frame-Options", "DENY");
@@ -21,6 +21,7 @@ export function proxy(request: NextRequest) {
   );
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
   headers.set("Cross-Origin-Resource-Policy", "same-origin");
+
   const isDev = process.env.NODE_ENV === "development";
   headers.set(
     "Content-Security-Policy",
@@ -31,7 +32,8 @@ export function proxy(request: NextRequest) {
         : "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob:",
+      // Allow external image hosts used by blog posts and the Next.js image optimizer
+      "img-src 'self' data: blob: https://images.unsplash.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://avatars.githubusercontent.com",
       isDev
         ? "connect-src 'self' ws: wss:"
         : "connect-src 'self'",
@@ -41,11 +43,12 @@ export function proxy(request: NextRequest) {
   );
 
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    const sessionToken =
-      request.cookies.get("next-auth.session-token")?.value ||
-      request.cookies.get("__Secure-next-auth.session-token")?.value;
-
-    if (!sessionToken) {
+    // Verify the JWT, not just cookie presence
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    if (!token) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
   }

@@ -1,31 +1,72 @@
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { createHmac } from "crypto";
+import type { Duration } from "@upstash/ratelimit";
 
-const limiters: Record<string, RateLimiterMemory> = {};
+export type Route = "contact" | "subscribe" | "posts" | "admin" | "login";
 
-function getLimiter(key: string, points: number, duration: number) {
-  if (!limiters[key]) {
-    limiters[key] = new RateLimiterMemory({ points, duration });
+const CONFIGS: Record<Route, { points: number; duration: number; upstashWindow: Duration }> = {
+  contact:   { points: 3,   duration: 3600, upstashWindow: "1 h"  },
+  subscribe: { points: 5,   duration: 3600, upstashWindow: "1 h"  },
+  posts:     { points: 100, duration: 60,   upstashWindow: "1 m"  },
+  admin:     { points: 20,  duration: 60,   upstashWindow: "1 m"  },
+  login:     { points: 5,   duration: 900,  upstashWindow: "15 m" },
+};
+
+// ── In-memory fallback (dev / single-instance deploys) ──────────────────────
+const memLimiters: Partial<Record<Route, RateLimiterMemory>> = {};
+
+function getMemLimiter(route: Route): RateLimiterMemory {
+  if (!memLimiters[route]) {
+    const { points, duration } = CONFIGS[route];
+    memLimiters[route] = new RateLimiterMemory({ points, duration });
   }
-  return limiters[key];
+  return memLimiters[route]!;
 }
 
+// ── Upstash Redis (survives serverless cold starts) ──────────────────────────
+interface UpstashLimiter {
+  limit(key: string): Promise<{ success: boolean; reset: number }>;
+}
+const upstashCache: Partial<Record<Route, UpstashLimiter>> = {};
+
+async function getUpstashLimiter(route: Route): Promise<UpstashLimiter> {
+  if (!upstashCache[route]) {
+    const { Ratelimit } = await import("@upstash/ratelimit");
+    const { Redis } = await import("@upstash/redis");
+    const { points, upstashWindow } = CONFIGS[route];
+    upstashCache[route] = new Ratelimit({
+      redis: Redis.fromEnv(),
+      limiter: Ratelimit.slidingWindow(points, upstashWindow),
+      prefix: `rl:${route}`,
+    }) as UpstashLimiter;
+  }
+  return upstashCache[route]!;
+}
+
+// ── Public API ───────────────────────────────────────────────────────────────
 export async function rateLimit(
-  ip: string,
-  route: "contact" | "subscribe" | "posts" | "admin",
+  key: string,
+  route: Route,
 ): Promise<{ success: boolean; msBeforeNext?: number }> {
-  const configs = {
-    contact:   { points: 3,   duration: 3600 }, // 3/hour
-    subscribe: { points: 5,   duration: 3600 }, // 5/hour
-    posts:     { points: 100, duration: 60 },   // 100/min
-    admin:     { points: 20,  duration: 60 },   // 20/min
-  };
+  const hasUpstash = !!(
+    process.env.UPSTASH_REDIS_REST_URL &&
+    process.env.UPSTASH_REDIS_REST_TOKEN
+  );
 
-  const { points, duration } = configs[route];
-  const limiter = getLimiter(route, points, duration);
+  if (hasUpstash) {
+    try {
+      const limiter = await getUpstashLimiter(route);
+      const { success, reset } = await limiter.limit(key);
+      return { success, msBeforeNext: success ? undefined : Math.max(0, reset - Date.now()) };
+    } catch (e) {
+      console.error("[rateLimit] Upstash error, falling back to memory:", e);
+    }
+  }
 
+  // Memory fallback
+  const limiter = getMemLimiter(route);
   try {
-    await limiter.consume(ip);
+    await limiter.consume(key);
     return { success: true };
   } catch (e: unknown) {
     const err = e as { msBeforeNext?: number };

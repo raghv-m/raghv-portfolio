@@ -33,8 +33,10 @@ export async function POST(req: NextRequest) {
 
   const existing = await prisma.subscriber.findUnique({ where: { email } });
   if (existing) {
-    if (existing.active) return NextResponse.json({ ok: true, message: "Already subscribed" });
-    await prisma.subscriber.update({ where: { email }, data: { active: true } });
+    if (!existing.active) {
+      await prisma.subscriber.update({ where: { email }, data: { active: true } });
+    }
+    // Return identical response regardless of existing/new to prevent email enumeration
     return NextResponse.json({ ok: true });
   }
 

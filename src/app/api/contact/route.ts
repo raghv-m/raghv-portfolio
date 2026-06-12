@@ -36,7 +36,9 @@ export async function POST(req: NextRequest) {
 
     const { name, email, subject, message, website, _csrf } = parsed.data;
 
-    if (!verifyCsrfToken(_csrf)) {
+    // Double-submit cookie check: body token must match the cookie value
+    const cookieCsrf = req.cookies.get("csrf")?.value;
+    if (!cookieCsrf || cookieCsrf !== _csrf || !verifyCsrfToken(_csrf)) {
       return NextResponse.json({ error: "Invalid request." }, { status: 403 });
     }
 

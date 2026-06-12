@@ -1,7 +1,12 @@
 import https from "https";
 
-const HOST = "raghv-portfolio-raghv-m.aws-us-west-2.turso.io";
-const TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODA4MTQ0OTQsImlkIjoiMDE5ZWEwZDAtOGUwMS03YThkLWIxMmUtYjE1OWVhYzkwMTZlIiwicmlkIjoiYzljOTVmZTEtNDMzYS00ZTg2LTgzMmQtN2ZiZTBhYmJjZjM1In0.jttCuw84pQ7YrikE3evnPjej23-1ivpARku4s4-JD2BxuoLSpUSe_Q_aKHRvsQ1NCly3ffT3vcOsUaDEybP5Bg";
+const HOST = process.env.TURSO_HOST;
+const TOKEN = process.env.TURSO_AUTH_TOKEN;
+if (!HOST || !TOKEN) {
+  console.error("Error: TURSO_HOST and TURSO_AUTH_TOKEN env vars must be set.");
+  console.error("Run: TURSO_HOST=<host> TURSO_AUTH_TOKEN=<token> node scripts/seed-posts.mjs");
+  process.exit(1);
+}
 const now = new Date().toISOString();
 const cuid = () => "c" + Math.random().toString(36).slice(2, 11) + Math.random().toString(36).slice(2, 6);
 

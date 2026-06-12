@@ -17,6 +17,10 @@ function getTransport() {
   });
 }
 
+const esc = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+   .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
 const FROM = process.env.SMTP_FROM || "Raghav Mahajan <onboarding@resend.dev>";
 const TO = process.env.CONTACT_RECEIVER_EMAIL || "raaghvv0508@gmail.com";
 
@@ -109,19 +113,19 @@ export async function sendContactNotification(data: {
       <tr>
         <td style="padding:12px 16px;background:#161616;border-radius:8px 8px 0 0;border:1px solid ${BORDER};border-bottom:none;">
           <p style="margin:0;font-family:'Courier New',monospace;font-size:10px;color:${MUTED};text-transform:uppercase;letter-spacing:0.1em;">From</p>
-          <p style="margin:4px 0 0;font-size:14px;color:${TEXT};">${data.name} &nbsp;<span style="color:${MUTED};">&lt;${data.email}&gt;</span></p>
+          <p style="margin:4px 0 0;font-size:14px;color:${TEXT};">${esc(data.name)} &nbsp;<span style="color:${MUTED};">&lt;${esc(data.email)}&gt;</span></p>
         </td>
       </tr>
       <tr>
         <td style="padding:12px 16px;background:#0f0f0f;border-radius:0 0 8px 8px;border:1px solid ${BORDER};border-top:none;">
           <p style="margin:0;font-family:'Courier New',monospace;font-size:10px;color:${MUTED};text-transform:uppercase;letter-spacing:0.1em;">Message</p>
-          <p style="margin:8px 0 0;font-size:14px;color:${TEXT};line-height:1.7;white-space:pre-wrap;">${data.message}</p>
+          <p style="margin:8px 0 0;font-size:14px;color:${TEXT};line-height:1.7;white-space:pre-wrap;">${esc(data.message)}</p>
         </td>
       </tr>
     </table>
 
-    <a href="mailto:${data.email}?subject=Re: ${data.subject}" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">Reply to ${data.name}</a>
-  `, `New message from ${data.name}`);
+    <a href="mailto:${encodeURIComponent(data.email)}?subject=${encodeURIComponent("Re: " + data.subject)}" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">Reply to ${esc(data.name)}</a>
+  `, `New message from ${esc(data.name)}`);
 
   await sendMail({ to: TO, subject: `[raghv.dev] ${data.subject}`, html });
 }
@@ -130,7 +134,7 @@ export async function sendContactNotification(data: {
 export async function sendAutoReply(to: string, name: string) {
   const html = base(`
     <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Message Received</p>
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Hey ${name},</h1>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Hey ${esc(name)},</h1>
     <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Your message landed safely. I personally review every inquiry and will get back to you within <span style="color:${TEXT};">24–48 hours</span>.</p>
 
     <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${GOLD};margin-bottom:28px;">
@@ -162,7 +166,7 @@ export async function sendWelcomeEmail(to: string, name: string | null, unsubscr
 
   const html = base(`
     <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Raghav's Cyber Daily</p>
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">You're in${name ? `, ${name}` : ""}.</h1>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">You're in${name ? `, ${esc(name)}` : ""}.</h1>
     <p style="margin:0 0 24px;font-size:15px;color:${MUTED};line-height:1.8;">
       Welcome to my newsletter. You'll get <span style="color:${TEXT};">lab writeups, security research, and notes on the path to offensive security</span> — whenever something worth reading is ready. No filler, no spam.
     </p>

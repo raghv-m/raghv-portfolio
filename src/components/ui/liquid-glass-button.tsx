@@ -233,11 +233,13 @@ export const MetalButton = React.forwardRef<HTMLButtonElement, MetalButtonProps>
   ({ children, className, variant = "default", ...props }, ref) => {
     const [isPressed, setIsPressed] = React.useState(false);
     const [isHovered, setIsHovered] = React.useState(false);
-    const [isTouchDevice, setIsTouchDevice] = React.useState(false);
-
-    React.useEffect(() => {
-      setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
-    }, []);
+    // useSyncExternalStore (not effect+setState) so this reads as false on the server
+    // snapshot without an extra post-mount render just to flip the touch flag.
+    const isTouchDevice = React.useSyncExternalStore(
+      () => () => {},
+      () => "ontouchstart" in window || navigator.maxTouchPoints > 0,
+      () => false
+    );
 
     const variants = metalButtonVariants(variant, isPressed, isHovered, isTouchDevice);
 

@@ -14,7 +14,6 @@ function ParticleField() {
     const nodes: [number, number, number][] = [];
 
     for (let i = 0; i < count; i++) {
-      // eslint-disable-next-line react-hooks/purity
       const x = (Math.random() - 0.5) * 22;
       const y = (Math.random() - 0.5) * 12;
       const z = (Math.random() - 0.5) * 8;

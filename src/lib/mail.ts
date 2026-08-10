@@ -21,6 +21,10 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
+// Only allow https:// links in admin-composed HTML — blocks javascript:/data: URI injection.
+const safeHref = (url: string | undefined | null) =>
+  url && /^https:\/\//i.test(url.trim()) ? esc(url.trim()) : undefined;
+
 const FROM = process.env.SMTP_FROM || "Raghav Mahajan <onboarding@resend.dev>";
 const TO = process.env.CONTACT_RECEIVER_EMAIL || "raaghvv0508@gmail.com";
 
@@ -99,6 +103,67 @@ function base(content: string, preview = "") {
 export async function sendMail({ to, subject, html }: { to: string; subject: string; html: string }) {
   const transport = getTransport();
   await transport.sendMail({ from: FROM, to, subject, html });
+}
+
+// ─── Batched send ──────────────────────────────────────────────────────────
+// Sends in fixed-size concurrent chunks instead of one email at a time, so a
+// large subscriber list doesn't serialize into a single long-running request
+// that risks hitting the platform's function timeout.
+export async function sendMailBatch(
+  items: { to: string; subject: string; html: string }[],
+  concurrency = 10
+): Promise<{ sent: number; errors: { to: string; error: string }[] }> {
+  let sent = 0;
+  const errors: { to: string; error: string }[] = [];
+
+  for (let i = 0; i < items.length; i += concurrency) {
+    const chunk = items.slice(i, i + concurrency);
+    const results = await Promise.allSettled(chunk.map((item) => sendMail(item)));
+    results.forEach((result, idx) => {
+      if (result.status === "fulfilled") {
+        sent++;
+      } else {
+        errors.push({ to: chunk[idx].to, error: String(result.reason) });
+      }
+    });
+  }
+
+  return { sent, errors };
+}
+
+// ─── New-post subscriber notification ─────────────────────────────────────
+export async function notifySubscribersAboutPost(post: { title: string; slug: string; excerpt: string }) {
+  const { prisma } = await import("@/lib/prisma");
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
+  const subscribers = await prisma.subscriber.findMany({
+    where: { active: true },
+    select: { email: true, unsubscribeToken: true },
+  });
+  if (subscribers.length === 0) return;
+
+  const title = esc(post.title);
+  const excerpt = esc(post.excerpt);
+
+  const items = subscribers.map((sub) => {
+    const unsubLink = `${baseUrl}/unsubscribe?token=${sub.unsubscribeToken}`;
+    const html = `
+      <div style="font-family:sans-serif;max-width:560px;margin:auto;background:#0a0a0a;color:#e8e8e8;border-radius:12px;border:1px solid #222;overflow:hidden;">
+        <div style="padding:28px;border-bottom:1px solid #222;">
+          <p style="margin:0 0 6px;font-family:monospace;font-size:10px;color:#d4a017;letter-spacing:.15em;text-transform:uppercase;">New Post</p>
+          <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;">${title}</h1>
+          <p style="margin:0 0 20px;font-size:14px;color:#888;line-height:1.7;">${excerpt}</p>
+          <a href="${baseUrl}/blog/${post.slug}" style="display:inline-block;padding:10px 22px;border:1px solid #d4a017;border-radius:4px;font-size:12px;color:#d4a017;text-decoration:none;letter-spacing:.08em;text-transform:uppercase;">Read Post →</a>
+        </div>
+        <div style="padding:16px 28px;background:#0a0a0a;">
+          <p style="margin:0;font-size:11px;color:#444;">You&apos;re subscribed to Raghav&apos;s Cyber Daily. <a href="${unsubLink}" style="color:#555;">Unsubscribe</a></p>
+        </div>
+      </div>
+    `;
+    return { to: sub.email, subject: `New Post: ${post.title}`, html };
+  });
+
+  const { errors } = await sendMailBatch(items);
+  errors.forEach((e) => console.error(`[notify-subscribers] failed for ${e.to}:`, e.error));
 }
 
 // ─── Contact notification (to Raghav) ─────────────────────────────────────
@@ -215,29 +280,34 @@ export function buildNewsletterHtml({
   ctaUrl?: string;
   ctaText?: string;
 }) {
-  const sectionHtml = sections.map(s => `
+  const sectionHtml = sections.map(s => {
+    const link = safeHref(s.link);
+    return `
     <tr><td style="padding:20px 0 0;">
-      <p style="margin:0 0 4px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};text-transform:uppercase;letter-spacing:0.12em;">${s.heading}</p>
-      <p style="margin:0;font-size:14px;color:${MUTED};line-height:1.75;">${s.body}</p>
-      ${s.link ? `<a href="${s.link}" style="display:inline-block;margin-top:10px;font-size:12px;color:${GOLD};text-decoration:none;border-bottom:1px solid rgba(212,160,23,0.3);">Read more →</a>` : ""}
+      <p style="margin:0 0 4px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};text-transform:uppercase;letter-spacing:0.12em;">${esc(s.heading)}</p>
+      <p style="margin:0;font-size:14px;color:${MUTED};line-height:1.75;">${esc(s.body)}</p>
+      ${link ? `<a href="${link}" style="display:inline-block;margin-top:10px;font-size:12px;color:${GOLD};text-decoration:none;border-bottom:1px solid rgba(212,160,23,0.3);">Read more →</a>` : ""}
     </td></tr>
     <tr><td style="padding:20px 0 0;"><div style="height:1px;background:${BORDER};"></div></td></tr>
-  `).join("");
+  `;
+  }).join("");
+
+  const cta = safeHref(ctaUrl);
 
   return base(`
     ${issueNumber ? `<p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Issue #${issueNumber}</p>` : ""}
-    <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${title}</h1>
-    <p style="margin:0 0 28px;font-size:15px;color:${MUTED};line-height:1.8;">${intro}</p>
+    <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${esc(title)}</h1>
+    <p style="margin:0 0 28px;font-size:15px;color:${MUTED};line-height:1.8;">${esc(intro)}</p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       ${sectionHtml}
     </table>
 
-    ${ctaUrl ? `
+    ${cta ? `
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:28px;">
       <tr>
         <td>
-          <a href="${ctaUrl}" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">${ctaText ?? "Read More"}</a>
+          <a href="${cta}" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">${esc(ctaText ?? "Read More")}</a>
         </td>
       </tr>
     </table>` : ""}

@@ -43,11 +43,17 @@ export async function proxy(request: NextRequest) {
   );
 
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    // Verify the JWT, not just cookie presence
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
+    // Verify the JWT, not just cookie presence.
+    // getToken() can throw on a malformed Authorization header (GHSA-xmf8-cvqr-rfgj) — treat that as unauthenticated.
+    let token;
+    try {
+      token = await getToken({
+        req: request,
+        secret: process.env.NEXTAUTH_SECRET,
+      });
+    } catch {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
     if (!token) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }

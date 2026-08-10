@@ -8,8 +8,6 @@ const SparklesCore = dynamic(
   () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
   { ssr: false }
 );
-import { MetalButton } from "@/components/ui/liquid-glass-button";
-
 const SmokeBackground = dynamic(
   () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
   { ssr: false }

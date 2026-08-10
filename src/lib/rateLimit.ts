@@ -76,7 +76,11 @@ export async function rateLimit(
 
 export function getClientIp(req: Request): string {
   const headers = req instanceof Request ? req.headers : new Headers();
+  // x-vercel-forwarded-for is set by Vercel's edge network from the actual TCP
+  // connection and cannot be spoofed by the client, unlike x-forwarded-for,
+  // which client requests can supply arbitrary values for.
   return (
+    headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ||
     headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     headers.get("x-real-ip") ||
     "unknown"

@@ -240,6 +240,7 @@ export default function PostEditor({ initial }: Props) {
           <div>
             {/* Toolbar */}
             <div className="flex flex-wrap gap-0.5 mb-2 p-2 glass rounded-xl">
+              {/* eslint-disable-next-line react-hooks/refs -- action() only runs from the button's onClick; the ref read in insert()/insertCodeBlock() never happens during render, the compiler just can't trace it through the TOOLBAR data array */}
               {TOOLBAR.map(({ icon: Icon, label, action }) => (
                 <button
                   key={label}

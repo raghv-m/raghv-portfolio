@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/requireAdmin";
 import { prisma } from "@/lib/prisma";
-import { sendMail } from "@/lib/mail";
+import { sendMailBatch } from "@/lib/mail";
 import { z } from "zod";
 
 const sendSchema = z.object({
@@ -11,7 +10,7 @@ const sendSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await requireAdmin();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: unknown;
@@ -25,19 +24,18 @@ export async function POST(req: NextRequest) {
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 
-  let sent = 0;
-  const errors: string[] = [];
-
-  for (const sub of subscribers) {
+  const items = subscribers.map((sub) => {
     const unsubLink = `${baseUrl}/unsubscribe?token=${sub.unsubscribeToken}`;
     const footer = `<p style="font-size:11px;color:#555;margin-top:32px;border-top:1px solid #222;padding-top:16px">You're receiving this because you subscribed to Raghav's Cyber Daily. <a href="${unsubLink}" style="color:#d4a017">Unsubscribe</a></p>`;
-    try {
-      await sendMail({ to: sub.email, subject: parsed.data.subject, html: parsed.data.html + footer });
-      sent++;
-    } catch (e) {
-      errors.push(`${sub.email}: ${String(e)}`);
-    }
-  }
+    return { to: sub.email, subject: parsed.data.subject, html: parsed.data.html + footer };
+  });
 
-  return NextResponse.json({ ok: true, sent, total: subscribers.length, errors });
+  const { sent, errors } = await sendMailBatch(items);
+
+  return NextResponse.json({
+    ok: true,
+    sent,
+    total: subscribers.length,
+    errors: errors.map((e) => `${e.to}: ${e.error}`),
+  });
 }

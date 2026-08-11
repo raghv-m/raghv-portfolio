@@ -86,7 +86,7 @@ export default function AdminMessagesClient({ messages }: { messages: Message[] 
                             {msg.name}
                           </p>
                           <span className="font-mono text-[8px] text-[var(--text-muted)] shrink-0">
-                            {new Date(msg.createdAt).toLocaleDateString()}
+                            {new Date(msg.createdAt).toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric" })}
                           </span>
                         </div>
                         <p className="font-mono text-[9px] text-[var(--gold)] truncate">{msg.subject}</p>
@@ -121,7 +121,7 @@ export default function AdminMessagesClient({ messages }: { messages: Message[] 
                       </div>
                     </div>
                     <span className="font-mono text-[9px] text-[var(--text-muted)] shrink-0">
-                      {new Date(selected.createdAt).toLocaleString()}
+                      {new Date(selected.createdAt).toLocaleString("en-CA", { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
                     </span>
                   </div>
                 </div>

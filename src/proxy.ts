@@ -28,15 +28,16 @@ export async function proxy(request: NextRequest) {
     [
       "default-src 'self'",
       isDev
-        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-        : "script-src 'self' 'unsafe-inline'",
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com"
+        : "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       // Allow external image hosts used by blog posts and the Next.js image optimizer
-      "img-src 'self' data: blob: https://images.unsplash.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://avatars.githubusercontent.com",
-      isDev
-        ? "connect-src 'self' ws: wss:"
-        : "connect-src 'self'",
+      "img-src 'self' data: blob: https://images.unsplash.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://avatars.githubusercontent.com https://*.google-analytics.com https://*.googletagmanager.com",
+      // Google Tag Manager / GA4 beacons.
+      `connect-src 'self'${isDev ? " ws: wss:" : ""} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
+      // GTM's <noscript> fallback iframe.
+      "frame-src https://www.googletagmanager.com",
       "frame-ancestors 'none'",
       "worker-src blob:",
     ].join("; ")

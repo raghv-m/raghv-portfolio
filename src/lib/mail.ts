@@ -100,9 +100,19 @@ function base(content: string, preview = "") {
 }
 
 // ─── Generic send ──────────────────────────────────────────────────────────
-export async function sendMail({ to, subject, html }: { to: string; subject: string; html: string }) {
+export async function sendMail({
+  to,
+  subject,
+  html,
+  attachments,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+  attachments?: { filename: string; content: Buffer; contentType: string }[];
+}) {
   const transport = getTransport();
-  await transport.sendMail({ from: FROM, to, subject, html });
+  await transport.sendMail({ from: FROM, to, subject, html, attachments });
 }
 
 // ─── Batched send ──────────────────────────────────────────────────────────
@@ -222,6 +232,48 @@ export async function sendAutoReply(to: string, name: string) {
   `, `I got your message, ${name}`);
 
   await sendMail({ to, subject: "Message received — Raghav Mahajan", html });
+}
+
+// ─── Invoice (to client, PDF attached) ─────────────────────────────────────
+export async function sendInvoiceEmail({
+  to,
+  clientName,
+  invoiceNumber,
+  amount,
+  dueDate,
+  pdf,
+}: {
+  to: string;
+  clientName: string;
+  invoiceNumber: string;
+  amount: string;
+  dueDate: string;
+  pdf: Buffer;
+}) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
+  const due = new Intl.DateTimeFormat("en-CA", { dateStyle: "long", timeZone: "America/Edmonton" }).format(new Date(dueDate));
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Invoice ${esc(invoiceNumber)}</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Hi ${esc(clientName)},</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Your invoice is attached as a PDF.</p>
+
+    <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${GOLD};margin-bottom:28px;">
+      <p style="margin:0 0 6px;font-size:13px;color:${MUTED};">Amount due</p>
+      <p style="margin:0 0 14px;font-size:22px;font-weight:700;color:${TEXT};">${esc(amount)}</p>
+      <p style="margin:0;font-size:13px;color:${MUTED};">Due by <span style="color:${TEXT};">${esc(due)}</span></p>
+    </div>
+
+    <a href="${baseUrl}/portal/invoices" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">View in client portal</a>
+
+    <p style="margin:28px 0 0;font-size:12px;color:#555;">Questions about this invoice? Just reply to this email.</p>
+  `, `Invoice ${invoiceNumber}: ${amount}`);
+
+  await sendMail({
+    to,
+    subject: `Invoice ${invoiceNumber} from Raghav Mahajan`,
+    html,
+    attachments: [{ filename: `${invoiceNumber}.pdf`, content: pdf, contentType: "application/pdf" }],
+  });
 }
 
 // ─── Newsletter welcome ────────────────────────────────────────────────────

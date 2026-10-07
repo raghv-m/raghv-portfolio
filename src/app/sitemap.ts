@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
+import { isDatabaseConfigured, prisma } from "@/lib/prisma";
 
 export default async function sitemap() {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://raghv.dev";
 
-  const posts = await prisma.post.findMany({
+  const posts = !isDatabaseConfigured ? [] : await prisma.post.findMany({
     where: { published: true },
     select: { slug: true, updatedAt: true },
   });

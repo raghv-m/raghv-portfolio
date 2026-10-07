@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
+import { refreshSupabaseSession } from "@/lib/supabase/proxy";
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -35,7 +37,8 @@ export async function proxy(request: NextRequest) {
       // Allow external image hosts used by blog posts and the Next.js image optimizer
       "img-src 'self' data: blob: https://images.unsplash.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://avatars.githubusercontent.com https://*.google-analytics.com https://*.googletagmanager.com",
       // Google Tag Manager / GA4 beacons.
-      `connect-src 'self'${isDev ? " ws: wss:" : ""} https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
+      // Supabase: REST/Auth/Storage over https, Realtime over wss.
+      `connect-src 'self'${isDev ? " ws: wss:" : ""} https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
       // GTM's <noscript> fallback iframe.
       "frame-src https://www.googletagmanager.com",
       "frame-ancestors 'none'",
@@ -58,6 +61,11 @@ export async function proxy(request: NextRequest) {
     if (!token) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
+  }
+
+  // Keep the Supabase session fresh wherever it's used (Server Components can't write cookies).
+  if (pathname.startsWith("/portal") || pathname.startsWith("/auth")) {
+    return refreshSupabaseSession(request, response);
   }
 
   return response;

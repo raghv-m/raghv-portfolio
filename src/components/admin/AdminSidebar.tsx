@@ -22,7 +22,7 @@ export default function AdminSidebar() {
       : pathname.startsWith(href) && href !== "/admin/posts/new";
 
   return (
-    <aside className="fixed top-14 left-0 bottom-0 w-52 flex flex-col bg-[var(--card)] border-r border-[var(--border)] z-30">
+    <aside className="fixed top-0 left-0 bottom-0 w-52 flex flex-col bg-[var(--card)] border-r border-[var(--border)] z-30">
       {/* Brand */}
       <div className="px-4 py-4 border-b border-[var(--border)]">
         <div className="flex items-center gap-2">

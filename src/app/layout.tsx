@@ -15,6 +15,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AlertTicker from "@/components/layout/AlertTicker";
 import NewsletterModal from "@/components/newsletter/NewsletterModal";
+import { PublicChrome } from "@/components/layout/PublicChrome";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -81,11 +82,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
-        <Navbar />
+        <PublicChrome>
+          <Navbar />
+        </PublicChrome>
         <main className="relative z-10">{children}</main>
-        <Footer />
-        <AlertTicker />
-        <NewsletterModal />
+        <PublicChrome>
+          <Footer />
+          <AlertTicker />
+          <NewsletterModal />
+        </PublicChrome>
         <Analytics />
         <SpeedInsights />
       </body>

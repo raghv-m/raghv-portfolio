@@ -5,6 +5,8 @@ import { Callout } from "@/components/blog/Callout";
 import Link from "next/link";
 import { ArrowLeft, Clock, Tag, Calendar } from "lucide-react";
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { site } from "@/config/site";
 
 export const revalidate = 3600;
 
@@ -14,14 +16,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await prisma.post.findUnique({ where: { slug, published: true } });
   if (!post) return { title: "Post not found" };
+  const url = `${site.url}/blog/${post.slug}`;
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: url },
     openGraph: {
+      type: "article",
+      url,
       title: post.title,
       description: post.excerpt,
-      images: post.coverImage ? [{ url: post.coverImage }] : [],
+      siteName: site.name,
+      publishedTime: post.createdAt.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
+      authors: [site.person],
+      section: post.category,
+      ...(post.coverImage ? { images: [{ url: post.coverImage }] } : {}),
     },
+    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
   };
 }
 
@@ -125,6 +137,23 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="min-h-screen pt-24 pb-32">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.excerpt,
+          url: `${site.url}/blog/${post.slug}`,
+          mainEntityOfPage: `${site.url}/blog/${post.slug}`,
+          datePublished: post.createdAt.toISOString(),
+          dateModified: post.updatedAt.toISOString(),
+          author: { "@id": `${site.url}/#person`, name: site.person },
+          publisher: { "@id": `${site.url}/#person` },
+          articleSection: post.category,
+          keywords: tags.join(", "),
+          ...(post.coverImage ? { image: post.coverImage } : {}),
+        }}
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Breadcrumb */}
         <Link href="/blog" className="inline-flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors font-mono text-[10px] mb-8">

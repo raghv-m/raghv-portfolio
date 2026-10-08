@@ -47,7 +47,7 @@ export default function SubscribeWidget({ compact = false }: { compact?: boolean
           onChange={e => setEmail(e.target.value)}
           className="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--gold)] placeholder:text-[var(--border)] min-w-0"
         />
-        <button type="submit" disabled={loading} className="btn-gold text-sm px-4 py-2 shrink-0 flex items-center gap-1">
+        <button type="submit" disabled={loading} aria-label="Subscribe to the newsletter" className="btn-gold text-sm px-4 py-2 shrink-0 flex items-center gap-1">
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
         {error && <span className="text-xs text-[var(--red)] self-center">{error}</span>}

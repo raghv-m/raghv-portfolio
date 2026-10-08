@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -16,6 +16,8 @@ import Footer from "@/components/layout/Footer";
 import AlertTicker from "@/components/layout/AlertTicker";
 import NewsletterModal from "@/components/newsletter/NewsletterModal";
 import { PublicChrome } from "@/components/layout/PublicChrome";
+import { SiteJsonLd } from "@/components/seo/JsonLd";
+import { site } from "@/config/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -36,31 +38,41 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: "Raghav Mahajan — Cybersecurity Analyst | SOC | Blue Team",
-    template: "%s | raghv.dev",
-  },
-  description:
-    "Cybersecurity portfolio of Raghav Mahajan — SOC Analyst in Training, Blue Team defender, homelab builder, and secure software developer. Edmonton, Alberta, Canada.",
-  keywords: [
-    "SOC Analyst", "Cybersecurity", "Blue Team", "Threat Detection",
-    "Incident Response", "SIEM", "Wazuh", "Splunk", "Edmonton", "Canada",
-  ],
-  authors: [{ name: "Raghav Mahajan", url: "https://raghv.dev" }],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://raghv.dev"),
+  metadataBase: new URL(site.url),
+  title: { default: site.title, template: "%s | raghv.dev" },
+  description: site.description,
+  applicationName: site.name,
+  keywords: [...site.keywords],
+  authors: [{ name: site.person, url: site.url }],
+  creator: site.person,
+  alternates: { canonical: site.url },
   openGraph: {
-    title: "Raghav Mahajan — Cybersecurity Analyst | SOC | Blue Team",
-    description: "Defensive security practitioner building real-world detection and response capabilities.",
-    url: "https://raghv.dev",
-    siteName: "raghv.dev",
+    title: site.title,
+    description: site.description,
+    url: site.url,
+    siteName: site.name,
     type: "website",
+    locale: "en_CA",
   },
+  twitter: { card: "summary_large_image", title: site.title, description: site.description },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  },
+  formatDetection: { telephone: false },
+  category: "technology",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0a",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
+      lang="en-CA"
       data-scroll-behavior="smooth"
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
@@ -82,6 +94,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
+        <SiteJsonLd />
         <PublicChrome>
           <Navbar />
         </PublicChrome>

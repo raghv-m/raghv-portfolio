@@ -1,18 +1,10 @@
 "use client";
+import { SmokeBackground, SparklesCore } from "@/components/effects/deferred";
 import { useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import { Briefcase, Shield, Code2, ChevronDown, MapPin, Calendar, ArrowRight } from "lucide-react";
-import dynamic from "next/dynamic";
-const SparklesCore = dynamic(
-  () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
-  { ssr: false }
-);
 
-const SmokeBackground = dynamic(
-  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
-  { ssr: false }
-);
 
 const ROLES = [
   {

@@ -1,13 +1,9 @@
 "use client";
+import { SmokeBackground } from "@/components/effects/deferred";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Tag, Clock, ArrowRight, Star } from "lucide-react";
-import dynamic from "next/dynamic";
-const SmokeBackground = dynamic(
-  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
-  { ssr: false }
-);
 
 type Post = {
   id: string;

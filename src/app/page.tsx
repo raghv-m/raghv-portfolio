@@ -1,22 +1,13 @@
 "use client";
+import { HeroScene, SmokeBackground, SparklesCore } from "@/components/effects/deferred";
 import { useState, useEffect, useRef } from "react";
-import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Download, ChevronDown } from "lucide-react";
 import TerminalAnimation from "@/components/home/TerminalAnimation";
 import SkillMarquee from "@/components/home/SkillMarquee";
 import MetricsDashboard from "@/components/home/MetricsDashboard";
-const SparklesCore = dynamic(
-  () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
-  { ssr: false }
-);
 
-const HeroScene = dynamic(() => import("@/components/three/HeroScene"), { ssr: false });
-const SmokeBackground = dynamic(
-  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
-  { ssr: false }
-);
 
 const TYPING_ROLES = [
   "Cybersecurity Analyst",
@@ -109,7 +100,7 @@ export default function HomePage() {
           {/* Left — text */}
           <div>
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="mb-6"
@@ -120,7 +111,7 @@ export default function HomePage() {
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
               className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-4 tracking-tight"
@@ -130,7 +121,7 @@ export default function HomePage() {
             </motion.h1>
 
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
               className="font-display text-lg text-[var(--text-muted)] mb-8 h-7"
@@ -139,7 +130,7 @@ export default function HomePage() {
             </motion.div>
 
             <motion.p
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.35 }}
               className="text-[var(--text-muted)] text-base leading-relaxed max-w-md mb-10"
@@ -149,7 +140,7 @@ export default function HomePage() {
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.45 }}
               className="flex flex-wrap gap-3"
@@ -165,7 +156,7 @@ export default function HomePage() {
 
           {/* Right — terminal */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
@@ -173,7 +164,7 @@ export default function HomePage() {
 
             {/* Status bar */}
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={false}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2 }}
               className="mt-4 glass rounded-lg px-4 py-2.5 flex flex-wrap gap-4"

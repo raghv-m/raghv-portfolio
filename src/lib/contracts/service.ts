@@ -96,7 +96,7 @@ function providerParty(): ContractVariables["provider"] {
     name: invoicing.businessName,
     legalName: invoicing.legalName,
     address: invoicing.addressLines.join(", "),
-    email: invoicing.email,
+    email: `${invoicing.email}, ${invoicing.phone}`,
     website: invoicing.website,
   };
 }

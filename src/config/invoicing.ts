@@ -1,18 +1,28 @@
 /**
  * Your business details for invoices and contracts. Edit here, not in the PDF or contract code.
  *
+ * The address and phone appear only on private documents (invoices, contracts), never on the
+ * public website.
+ *
  * TODO(owner):
- *  - If you register a trade name (Alberta Corporate Registry) or incorporate, put it in legalName.
- *  - Add a mailing address: Canadian invoices and contracts should show one (a PO box is fine).
+ *  - Trade name: in Alberta you must register a trade name before trading under it (any registry
+ *    agent, about $60-$100). Once registered, set tradeNameRegistered: true and documents will read
+ *    "Raghav Mahajan, operating as Raghv Digital".
  *  - If you register for GST/HST (mandatory once revenue passes $30,000 in four consecutive
  *    quarters), set gstNumber; invoices then need tax lines before you charge it.
  */
+const tradeName = "Raghv Digital";
+const tradeNameRegistered = false;
+
 export const invoicing = {
-  businessName: "Raghav Mahajan",
+  businessName: tradeNameRegistered ? tradeName : "Raghav Mahajan",
+  tradeName,
+  tradeNameRegistered,
   /** The legal party on contracts and invoices. A sole proprietor contracts in their own name. */
-  legalName: "Raghav Mahajan (sole proprietor)",
-  tagline: "Software & Security",
-  addressLines: ["Edmonton, Alberta", "Canada"],
+  legalName: tradeNameRegistered ? `Raghav Mahajan, operating as ${tradeName}` : "Raghav Mahajan (sole proprietor)",
+  tagline: "Web Development & Cybersecurity",
+  addressLines: ["Unit 303, 107 Watt Common SW", "Edmonton, AB T6X 3C6", "Canada"],
+  phone: "825-343-1168",
   email: "raaghvv0508@gmail.com",
   website: "raghv.dev",
   gstNumber: null as string | null,

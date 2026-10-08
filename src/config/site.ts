@@ -12,6 +12,8 @@ export const site = {
   region: "AB",
   country: "CA",
   email: "raaghvv0508@gmail.com",
+  /** Public business phone (in structured data for local search). The street address is NOT public. */
+  phone: "+1-825-343-1168",
   sameAs: ["https://github.com/HomeLab-Raghav", "https://linkedin.com/in/raghav-mahajan-17611b24b"],
   keywords: [
     "web developer Edmonton",

@@ -38,6 +38,7 @@ export function SiteJsonLd() {
             url: site.url,
             founder: { "@id": personId },
             email: site.email,
+            telephone: site.phone,
             priceRange: "$$",
             areaServed: [{ "@type": "City", name: "Edmonton" }, { "@type": "AdministrativeArea", name: "Alberta" }, { "@type": "Country", name: "Canada" }],
             address: { "@type": "PostalAddress", addressLocality: site.city, addressRegion: site.region, addressCountry: site.country },

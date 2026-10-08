@@ -25,6 +25,7 @@ export type InvoicePdfData = {
     gstNumber: string | null;
     paymentInstructions: string;
     legalName?: string;
+    phone?: string;
   };
   /** Legal lines printed at the foot of the invoice (payment terms, interest, tax status, law). */
   legalLines?: string[];
@@ -60,6 +61,7 @@ export function renderInvoicePdf(data: InvoicePdfData): Promise<Buffer> {
     }
     doc.font("Helvetica").fontSize(9).fillColor(MUTED).text(data.from.tagline);
     for (const line of data.from.addressLines) doc.text(line);
+    if (data.from.phone) doc.text(data.from.phone);
     doc.text(data.from.email).text(data.from.website);
     if (data.from.gstNumber) doc.text(`GST/HST: ${data.from.gstNumber}`);
 

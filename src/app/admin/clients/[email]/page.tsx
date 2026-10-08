@@ -3,7 +3,12 @@ import { notFound } from "next/navigation";
 import { z } from "zod";
 
 import { AdminPage, Empty, Panel, StatusPill, money, when } from "@/components/admin/ui";
+import { NotesPanel } from "@/components/crm/NotesPanel";
+import { StartProject } from "@/components/crm/StartProject";
+import { TaskList } from "@/components/crm/TaskList";
 import { getPerson } from "@/lib/clients";
+import { personTimeline } from "@/lib/crm";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 import { InviteButton } from "./InviteButton";
 import { OnboardingButtons } from "./OnboardingButtons";
@@ -14,6 +19,12 @@ export default async function PersonPage({ params }: { params: Promise<{ email: 
   const email = decodeURIComponent((await params).email);
   if (!z.email().safeParse(email).success) notFound();
   const person = await getPerson(email);
+  const [timeline, { data: notes }, { data: tasks }] = await Promise.all([
+    personTimeline(email, person.profile?.id ?? null),
+    getSupabaseAdmin().from("crm_notes").select("id, body, pinned, created_at").eq("person_email", email.toLowerCase()),
+    getSupabaseAdmin().from("crm_tasks").select("*").eq("person_email", email.toLowerCase()).order("done_at", { ascending: true, nullsFirst: true }).order("due_at", { ascending: true }),
+  ]);
+  const signedContracts = person.contracts.filter((c) => c.status === "signed");
   if (!person.profile && !person.estimates.length && !person.messages.length) notFound();
 
   const name = person.profile?.full_name || person.estimates[0]?.name || person.messages[0]?.name || email;
@@ -33,6 +44,28 @@ export default async function PersonPage({ params }: { params: Promise<{ email: 
         </>
       }
     >
+      <div className="grid lg:grid-cols-2 gap-6 mb-6">
+        <Panel title="Notes"><NotesPanel email={email} notes={notes ?? []} /></Panel>
+        <Panel title="Follow-ups"><TaskList email={email} tasks={tasks ?? []} /></Panel>
+        {person.profile?.role === "client" && (
+          <Panel title={`Projects (${person.projects.length})`} className="lg:col-span-2">
+            {person.projects.length > 0 && (
+              <ul className="mb-5 divide-y divide-[var(--border)]">
+                {person.projects.map((p) => (
+                  <li key={p.id}>
+                    <Link href={`/admin/projects/${p.id}`} className="flex items-center justify-between gap-3 py-3 hover:text-[var(--gold)]">
+                      <span className="text-sm">{p.title}</span>
+                      <span className="flex items-center gap-3"><span className="text-xs text-[var(--text-muted)]">{p.progress}%</span><StatusPill status={p.status.replace("_", " ")} /></span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <StartProject clientId={person.profile.id} contracts={signedContracts.map((c) => ({ id: c.id, number: c.number, title: c.title }))} />
+          </Panel>
+        )}
+      </div>
+
       <div className="grid lg:grid-cols-2 gap-6">
         <Panel title={`Estimate requests (${person.estimates.length})`}>
           {person.estimates.length ? (
@@ -129,6 +162,19 @@ export default async function PersonPage({ params }: { params: Promise<{ email: 
             </p>
           </Panel>
         )}
+        <Panel title="Activity" className="lg:col-span-2">
+          {timeline.length ? (
+            <ol className="relative border-l border-[var(--border)] ml-2 space-y-4">
+              {timeline.map((t, i) => (
+                <li key={i} className="pl-5 relative">
+                  <span className="absolute -left-[5px] top-1.5 size-2.5 rounded-full bg-[var(--gold)]" />
+                  <p className="text-sm text-[var(--text)]">{t.href ? <Link href={t.href} className="hover:text-[var(--gold)]">{t.title}</Link> : t.title}{t.detail && <span className="text-[var(--text-muted)]"> · {t.detail}</span>}</p>
+                  <p className="font-mono text-[10px] text-[var(--text-muted)]">{when(t.at)} · {t.kind}</p>
+                </li>
+              ))}
+            </ol>
+          ) : <Empty>No activity yet.</Empty>}
+        </Panel>
       </div>
     </AdminPage>
   );

@@ -47,3 +47,14 @@ export async function signContractAction(contractId: string, input: unknown): Pr
   revalidatePath(`/portal/contracts/${contractId}`);
   return result.ok ? { ok: true } : result;
 }
+
+/** Client posts a message on one of their projects. RLS enforces sender = self and project access. */
+export async function postClientMessageAction(projectId: string, body: string): Promise<ActionResult> {
+  const { userId } = await requirePortalUser();
+  const text = z.string().trim().min(1).max(10000).safeParse(body);
+  if (!z.uuid().safeParse(projectId).success || !text.success) return { ok: false, error: "Write a message" };
+  const { createSupabaseServerClient } = await import("@/lib/supabase/server");
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.from("messages").insert({ project_id: projectId, sender_id: userId, body: text.data });
+  return error ? { ok: false, error: "Couldn't send that. Try again." } : { ok: true };
+}

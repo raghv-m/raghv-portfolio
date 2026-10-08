@@ -77,6 +77,8 @@ await db.exec(`
   insert into public.estimates (name,email,category_slug,pages,one_time_cents,one_time_low_cents,one_time_high_cents) values
     ('A','A@x','business-website',5,250000,225000,300000),('Stranger','z@x','portfolio',3,150000,135000,180000);
   update public.pricing_items set active = false where slug = 'paypal';
+  insert into public.crm_notes (person_email, body) values ('a@x', 'private note about A');
+  insert into public.crm_tasks (person_email, title) values ('a@x', 'follow up');
   insert into public.questionnaires (client_id, tenant_id) values ('${CA}','${T_A}'),('${CB}','${T_B}');
   insert into public.contracts (id, client_id, tenant_id, status, body) values
     ('40000000-0000-0000-0000-000000000001','${CA}','${T_A}','sent','A terms'),
@@ -128,6 +130,7 @@ await as("anon", null, async () => {
   ok("anon can't change prices", (await affected(`update public.pricing_items set price_cents = 1`)) === 0);
   ok("anon can't submit estimates directly (server route only)", await fails(`insert into public.estimates (name,email,category_slug,pages,one_time_cents,one_time_low_cents,one_time_high_cents) values ('x','x@x','portfolio',1,1,1,1)`));
   ok("anon can't read estimates", (await count(`select * from public.estimates`)) === 0);
+  ok("anon can't read CRM notes", (await count(`select * from public.crm_notes`)) === 0);
   ok("anon sees only published posts", (await count(`select * from public.blog_posts`)) === 1);
   ok("anon sees no profiles", (await count(`select * from public.profiles`)) === 0);
   ok("anon cannot self-insert a confirmed subscriber", await fails(`insert into public.subscribers (email, confirmed) values ('evil@x', true)`));
@@ -138,6 +141,8 @@ await as("anon", null, async () => {
 await as("authenticated", CA, async () => {
   ok("client reads only estimates sent from their own email (case-insensitive)", (await count(`select * from public.estimates`)) === 1);
   ok("client reads only their own questionnaire", (await count(`select * from public.questionnaires`)) === 1);
+  ok("client can't read CRM notes, even about themselves", (await count(`select * from public.crm_notes`)) === 0);
+  ok("client can't read CRM tasks", (await count(`select * from public.crm_tasks`)) === 0);
   ok("client reads their sent contract, not drafts or others'", (await count(`select * from public.contracts`)) === 1);
   ok("client can't sign by writing to contracts directly", (await affected(`update public.contracts set status='signed', client_signature_name='x'`)) === 0);
   ok("client can't submit questionnaire answers directly", (await affected(`update public.questionnaires set status='submitted'`)) === 0);
@@ -170,6 +175,7 @@ await as("authenticated", CA, async () => {
 await as("authenticated", ADMIN, async () => {
   ok("admin reads all estimates", (await count(`select * from public.estimates`)) === 2);
   ok("admin reads all contracts incl. drafts", (await count(`select * from public.contracts`)) === 3);
+  ok("admin reads CRM notes and tasks", (await count(`select * from public.crm_notes`)) === 1 && (await count(`select * from public.crm_tasks`)) === 1);
   ok("admin reads inactive prices too", (await count(`select * from public.pricing_items where slug = 'paypal'`)) === 1);
   ok("admin reads all profiles (no policy recursion)", (await count(`select * from public.profiles`)) === 3);
   ok("admin reads all projects", (await count(`select * from public.projects`)) === 2);

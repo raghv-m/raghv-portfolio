@@ -36,8 +36,30 @@ export type ProjectRow = {
   progress: number;
   start_date: Timestamp | null;
   end_date: Timestamp | null;
+  contract_id: string | null;
+  estimate_id: string | null;
+  value_cents: number;
   created_at: Timestamp;
   updated_at: Timestamp;
+};
+
+export type CrmNoteRow = {
+  id: string;
+  person_email: string;
+  body: string;
+  pinned: boolean;
+  author_id: string | null;
+  created_at: Timestamp;
+};
+
+export type CrmTaskRow = {
+  id: string;
+  person_email: string | null;
+  title: string;
+  due_at: Timestamp | null;
+  priority: "low" | "normal" | "high";
+  done_at: Timestamp | null;
+  created_at: Timestamp;
 };
 
 export type MilestoneRow = {
@@ -336,6 +358,8 @@ export type Database = {
       pricing_items: Table<PricingItemRow, "section" | "slug" | "label">;
       questionnaires: Table<QuestionnaireRow, "client_id" | "tenant_id">;
       contracts: Table<ContractRow, "client_id" | "tenant_id">;
+      crm_notes: Table<CrmNoteRow, "person_email" | "body">;
+      crm_tasks: Table<CrmTaskRow, "title">;
       estimates: Table<
         EstimateRow,
         "name" | "email" | "category_slug" | "pages" | "one_time_cents" | "one_time_low_cents" | "one_time_high_cents"

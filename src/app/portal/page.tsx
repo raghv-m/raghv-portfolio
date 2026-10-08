@@ -119,7 +119,7 @@ export default async function PortalHome() {
               {projects.map((p) => (
                 <li key={p.id} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
                   <div className="flex justify-between gap-3">
-                    <p className="text-[var(--text)]">{p.title}</p>
+                    <Link href={`/portal/projects/${p.id}`} className="text-[var(--text)] hover:text-[var(--gold)]">{p.title} →</Link>
                     <p className="font-mono text-[10px] text-[var(--text-muted)] uppercase">{p.status.replace("_", " ")}</p>
                   </div>
                   <div className="mt-3 h-1.5 rounded-full bg-[var(--border)] overflow-hidden">

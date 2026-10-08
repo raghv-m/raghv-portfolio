@@ -3,14 +3,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/auth/actions";
 import {
-  FileText, Mail, Users, ExternalLink, LogOut, PenSquare, LayoutDashboard, Calculator, Contact, Receipt, Tags, Gauge, FileSignature,
+  FileText, Mail, Users, ExternalLink, LogOut, PenSquare, LayoutDashboard, Calculator, Contact, Receipt, Tags, Gauge, FileSignature, Kanban, FolderKanban, ListChecks,
 } from "lucide-react";
 
 const NAV = [
   { href: "/admin", icon: Gauge, label: "Overview", exact: true },
+  { href: "/admin/pipeline", icon: Kanban, label: "Pipeline" },
+  { href: "/admin/tasks", icon: ListChecks, label: "Tasks" },
   { href: "/admin/estimates", icon: Calculator, label: "Estimates" },
   { href: "/admin/clients", icon: Contact, label: "Clients & leads" },
   { href: "/admin/contracts", icon: FileSignature, label: "Contracts" },
+  { href: "/admin/projects", icon: FolderKanban, label: "Projects" },
   { href: "/admin/invoices", icon: Receipt, label: "Invoices" },
   { href: "/admin/pricing", icon: Tags, label: "Pricing" },
   { href: "/admin/messages", icon: Mail, label: "Messages" },

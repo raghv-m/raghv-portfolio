@@ -27,11 +27,20 @@ function safeNext(value: FormDataEntryValue | null, fallback: string): string {
   return next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : fallback;
 }
 
+/**
+ * Where emailed links should come back to: the site the request came from (localhost, a Vercel
+ * preview, or raghv.dev), so a reset requested locally doesn't land on production. Supabase only
+ * honours redirect URLs on its allow-list (set in the dashboard), so a spoofed Host header can't
+ * send the link elsewhere; it falls back to the configured site URL instead.
+ */
 async function siteOrigin(): Promise<string> {
-  const configured = process.env.NEXT_PUBLIC_SITE_URL;
-  if (configured) return configured.replace(/\/$/, "");
   const h = await headers();
-  return `${h.get("x-forwarded-proto") ?? "http"}://${h.get("host")}`;
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  if (host) {
+    const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+    return `${proto}://${host}`;
+  }
+  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://raghv.dev").replace(/\/$/, "");
 }
 
 const credentials = z.object({

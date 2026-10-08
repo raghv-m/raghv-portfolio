@@ -1,14 +1,11 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Plus, Eye } from "lucide-react";
 import DeletePostButton from "./DeletePostButton";
 
 export default async function AdminPostsPage() {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/admin/login");
+  await requireAdmin();
 
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: "desc" },

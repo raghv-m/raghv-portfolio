@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, CheckCircle, Circle, LogOut, Shield } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOutAction } from "@/app/auth/actions";
 
 type Message = {
   id: string;
@@ -42,7 +42,7 @@ export default function AdminMessagesClient({ messages }: { messages: Message[] 
               {messages.length} total · {messages.filter((m) => !m.read).length} unread
             </span>
             <button
-              onClick={() => signOut({ callbackUrl: "/admin/login" })}
+              onClick={() => signOutAction()}
               className="btn-ghost gap-1.5 text-xs"
             >
               <LogOut className="w-3 h-3" /> Sign out

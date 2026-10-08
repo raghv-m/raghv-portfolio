@@ -1,12 +1,9 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import NewsletterClient from "./NewsletterClient";
 
 export default async function AdminNewsletterPage() {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/admin/login");
+  await requireAdmin();
 
   const [subscribers, total, active] = await Promise.all([
     prisma.subscriber.findMany({ orderBy: { subscribedAt: "desc" }, take: 200 }),

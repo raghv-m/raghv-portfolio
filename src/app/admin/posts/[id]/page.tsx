@@ -1,14 +1,12 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect, notFound } from "next/navigation";
+import { requireAdmin } from "@/lib/session";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import PostEditor from "@/components/admin/PostEditor";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function EditPostPage({ params }: Props) {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/admin/login");
+  await requireAdmin();
 
   const { id } = await params;
   const post = await prisma.post.findUnique({ where: { id } });

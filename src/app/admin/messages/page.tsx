@@ -1,12 +1,9 @@
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import AdminMessagesClient from "./AdminMessagesClient";
 
 export default async function AdminMessagesPage() {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/admin/login");
+  await requireAdmin();
 
   const messages = await prisma.contactSubmission.findMany({
     orderBy: { createdAt: "desc" },

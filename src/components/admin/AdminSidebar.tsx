@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOutAction } from "@/app/auth/actions";
 import {
   FileText, Mail, Users, ExternalLink, LogOut, PenSquare, LayoutDashboard,
 } from "lucide-react";
@@ -60,7 +60,7 @@ export default function AdminSidebar() {
           View Site
         </Link>
         <button
-          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          onClick={() => signOutAction()}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-mono text-[var(--text-muted)] hover:text-red-400 hover:bg-[rgba(255,68,68,0.06)] transition-colors"
         >
           <LogOut className="w-3.5 h-3.5 shrink-0" />

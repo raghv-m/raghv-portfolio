@@ -1,12 +1,9 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import { requireAdmin } from "@/lib/session";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession(authOptions);
-
-  // Login page — no sidebar, just the full-screen form
-  if (!session) return <>{children}</>;
+  // Signed in + admin + TOTP for this session, or redirected to /auth/login or /auth/mfa.
+  await requireAdmin();
 
   return (
     <div className="min-h-screen flex">

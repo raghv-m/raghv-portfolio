@@ -25,6 +25,8 @@ await db.exec(`
   create table auth.users (id uuid primary key, email text);
   create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
   grant execute on function auth.uid() to anon, authenticated, service_role;
+  create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
+  grant execute on function auth.jwt() to anon, authenticated, service_role;
   create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint);
   create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text, name text);
   alter table storage.objects enable row level security;
@@ -72,6 +74,9 @@ await db.exec(`
   insert into public.subscribers (email,confirmed) values ('s@x',true);
   insert into public.mfa_secrets (user_id,secret_encrypted) values ('${ADMIN}','enc');
   insert into public.audit_logs (action,resource_type) values ('create','invoice');
+  insert into public.estimates (name,email,category_slug,pages,one_time_cents,one_time_low_cents,one_time_high_cents) values
+    ('A','A@x','business-website',5,250000,225000,300000),('Stranger','z@x','portfolio',3,150000,135000,180000);
+  update public.pricing_items set active = false where slug = 'paypal';
   insert into storage.objects (bucket_id,name) values
     ('project-files','${PA}/spec.pdf'),('project-files','${PB}/b.pdf'),('project-files','not-a-uuid/x.pdf');
 `);
@@ -91,11 +96,14 @@ ok("amount_due updates when a line item is removed", total2.rows[0].amount_due =
 
 // --- act as a role ----------------------------------------------------------------------------
 async function as(role, uid, fn) {
-  await db.exec(`set role ${role}; select set_config('request.jwt.claim.sub', '${uid ?? ""}', false);`);
+  const email = { [ADMIN]: "me@x", [CA]: "a@x", [CB]: "b@x" }[uid] ?? "";
+  await db.exec(
+    `set role ${role}; select set_config('request.jwt.claim.sub', '${uid ?? ""}', false); select set_config('request.jwt.claims', '${JSON.stringify(uid ? { sub: uid, email } : {})}', false);`,
+  );
   try {
     return await fn();
   } finally {
-    await db.exec(`reset role; select set_config('request.jwt.claim.sub', '', false);`);
+    await db.exec(`reset role; select set_config('request.jwt.claim.sub', '', false); select set_config('request.jwt.claims', '', false);`);
   }
 }
 const count = async (sql) => (await db.query(sql)).rows.length;
@@ -110,6 +118,11 @@ const fails = async (sql) => {
 const affected = async (sql) => (await db.query(sql)).affectedRows ?? 0;
 
 await as("anon", null, async () => {
+  const pricing = await count(`select * from public.pricing_items`);
+  ok("anon reads the active price list (inactive items hidden)", pricing > 50 && (await count(`select * from public.pricing_items where slug = 'paypal'`)) === 0, String(pricing));
+  ok("anon can't change prices", (await affected(`update public.pricing_items set price_cents = 1`)) === 0);
+  ok("anon can't submit estimates directly (server route only)", await fails(`insert into public.estimates (name,email,category_slug,pages,one_time_cents,one_time_low_cents,one_time_high_cents) values ('x','x@x','portfolio',1,1,1,1)`));
+  ok("anon can't read estimates", (await count(`select * from public.estimates`)) === 0);
   ok("anon sees only published posts", (await count(`select * from public.blog_posts`)) === 1);
   ok("anon sees no profiles", (await count(`select * from public.profiles`)) === 0);
   ok("anon cannot self-insert a confirmed subscriber", await fails(`insert into public.subscribers (email, confirmed) values ('evil@x', true)`));
@@ -118,6 +131,7 @@ await as("anon", null, async () => {
 });
 
 await as("authenticated", CA, async () => {
+  ok("client reads only estimates sent from their own email (case-insensitive)", (await count(`select * from public.estimates`)) === 1);
   ok("client sees own profile only", (await count(`select * from public.profiles`)) === 1);
   ok("client sees only own tenant's projects", (await count(`select * from public.projects`)) === 1);
   ok("client sees own milestones only", (await count(`select * from public.milestones`)) === 1);
@@ -145,6 +159,8 @@ await as("authenticated", CA, async () => {
 });
 
 await as("authenticated", ADMIN, async () => {
+  ok("admin reads all estimates", (await count(`select * from public.estimates`)) === 2);
+  ok("admin reads inactive prices too", (await count(`select * from public.pricing_items where slug = 'paypal'`)) === 1);
   ok("admin reads all profiles (no policy recursion)", (await count(`select * from public.profiles`)) === 3);
   ok("admin reads all projects", (await count(`select * from public.projects`)) === 2);
   ok("admin reads all invoices incl. drafts", (await count(`select * from public.invoices`)) === 3);

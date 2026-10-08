@@ -138,8 +138,9 @@ export type EmailSendRow = {
   id: string;
   post_id: string | null;
   invoice_id: string | null;
+  estimate_id: string | null;
   recipient_email: string;
-  type: "newsletter" | "newsletter_confirm" | "contact_reply" | "invoice_sent" | "admin_alert";
+  type: "newsletter" | "newsletter_confirm" | "contact_reply" | "invoice_sent" | "admin_alert" | "estimate_sent";
   status: "sent" | "failed";
   error_message: string | null;
   sent_at: Timestamp;
@@ -203,6 +204,61 @@ export type MfaSecretRow = {
 
 export type TenantRow = { id: string; name: string; created_at: Timestamp };
 
+export type PricingItemRow = {
+  id: string;
+  section: "category" | "feature" | "integration" | "hosting" | "addon";
+  slug: string;
+  label: string;
+  description: string;
+  icon: string | null;
+  price_cents: number;
+  monthly_cents: number;
+  included_pages: number;
+  per_page_cents: number;
+  sort_order: number;
+  active: boolean;
+  updated_at: Timestamp;
+};
+
+export type EstimateStatus = "new" | "reviewed" | "quoted" | "converted" | "declined";
+
+export type EstimateRow = {
+  id: string;
+  reference: string;
+  status: EstimateStatus;
+  name: string;
+  email: string;
+  company: string | null;
+  phone: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  region: string | null;
+  postal_code: string | null;
+  country: string | null;
+  place_id: string | null;
+  category_slug: string;
+  pages: number;
+  selections: { features?: string[]; integrations?: string[]; hosting?: string | null; addons?: string[] };
+  description: string | null;
+  timeline: string | null;
+  budget: string | null;
+  line_items: { label: string; detail?: string; oneTimeCents: number; monthlyCents: number }[];
+  one_time_cents: number;
+  one_time_low_cents: number;
+  one_time_high_cents: number;
+  monthly_cents: number;
+  my_low_cents: number;
+  my_high_cents: number;
+  currency: string;
+  admin_notes: string | null;
+  invoice_id: string | null;
+  client_id: string | null;
+  ip_hash: string | null;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -228,6 +284,11 @@ export type Database = {
       annotations: Table<AnnotationRow, "page_slug" | "content">;
       audit_logs: Table<AuditLogRow, "action" | "resource_type">;
       mfa_secrets: Table<MfaSecretRow, "user_id" | "secret_encrypted">;
+      pricing_items: Table<PricingItemRow, "section" | "slug" | "label">;
+      estimates: Table<
+        EstimateRow,
+        "name" | "email" | "category_slug" | "pages" | "one_time_cents" | "one_time_low_cents" | "one_time_high_cents"
+      >;
     };
     Views: Record<string, never>;
     Functions: {

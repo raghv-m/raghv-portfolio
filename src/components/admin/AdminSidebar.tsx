@@ -3,13 +3,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/auth/actions";
 import {
-  FileText, Mail, Users, ExternalLink, LogOut, PenSquare, LayoutDashboard,
+  FileText, Mail, Users, ExternalLink, LogOut, PenSquare, LayoutDashboard, Calculator, Contact, Receipt, Tags, Gauge,
 } from "lucide-react";
 
 const NAV = [
+  { href: "/admin", icon: Gauge, label: "Overview", exact: true },
+  { href: "/admin/estimates", icon: Calculator, label: "Estimates" },
+  { href: "/admin/clients", icon: Contact, label: "Clients & leads" },
+  { href: "/admin/invoices", icon: Receipt, label: "Invoices" },
+  { href: "/admin/pricing", icon: Tags, label: "Pricing" },
+  { href: "/admin/messages", icon: Mail, label: "Messages" },
   { href: "/admin/posts", icon: FileText, label: "Posts" },
   { href: "/admin/posts/new", icon: PenSquare, label: "New Post" },
-  { href: "/admin/messages", icon: Mail, label: "Messages" },
   { href: "/admin/newsletter", icon: Users, label: "Newsletter" },
 ];
 
@@ -17,9 +22,9 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
-    href === "/admin/posts/new"
+    href === "/admin" || href === "/admin/posts/new"
       ? pathname === href
-      : pathname.startsWith(href) && href !== "/admin/posts/new";
+      : pathname.startsWith(href) && !(href === "/admin/posts" && pathname === "/admin/posts/new");
 
   return (
     <aside className="fixed top-0 left-0 bottom-0 w-52 flex flex-col bg-[var(--card)] border-r border-[var(--border)] z-30">

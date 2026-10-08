@@ -250,3 +250,44 @@ export async function getInvoicePdfUrl(invoiceId: string): Promise<string | null
   const { data } = await admin().storage.from("invoices").createSignedUrl(visible.pdf_path, 300);
   return data?.signedUrl ?? null;
 }
+
+/** Replaces a draft's details and line items (only drafts are editable; sent invoices are final). */
+export async function updateDraftInvoice(actorId: string, invoiceId: string, input: Omit<CreateInvoiceInput, "clientId">): Promise<Result> {
+  const loaded = await loadInvoice(invoiceId);
+  if (!loaded) return { ok: false, error: "Invoice not found" };
+  if (loaded.invoice.status !== "draft") return { ok: false, error: "Only draft invoices can be edited" };
+
+  const { error } = await admin()
+    .from("invoices")
+    .update({
+      due_date: new Date(`${input.dueDate}T23:59:59-07:00`).toISOString(),
+      currency: input.currency,
+      notes: input.notes || null,
+    })
+    .eq("id", invoiceId)
+    .eq("status", "draft");
+  if (error) throw error;
+
+  const { error: deleteError } = await admin().from("invoice_line_items").delete().eq("invoice_id", invoiceId);
+  if (deleteError) throw deleteError;
+  const { error: insertError } = await admin()
+    .from("invoice_line_items")
+    .insert(
+      input.lineItems.map((item, index) => ({
+        invoice_id: invoiceId,
+        description: item.description,
+        quantity: item.quantity,
+        unit_amount: item.unitAmount,
+        sort_order: index,
+      })),
+    );
+  if (insertError) throw insertError;
+
+  await logAudit({ actorId, action: "invoice.update", resourceType: "invoice", resourceId: invoiceId, changes: { line_items: input.lineItems.length } });
+  return { ok: true, data: undefined };
+}
+
+/** The data the admin invoice editor needs. */
+export async function getInvoiceForAdmin(invoiceId: string) {
+  return loadInvoice(invoiceId);
+}

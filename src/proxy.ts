@@ -28,15 +28,15 @@ export async function proxy(request: NextRequest) {
     [
       "default-src 'self'",
       isDev
-        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com"
-        : "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+        ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com"
+        : "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       // Allow external image hosts used by blog posts and the Next.js image optimizer
-      "img-src 'self' data: blob: https://images.unsplash.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://avatars.githubusercontent.com https://*.google-analytics.com https://*.googletagmanager.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://avatars.githubusercontent.com https://*.google-analytics.com https://*.googletagmanager.com https://maps.gstatic.com https://*.googleapis.com",
       // Google Tag Manager / GA4 beacons.
       // Supabase: REST/Auth/Storage over https, Realtime over wss.
-      `connect-src 'self'${isDev ? " ws: wss:" : ""} https://*.supabase.co wss://*.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
+      `connect-src 'self'${isDev ? " ws: wss:" : ""} https://*.supabase.co wss://*.supabase.co https://maps.googleapis.com https://places.googleapis.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com`,
       // GTM's <noscript> fallback iframe.
       "frame-src https://www.googletagmanager.com",
       "frame-ancestors 'none'",

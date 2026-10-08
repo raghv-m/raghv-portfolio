@@ -97,7 +97,7 @@ export async function requestPasswordResetAction(_prev: FormState, formData: For
   if (limit.success) {
     const supabase = await createSupabaseServerClient();
     await supabase.auth.resetPasswordForEmail(email.data.toLowerCase(), {
-      redirectTo: `${await siteOrigin()}/auth/callback?next=/auth/reset-password`,
+      redirectTo: `${await siteOrigin()}/auth/confirm?next=/auth/reset-password`,
     });
   }
   // Always the same answer, whether or not the account exists.

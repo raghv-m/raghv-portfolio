@@ -16,6 +16,7 @@ const LINKS = [
 { href: "/blog", label: "Blog" },
 { href: "/estimate", label: "Estimate" },
 { href: "/contact", label: "Contact" },
+{ href: "/auth/login", label: "Client login" },
 ];
 
 export default function Navbar() {

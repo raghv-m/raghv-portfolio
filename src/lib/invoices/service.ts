@@ -1,6 +1,6 @@
 import "server-only";
 
-import { invoicing } from "@/config/invoicing";
+import { invoiceLegalLines, invoicing } from "@/config/invoicing";
 import { logAudit } from "@/lib/audit";
 import { sendInvoiceEmail } from "@/lib/mail";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
@@ -122,6 +122,7 @@ async function renderAndStore(invoiceId: string, issuedAt: string, statusOverrid
     notes: invoice.notes,
     client: { name: client?.full_name || client?.email || "Client", email: client?.email ?? "" },
     from: invoicing,
+    legalLines: invoiceLegalLines(),
     lineItems: invoice.invoice_line_items.map((item) => ({
       description: item.description,
       quantity: item.quantity,

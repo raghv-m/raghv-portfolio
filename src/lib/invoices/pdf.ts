@@ -24,7 +24,10 @@ export type InvoicePdfData = {
     website: string;
     gstNumber: string | null;
     paymentInstructions: string;
+    legalName?: string;
   };
+  /** Legal lines printed at the foot of the invoice (payment terms, interest, tax status, law). */
+  legalLines?: string[];
   lineItems: { description: string; quantity: number; unitAmount: number; amount: number }[];
 };
 
@@ -52,6 +55,9 @@ export function renderInvoicePdf(data: InvoicePdfData): Promise<Buffer> {
 
     // Header: from (left), INVOICE + meta (right)
     doc.font("Helvetica-Bold").fontSize(16).fillColor(INK).text(data.from.businessName, left, 50);
+    if (data.from.legalName && data.from.legalName !== data.from.businessName) {
+      doc.font("Helvetica").fontSize(8).fillColor(MUTED).text(data.from.legalName);
+    }
     doc.font("Helvetica").fontSize(9).fillColor(MUTED).text(data.from.tagline);
     for (const line of data.from.addressLines) doc.text(line);
     doc.text(data.from.email).text(data.from.website);
@@ -131,7 +137,23 @@ export function renderInvoicePdf(data: InvoicePdfData): Promise<Buffer> {
       doc.font("Helvetica").fontSize(10).fillColor(INK).text(data.notes, left, y + 13, { width });
       y = doc.y + 14;
     }
-    doc.font("Helvetica").fontSize(9).fillColor(MUTED).text(data.from.paymentInstructions, left, y, { width });
+    doc.font("Helvetica-Bold").fontSize(9).fillColor(INK).text("HOW TO PAY", left, y);
+    doc.font("Helvetica").fontSize(9).fillColor(MUTED).text(data.from.paymentInstructions, left, doc.y + 2, { width });
+
+    if (data.legalLines?.length) {
+      // Keep the legal block together at the bottom of the last page.
+      const block = data.legalLines.join("\n");
+      const height = doc.heightOfString(block, { width }) + data.legalLines.length * 2 + 24;
+      if (doc.y + height > doc.page.height - 50) doc.addPage();
+      const top = Math.max(doc.y + 20, doc.page.height - 50 - height);
+      doc.moveTo(left, top).lineTo(right, top).strokeColor(RULE).stroke();
+      doc.font("Helvetica").fontSize(7.5).fillColor(MUTED);
+      let legalY = top + 10;
+      for (const line of data.legalLines) {
+        doc.text(line, left, legalY, { width });
+        legalY = doc.y + 2;
+      }
+    }
 
     doc.end();
   });

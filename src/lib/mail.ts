@@ -343,7 +343,7 @@ export async function sendEstimateEmail({
       <p style="margin:0;font-size:26px;font-weight:700;color:${TEXT};">${dollars(result.myLowCents)} – ${dollars(result.myHighCents)} <span style="font-size:12px;color:${MUTED};">CAD</span></p>
       ${result.monthlyCents ? `<p style="margin:10px 0 0;font-size:13px;color:${MUTED};">Ongoing: <span style="color:${TEXT};">${dollars(result.monthlyCents)}/month</span></p>` : ""}
     </div>
-    <p style="margin:0 0 24px;font-size:13px;color:${MUTED};line-height:1.8;">The market figure is what an agency or a team of specialists would typically quote for this. I'm one person handling design, development, security and launch myself, with no agency overhead, so I'll build it for around half that, and quickly. I'll review your details and reply within 1–2 business days with a firm quote.</p>
+    <p style="margin:0 0 24px;font-size:13px;color:${MUTED};line-height:1.8;">The market figure is what an agency or a team of specialists would typically quote for this. I'm one person handling design, development, security and launch myself, with no agency overhead, so I'll build it for less than half that, and quickly. I'll review your details and reply within 1–2 business days with a firm quote.</p>
 
     ${portalBlock}
 
@@ -384,6 +384,45 @@ export async function sendEstimateNotification({
   `, `New estimate from ${name}`);
 
   await sendMail({ to: TO, subject: `[raghv.dev] New estimate ${reference} from ${name}`, html });
+}
+
+// ─── Onboarding questionnaire (to client) ───────────────────────────────────
+export async function sendQuestionnaireEmail({ to, name, url }: { to: string; name: string; url: string }) {
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Next step · Onboarding</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Let's get your project started, ${esc(name)}</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Please fill in a short questionnaire about your business and the project. It takes about 10 minutes, and I use your answers to prepare our agreement, so the details (business name, address, payment preferences) need to be accurate.</p>
+    <a href="${url}" style="display:inline-block;padding:12px 24px;background:${GOLD};border-radius:4px;font-size:12px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">Open the questionnaire</a>
+    <p style="margin:20px 0 0;font-size:12px;color:#555;">You'll be asked to sign in to your client portal first. Forgot your password? Use "Forgot?" on the sign-in page.</p>
+  `, "Your onboarding questionnaire");
+  await sendMail({ to, subject: "Your project questionnaire (about 10 minutes)", html });
+}
+
+// ─── Contract ready to sign (to client) ─────────────────────────────────────
+export async function sendContractToSignEmail({ to, name, number, title, url }: { to: string; name: string; number: string; title: string; url: string }) {
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Agreement ${esc(number)}</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Your agreement is ready to sign</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Hi ${esc(name)}, the <span style="color:${TEXT};">${esc(title)}</span> for your project is ready. Please read it through and sign it in your client portal. I've already signed on my side. Once you sign, you'll both get a PDF copy and I'll send the deposit invoice so we can start.</p>
+    <a href="${url}" style="display:inline-block;padding:12px 24px;background:${GOLD};border-radius:4px;font-size:12px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">Review &amp; sign</a>
+    <p style="margin:20px 0 0;font-size:12px;color:#555;">Questions or changes before signing? Just reply to this email.</p>
+  `, `Agreement ${number} is ready to sign`);
+  await sendMail({ to, subject: `Please review and sign: ${title} (${number})`, html });
+}
+
+// ─── Signed contract copy (to both parties) ─────────────────────────────────
+export async function sendContractSignedEmail({ to, name, number, clientName, pdf, forProvider }: { to: string; name: string; number: string; clientName: string; pdf: Buffer; forProvider: boolean }) {
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Agreement ${esc(number)} · Signed</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${forProvider ? `${esc(clientName)} signed the agreement` : `Thanks, ${esc(name)}. We're official.`}</h1>
+    <p style="margin:0 0 12px;font-size:15px;color:${MUTED};line-height:1.8;">${forProvider ? "The signed agreement is attached. Next: send the deposit invoice from the admin console." : "Your signed copy is attached for your records. I'll send the deposit invoice next, and work starts once it's paid. You can follow progress in your client portal."}</p>
+  `, `Agreement ${number} signed`);
+  await sendMail({
+    to,
+    subject: forProvider ? `[raghv.dev] ${clientName} signed ${number}` : `Your signed agreement (${number})`,
+    html,
+    attachments: [{ filename: `${number}-signed.pdf`, content: pdf, contentType: "application/pdf" }],
+  });
 }
 
 // ─── Newsletter welcome ────────────────────────────────────────────────────

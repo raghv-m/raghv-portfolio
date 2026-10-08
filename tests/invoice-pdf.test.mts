@@ -61,3 +61,8 @@ test("long invoices flow onto extra pages", async () => {
   const pages = pdf.toString("latin1").match(/\/Type \/Page\b/g)?.length ?? 0;
   assert.ok(pages >= 2, `expected multiple pages, got ${pages}`);
 });
+
+test("legal footer renders without breaking the layout", async () => {
+  const pdf = await renderInvoicePdf({ ...base, legalLines: ["Payment terms: net 14 days.", "GST/HST not charged: small supplier.", "Governed by the laws of Alberta."] });
+  assert.equal(pdf.subarray(0, 5).toString(), "%PDF-");
+});

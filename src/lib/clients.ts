@@ -77,12 +77,27 @@ export async function getPerson(email: string) {
   const { data: projects } = profile
     ? await admin.from("projects").select("*").eq("client_id", profile.id).order("created_at", { ascending: false })
     : { data: [] };
+  const { data: questionnaires } = profile
+    ? await admin.from("questionnaires").select("*").eq("client_id", profile.id).order("created_at", { ascending: false })
+    : { data: [] };
+  const { data: contracts } = profile
+    ? await admin.from("contracts").select("id, number, title, status, sent_at, client_signed_at, created_at").eq("client_id", profile.id).order("created_at", { ascending: false })
+    : { data: [] };
   const messages = isDatabaseConfigured
     ? await prisma.contactSubmission
         .findMany({ where: { email: { equals: key } }, orderBy: { createdAt: "desc" } })
         .catch(() => [])
     : [];
-  return { email: key, profile, estimates: estimates ?? [], invoices: invoices ?? [], projects: projects ?? [], messages };
+  return {
+    email: key,
+    profile,
+    estimates: estimates ?? [],
+    invoices: invoices ?? [],
+    projects: projects ?? [],
+    questionnaires: questionnaires ?? [],
+    contracts: contracts ?? [],
+    messages,
+  };
 }
 
 /**

@@ -27,11 +27,17 @@ const STAGE: Record<string, { label: string; step: number }> = {
 export default async function PortalHome() {
   const { profile, email } = await requirePortalUser();
   const supabase = await createSupabaseServerClient();
-  const [{ data: estimates }, { data: projects }, { data: invoices }] = await Promise.all([
+  const [{ data: estimates }, { data: projects }, { data: invoices }, { data: questionnaires }, { data: contracts }] = await Promise.all([
     supabase.from("estimates").select("id, reference, status, category_slug, pages, my_low_cents, my_high_cents, monthly_cents, created_at").order("created_at", { ascending: false }),
     supabase.from("projects").select("id, title, status, progress, end_date").order("created_at", { ascending: false }),
     supabase.from("invoices").select("id, invoice_number, status, amount_due, amount_paid, currency, due_date, pdf_path").order("created_at", { ascending: false }),
+    supabase.from("questionnaires").select("id, status, sent_at").order("sent_at", { ascending: false }),
+    supabase.from("contracts").select("id, number, title, status, sent_at, client_signed_at").neq("status", "void").order("created_at", { ascending: false }),
   ]);
+  const todo = [
+    ...(questionnaires ?? []).filter((q) => q.status === "sent").map((q) => ({ href: `/portal/questionnaire/${q.id}`, title: "Fill in your project questionnaire", detail: "About 10 minutes. I use it to prepare our agreement." })),
+    ...(contracts ?? []).filter((c) => c.status === "sent").map((c) => ({ href: `/portal/contracts/${c.id}`, title: `Review and sign ${c.title}`, detail: `${c.number} is ready for your signature.` })),
+  ];
 
   return (
     <div className="min-h-screen px-6 py-12">
@@ -47,6 +53,25 @@ export default async function PortalHome() {
             <form action={signOutAction}><button type="submit" className="btn-ghost">Sign out</button></form>
           </div>
         </header>
+
+        {todo.length > 0 && (
+          <section className="mt-10">
+            <h2 className="font-mono text-[10px] tracking-wider text-[var(--gold)] uppercase mb-3">To do</h2>
+            <ul className="space-y-3">
+              {todo.map((t) => (
+                <li key={t.href}>
+                  <Link href={t.href} className="flex items-center justify-between gap-4 rounded-xl border border-[rgba(212,160,23,0.4)] bg-[rgba(212,160,23,0.05)] p-5 hover:border-[var(--gold)] transition-colors">
+                    <span>
+                      <span className="block text-[var(--text)] font-medium">{t.title}</span>
+                      <span className="block text-sm text-[var(--text-muted)]">{t.detail}</span>
+                    </span>
+                    <span className="btn-gold shrink-0">Open →</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className="mt-10">
           <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-3">Your requests</h2>
@@ -101,6 +126,23 @@ export default async function PortalHome() {
                     <div className="h-full bg-[var(--gold)]" style={{ width: `${p.progress}%` }} />
                   </div>
                   <p className="mt-1 text-xs text-[var(--text-muted)]">{p.progress}% complete{p.end_date ? ` · target ${date(p.end_date)}` : ""}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {contracts && contracts.some((c) => c.status === "signed") && (
+          <section className="mt-10">
+            <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-3">Agreements</h2>
+            <ul className="divide-y divide-[var(--border)] rounded-xl border border-[var(--border)] bg-[var(--card)]">
+              {contracts.filter((c) => c.status === "signed").map((c) => (
+                <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+                  <Link href={`/portal/contracts/${c.id}`} className="hover:text-[var(--gold)]">
+                    <span className="block text-[var(--text)]">{c.title}</span>
+                    <span className="block text-xs text-[var(--text-muted)]">{c.number}{c.client_signed_at ? ` · signed ${date(c.client_signed_at)}` : ""}</span>
+                  </Link>
+                  <a href={`/api/contracts/${c.id}/pdf`} className="text-xs text-[var(--gold)] hover:underline">PDF</a>
                 </li>
               ))}
             </ul>

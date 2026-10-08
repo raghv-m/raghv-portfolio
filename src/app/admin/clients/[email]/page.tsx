@@ -6,6 +6,7 @@ import { AdminPage, Empty, Panel, StatusPill, money, when } from "@/components/a
 import { getPerson } from "@/lib/clients";
 
 import { InviteButton } from "./InviteButton";
+import { OnboardingButtons } from "./OnboardingButtons";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +75,38 @@ export default async function PersonPage({ params }: { params: Promise<{ email: 
             </ul>
           ) : <Empty>{person.profile ? "No invoices yet." : "No account yet. Creating an invoice creates one."}</Empty>}
         </Panel>
+
+        {person.profile && person.profile.role === "client" && (
+          <Panel title="Onboarding" className="lg:col-span-2">
+            <OnboardingButtons clientId={person.profile.id} questionnaireSubmitted={person.questionnaires.some((q) => q.status === "submitted")} />
+            {person.contracts.length > 0 && (
+              <ul className="mt-5 divide-y divide-[var(--border)] border-t border-[var(--border)]">
+                {person.contracts.map((c) => (
+                  <li key={c.id}>
+                    <Link href={`/admin/contracts/${c.id}`} className="flex justify-between gap-3 py-3 hover:text-[var(--gold)]">
+                      <span><span className="block text-sm">{c.number}</span><span className="block text-xs text-[var(--text-muted)]">{c.title}</span></span>
+                      <StatusPill status={c.status === "sent" ? "awaiting signature" : c.status} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {person.questionnaires.filter((q) => q.status === "submitted").slice(0, 1).map((q) => (
+              <details key={q.id} className="mt-5 border-t border-[var(--border)] pt-4" open>
+                <summary className="cursor-pointer font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase">Questionnaire answers{q.submitted_at ? ` · ${when(q.submitted_at)}` : ""}</summary>
+                <dl className="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                  {Object.entries(q.answers).filter(([k]) => k !== "consentElectronic").map(([k, value]) => (
+                    <div key={k}>
+                      <dt className="font-mono text-[9px] tracking-wider text-[var(--text-muted)] uppercase">{k.replace(/([A-Z])/g, " $1")}</dt>
+                      <dd className="text-[var(--text)] whitespace-pre-wrap">{String(value || "–")}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </details>
+            ))}
+            {person.questionnaires.some((q) => q.status === "sent") && <p className="mt-4 text-xs text-[var(--text-muted)]">Questionnaire sent, waiting for their answers.</p>}
+          </Panel>
+        )}
 
         <Panel title={`Messages (${person.messages.length})`} className="lg:col-span-2">
           {person.messages.length ? (

@@ -77,6 +77,11 @@ await db.exec(`
   insert into public.estimates (name,email,category_slug,pages,one_time_cents,one_time_low_cents,one_time_high_cents) values
     ('A','A@x','business-website',5,250000,225000,300000),('Stranger','z@x','portfolio',3,150000,135000,180000);
   update public.pricing_items set active = false where slug = 'paypal';
+  insert into public.questionnaires (client_id, tenant_id) values ('${CA}','${T_A}'),('${CB}','${T_B}');
+  insert into public.contracts (id, client_id, tenant_id, status, body) values
+    ('40000000-0000-0000-0000-000000000001','${CA}','${T_A}','sent','A terms'),
+    ('40000000-0000-0000-0000-000000000002','${CA}','${T_A}','draft','A draft'),
+    ('40000000-0000-0000-0000-000000000003','${CB}','${T_B}','sent','B terms');
   insert into storage.objects (bucket_id,name) values
     ('project-files','${PA}/spec.pdf'),('project-files','${PB}/b.pdf'),('project-files','not-a-uuid/x.pdf');
 `);
@@ -132,6 +137,10 @@ await as("anon", null, async () => {
 
 await as("authenticated", CA, async () => {
   ok("client reads only estimates sent from their own email (case-insensitive)", (await count(`select * from public.estimates`)) === 1);
+  ok("client reads only their own questionnaire", (await count(`select * from public.questionnaires`)) === 1);
+  ok("client reads their sent contract, not drafts or others'", (await count(`select * from public.contracts`)) === 1);
+  ok("client can't sign by writing to contracts directly", (await affected(`update public.contracts set status='signed', client_signature_name='x'`)) === 0);
+  ok("client can't submit questionnaire answers directly", (await affected(`update public.questionnaires set status='submitted'`)) === 0);
   ok("client sees own profile only", (await count(`select * from public.profiles`)) === 1);
   ok("client sees only own tenant's projects", (await count(`select * from public.projects`)) === 1);
   ok("client sees own milestones only", (await count(`select * from public.milestones`)) === 1);
@@ -160,6 +169,7 @@ await as("authenticated", CA, async () => {
 
 await as("authenticated", ADMIN, async () => {
   ok("admin reads all estimates", (await count(`select * from public.estimates`)) === 2);
+  ok("admin reads all contracts incl. drafts", (await count(`select * from public.contracts`)) === 3);
   ok("admin reads inactive prices too", (await count(`select * from public.pricing_items where slug = 'paypal'`)) === 1);
   ok("admin reads all profiles (no policy recursion)", (await count(`select * from public.profiles`)) === 3);
   ok("admin reads all projects", (await count(`select * from public.projects`)) === 2);
@@ -171,6 +181,11 @@ await as("authenticated", ADMIN, async () => {
 });
 
 await as("service_role", null, async () => {
+  ok("contract numbers come from the sequence", (await db.query(`select number from public.contracts`)).rows.every((r) => /^CON-\d{4}-\d{4}$/.test(r.number)));
+  await db.query(`update public.contracts set status='signed', client_signature_name='Alice', client_signed_at=now() where id='40000000-0000-0000-0000-000000000001'`);
+  ok("a signed contract's text can't be changed, even by the server", await fails(`update public.contracts set body='changed' where id='40000000-0000-0000-0000-000000000001'`));
+  ok("a signed contract can't be un-signed", await fails(`update public.contracts set status='sent' where id='40000000-0000-0000-0000-000000000001'`));
+  ok("a signed contract can be voided (record kept)", (await affected(`update public.contracts set status='void' where id='40000000-0000-0000-0000-000000000001'`)) === 1);
   ok("service role can append audit logs", (await affected(`insert into public.audit_logs (action,resource_type) values ('x','y')`)) === 1);
   ok("audit logs reject updates even for service role", await fails(`update public.audit_logs set action='z'`));
   ok("audit logs reject deletes even for service role", await fails(`delete from public.audit_logs`));

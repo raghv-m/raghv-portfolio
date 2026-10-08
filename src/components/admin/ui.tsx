@@ -49,6 +49,9 @@ const PILL: Record<string, string> = {
   overdue: "text-[var(--red)] border-[rgba(255,68,68,0.35)] bg-[rgba(255,68,68,0.08)]",
   cancelled: "text-[var(--text-muted)] border-[var(--border)] line-through",
   admin: "text-[var(--gold)] border-[rgba(212,160,23,0.35)]",
+  "awaiting signature": "text-[var(--gold)] border-[rgba(212,160,23,0.35)] bg-[rgba(212,160,23,0.08)]",
+  signed: "text-[var(--green)] border-[rgba(34,197,94,0.35)] bg-[rgba(34,197,94,0.08)]",
+  void: "text-[var(--text-muted)] border-[var(--border)] line-through",
   client: "text-[var(--green)] border-[rgba(34,197,94,0.35)]",
   lead: "text-[var(--text-muted)] border-[var(--border)]",
 };

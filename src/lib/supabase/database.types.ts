@@ -139,8 +139,18 @@ export type EmailSendRow = {
   post_id: string | null;
   invoice_id: string | null;
   estimate_id: string | null;
+  contract_id: string | null;
   recipient_email: string;
-  type: "newsletter" | "newsletter_confirm" | "contact_reply" | "invoice_sent" | "admin_alert" | "estimate_sent";
+  type:
+    | "newsletter"
+    | "newsletter_confirm"
+    | "contact_reply"
+    | "invoice_sent"
+    | "admin_alert"
+    | "estimate_sent"
+    | "questionnaire_sent"
+    | "contract_sent"
+    | "contract_signed";
   status: "sent" | "failed";
   error_message: string | null;
   sent_at: Timestamp;
@@ -220,6 +230,45 @@ export type PricingItemRow = {
   updated_at: Timestamp;
 };
 
+export type QuestionnaireRow = {
+  id: string;
+  client_id: string;
+  tenant_id: string;
+  estimate_id: string | null;
+  status: "sent" | "submitted";
+  answers: Record<string, unknown>;
+  sent_at: Timestamp;
+  submitted_at: Timestamp | null;
+  created_at: Timestamp;
+};
+
+export type ContractStatus = "draft" | "sent" | "signed" | "void";
+
+export type ContractRow = {
+  id: string;
+  number: string;
+  client_id: string;
+  tenant_id: string;
+  estimate_id: string | null;
+  questionnaire_id: string | null;
+  title: string;
+  status: ContractStatus;
+  variables: Record<string, unknown>;
+  body: string;
+  body_sha256: string | null;
+  sent_at: Timestamp | null;
+  provider_signature_name: string | null;
+  provider_signed_at: Timestamp | null;
+  client_signature_name: string | null;
+  client_signature_title: string | null;
+  client_signed_at: Timestamp | null;
+  client_ip_hash: string | null;
+  client_user_agent: string | null;
+  pdf_path: string | null;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export type EstimateStatus = "new" | "reviewed" | "quoted" | "converted" | "declined";
 
 export type EstimateRow = {
@@ -285,6 +334,8 @@ export type Database = {
       audit_logs: Table<AuditLogRow, "action" | "resource_type">;
       mfa_secrets: Table<MfaSecretRow, "user_id" | "secret_encrypted">;
       pricing_items: Table<PricingItemRow, "section" | "slug" | "label">;
+      questionnaires: Table<QuestionnaireRow, "client_id" | "tenant_id">;
+      contracts: Table<ContractRow, "client_id" | "tenant_id">;
       estimates: Table<
         EstimateRow,
         "name" | "email" | "category_slug" | "pages" | "one_time_cents" | "one_time_low_cents" | "one_time_high_cents"

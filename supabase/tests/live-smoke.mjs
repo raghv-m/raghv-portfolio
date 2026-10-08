@@ -68,6 +68,27 @@ try {
   ok("client can't make themselves admin", Boolean(promote.error));
 
   await admin.storage.from("invoices").remove([`${invoice.id}.pdf`]);
+
+  // Contracts: drafts hidden, sent visible to the owner only, signed text locked, PDFs private.
+  const { data: contract } = await admin.from("contracts").insert({ client_id: a.id, tenant_id: a.tenantId, body: "terms v1" }).select().single();
+  ok("contract number assigned", /^CON-\d{4}-\d{4}$/.test(contract.number), contract.number);
+  ok("client can't see a draft contract", (await a.client.from("contracts").select("id")).data?.length === 0);
+  await admin.from("contracts").update({ status: "sent", body_sha256: "x" }).eq("id", contract.id);
+  ok("client sees their sent contract", (await a.client.from("contracts").select("id")).data?.length === 1);
+  ok("other clients don't", (await b.client.from("contracts").select("id")).data?.length === 0);
+  const forged = await a.client.from("contracts").update({ status: "signed", client_signature_name: "forged" }).eq("id", contract.id).select("id");
+  ok("client can't sign by writing to the table", (forged.data?.length ?? 0) === 0);
+  await admin.from("contracts").update({ status: "signed", client_signature_name: "A", client_signed_at: new Date().toISOString() }).eq("id", contract.id);
+  const edit = await admin.from("contracts").update({ body: "terms v2" }).eq("id", contract.id);
+  ok("signed contract text is locked even for the server", Boolean(edit.error));
+  const up = await admin.storage.from("contracts").upload(`${contract.id}.pdf`, Buffer.from("%PDF-1.4 c"), { contentType: "application/pdf", upsert: true });
+  ok("contract PDF stored", !up.error, up.error?.message ?? "");
+  ok("clients can't read the contracts bucket directly", Boolean((await a.client.storage.from("contracts").download(`${contract.id}.pdf`)).error));
+  await admin.storage.from("contracts").remove([`${contract.id}.pdf`]);
+  const { data: q } = await admin.from("questionnaires").insert({ client_id: a.id, tenant_id: a.tenantId }).select().single();
+  ok("client sees their questionnaire", (await a.client.from("questionnaires").select("id")).data?.length === 1);
+  ok("other clients don't", (await b.client.from("questionnaires").select("id")).data?.length === 0);
+  ok("client can't submit by writing to the table", ((await a.client.from("questionnaires").update({ status: "submitted" }).eq("id", q.id).select("id")).data?.length ?? 0) === 0);
 } catch (error) {
   ok("smoke run completed", false, error.message);
 } finally {

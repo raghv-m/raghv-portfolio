@@ -1,10 +1,16 @@
 /**
- * What appears on invoices as "from". Edit here, not in the PDF code.
- * TODO(owner): if you register for GST/HST (required once revenue passes $30k in 4 quarters),
- * add the number here and tax lines to invoices before charging it.
+ * Your business details for invoices and contracts. Edit here, not in the PDF or contract code.
+ *
+ * TODO(owner):
+ *  - If you register a trade name (Alberta Corporate Registry) or incorporate, put it in legalName.
+ *  - Add a mailing address: Canadian invoices and contracts should show one (a PO box is fine).
+ *  - If you register for GST/HST (mandatory once revenue passes $30,000 in four consecutive
+ *    quarters), set gstNumber; invoices then need tax lines before you charge it.
  */
 export const invoicing = {
   businessName: "Raghav Mahajan",
+  /** The legal party on contracts and invoices. A sole proprietor contracts in their own name. */
+  legalName: "Raghav Mahajan (sole proprietor)",
   tagline: "Software & Security",
   addressLines: ["Edmonton, Alberta", "Canada"],
   email: "raaghvv0508@gmail.com",
@@ -13,4 +19,28 @@ export const invoicing = {
   defaultCurrency: "cad",
   /** Shown under the totals. */
   paymentInstructions: "Payment by Interac e-Transfer to the email above. Please include the invoice number.",
+  /** Ways clients can pay; offered in the questionnaire and written into contracts. */
+  paymentMethods: ["Interac e-Transfer", "Bank transfer (EFT)", "Credit card (via secure payment link)", "Cheque"],
+  /** Days to pay after an invoice is issued. */
+  paymentTermsDays: 14,
+  /** Monthly interest on overdue balances. The Interest Act (s. 4) requires the yearly rate too. */
+  lateInterestMonthlyPct: 1.5,
+  lateInterestAnnualPct: 19.56,
+  /** Deposit taken before work starts, as a % of the project fee (written into contracts). */
+  depositPct: 40,
+  jurisdiction: "Alberta",
 } as const;
+
+/** The legal lines printed at the bottom of every invoice. */
+export function invoiceLegalLines(): string[] {
+  const gst = invoicing.gstNumber
+    ? `GST/HST registration no. ${invoicing.gstNumber}.`
+    : "GST/HST not charged: the supplier is a small supplier not registered for GST/HST (Excise Tax Act, s. 148).";
+  return [
+    `Payment terms: net ${invoicing.paymentTermsDays} days from the invoice date, in the currency shown.`,
+    `Overdue balances bear interest at ${invoicing.lateInterestMonthlyPct}% per month (${invoicing.lateInterestAnnualPct}% per year), calculated monthly, from the due date until paid.`,
+    gst,
+    `Issued under the services agreement between the parties (if any) and the terms at ${invoicing.website}/terms. Governed by the laws of ${invoicing.jurisdiction} and the federal laws of Canada applicable there.`,
+    `Questions about this invoice: ${invoicing.email}. Thank you for your business.`,
+  ];
+}

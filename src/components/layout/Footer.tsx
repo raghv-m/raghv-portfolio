@@ -25,6 +25,7 @@ const LINKS = [
     { label: "Certifications", href: "/certifications" },
     { label: "Career", href: "/career" },
     { label: "Blog", href: "/blog" },
+    { label: "Daily security news", href: "/news" },
   ],
   [
     { label: "Get an estimate", href: "/estimate" },

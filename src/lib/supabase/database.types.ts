@@ -291,6 +291,17 @@ export type ContractRow = {
   updated_at: Timestamp;
 };
 
+export type NewsItem = { title: string; url: string; source: string; summary?: string; publishedAt?: string };
+
+export type NewsDigestRow = {
+  id: string;
+  digest_date: string;
+  items: NewsItem[];
+  linkedin_url: string | null;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export type EstimateStatus = "new" | "reviewed" | "quoted" | "converted" | "declined";
 
 export type EstimateRow = {
@@ -360,6 +371,7 @@ export type Database = {
       contracts: Table<ContractRow, "client_id" | "tenant_id">;
       crm_notes: Table<CrmNoteRow, "person_email" | "body">;
       crm_tasks: Table<CrmTaskRow, "title">;
+      news_digests: Table<NewsDigestRow, "digest_date" | "items">;
       estimates: Table<
         EstimateRow,
         "name" | "email" | "category_slug" | "pages" | "one_time_cents" | "one_time_low_cents" | "one_time_high_cents"

@@ -14,10 +14,11 @@ export const revalidate = 3600;
 const PAGES: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; updated: string }[] = [
   { path: "", priority: 1.0, changeFrequency: "weekly", updated: "2026-10-08" },
   { path: "/estimate", priority: 0.9, changeFrequency: "monthly", updated: "2026-10-08" },
-  { path: "/projects", priority: 0.8, changeFrequency: "monthly", updated: "2026-10-08" },
+  { path: "/projects", priority: 0.8, changeFrequency: "monthly", updated: "2026-10-09" },
   { path: "/about", priority: 0.8, changeFrequency: "monthly", updated: "2026-10-08" },
   { path: "/contact", priority: 0.7, changeFrequency: "yearly", updated: "2026-10-08" },
   { path: "/blog", priority: 0.7, changeFrequency: "weekly", updated: "2026-10-08" },
+  { path: "/news", priority: 0.6, changeFrequency: "daily", updated: "2026-10-09" },
   { path: "/cybersecurity", priority: 0.6, changeFrequency: "monthly", updated: "2026-10-08" },
   { path: "/homelab", priority: 0.6, changeFrequency: "monthly", updated: "2026-10-08" },
   { path: "/experience", priority: 0.6, changeFrequency: "monthly", updated: "2026-10-08" },

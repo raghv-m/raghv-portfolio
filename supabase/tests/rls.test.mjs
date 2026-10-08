@@ -131,6 +131,7 @@ await as("anon", null, async () => {
   ok("anon can't submit estimates directly (server route only)", await fails(`insert into public.estimates (name,email,category_slug,pages,one_time_cents,one_time_low_cents,one_time_high_cents) values ('x','x@x','portfolio',1,1,1,1)`));
   ok("anon can't read estimates", (await count(`select * from public.estimates`)) === 0);
   ok("anon can't read CRM notes", (await count(`select * from public.crm_notes`)) === 0);
+  ok("anon can't write news digests directly", await fails(`insert into public.news_digests (digest_date, items) values ('2026-10-09', '[]')`));
   ok("anon sees only published posts", (await count(`select * from public.blog_posts`)) === 1);
   ok("anon sees no profiles", (await count(`select * from public.profiles`)) === 0);
   ok("anon cannot self-insert a confirmed subscriber", await fails(`insert into public.subscribers (email, confirmed) values ('evil@x', true)`));

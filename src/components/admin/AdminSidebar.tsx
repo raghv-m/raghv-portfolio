@@ -1,15 +1,24 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOutAction } from "@/app/auth/actions";
 import {
-  FileText, Mail, Users, ExternalLink, LogOut, PenSquare, LayoutDashboard,
+  FileText, Mail, Users, ExternalLink, LogOut, PenSquare, LayoutDashboard, Calculator, Contact, Receipt, Tags, Gauge, FileSignature, Kanban, FolderKanban, ListChecks,
 } from "lucide-react";
 
 const NAV = [
+  { href: "/admin", icon: Gauge, label: "Overview", exact: true },
+  { href: "/admin/pipeline", icon: Kanban, label: "Pipeline" },
+  { href: "/admin/tasks", icon: ListChecks, label: "Tasks" },
+  { href: "/admin/estimates", icon: Calculator, label: "Estimates" },
+  { href: "/admin/clients", icon: Contact, label: "Clients & leads" },
+  { href: "/admin/contracts", icon: FileSignature, label: "Contracts" },
+  { href: "/admin/projects", icon: FolderKanban, label: "Projects" },
+  { href: "/admin/invoices", icon: Receipt, label: "Invoices" },
+  { href: "/admin/pricing", icon: Tags, label: "Pricing" },
+  { href: "/admin/messages", icon: Mail, label: "Messages" },
   { href: "/admin/posts", icon: FileText, label: "Posts" },
   { href: "/admin/posts/new", icon: PenSquare, label: "New Post" },
-  { href: "/admin/messages", icon: Mail, label: "Messages" },
   { href: "/admin/newsletter", icon: Users, label: "Newsletter" },
 ];
 
@@ -17,12 +26,12 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
-    href === "/admin/posts/new"
+    href === "/admin" || href === "/admin/posts/new"
       ? pathname === href
-      : pathname.startsWith(href) && href !== "/admin/posts/new";
+      : pathname.startsWith(href) && !(href === "/admin/posts" && pathname === "/admin/posts/new");
 
   return (
-    <aside className="fixed top-14 left-0 bottom-0 w-52 flex flex-col bg-[var(--card)] border-r border-[var(--border)] z-30">
+    <aside className="fixed top-0 left-0 bottom-0 w-52 flex flex-col bg-[var(--card)] border-r border-[var(--border)] z-30">
       {/* Brand */}
       <div className="px-4 py-4 border-b border-[var(--border)]">
         <div className="flex items-center gap-2">
@@ -60,7 +69,7 @@ export default function AdminSidebar() {
           View Site
         </Link>
         <button
-          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          onClick={() => signOutAction()}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-mono text-[var(--text-muted)] hover:text-red-400 hover:bg-[rgba(255,68,68,0.06)] transition-colors"
         >
           <LogOut className="w-3.5 h-3.5 shrink-0" />

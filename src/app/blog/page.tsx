@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { isDatabaseConfigured, prisma } from "@/lib/prisma";
 import BlogContent from "@/components/blog/BlogContent";
 
 export const revalidate = 60;
 
 export default async function BlogPage() {
-  const posts = await prisma.post.findMany({
+  const posts = !isDatabaseConfigured ? [] : await prisma.post.findMany({
     where: { published: true },
     orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
     select: {

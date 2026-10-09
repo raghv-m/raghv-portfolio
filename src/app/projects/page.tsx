@@ -1,16 +1,8 @@
 "use client";
+import { SmokeBackground, SparklesCore } from "@/components/effects/deferred";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Shield, Code2, Server, Brain } from "lucide-react";
-import dynamic from "next/dynamic";
-const SparklesCore = dynamic(
-  () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
-  { ssr: false }
-);
-const SmokeBackground = dynamic(
-  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
-  { ssr: false }
-);
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
@@ -20,7 +12,43 @@ const GithubIcon = () => (
 
 type Category = "All" | "Security" | "Development" | "Infrastructure";
 
-const PROJECTS = [
+const PROJECTS: {
+  id: number;
+  featured?: boolean;
+  title: string;
+  subtitle: string;
+  category: Category;
+  status: string;
+  statusColor: string;
+  stack: string[];
+  color: string;
+  description: string;
+  impact: string[];
+  github?: string;
+  live?: string;
+  icon: typeof Shield;
+}[] = [
+  {
+    id: 0,
+    featured: true,
+    title: "Vic Cameleers",
+    subtitle: "Removalist Website & Operations Platform (client work)",
+    category: "Development" as Category,
+    status: "LIVE",
+    statusColor: "var(--green)",
+    stack: ["Next.js 16", "TypeScript", "PostgreSQL (Neon)", "Prisma", "Better Auth", "Resend", "Vercel"],
+    color: "var(--gold)",
+    description: "A complete website and back office for a Melbourne removalist, built end to end. Customers get an instant moving estimate from a priced quote engine; the business gets an admin console for leads, bookings, crew, trucks, invoicing-ready jobs and automated emails. Suburb-by-suburb local SEO pages, structured data and a fast mobile-first build bring in the leads; role-based staff access with mandatory two-factor login keeps the data safe.",
+    impact: [
+      "Instant quote estimator with a configurable pricing engine",
+      "Admin CRM: leads, bookings, calendar, crew and truck scheduling, audit log",
+      "Staff roles (RBAC) with mandatory 2FA and an obscured admin path",
+      "Automated emails: quotes, booking confirmations, 7-day and 24-hour reminders, review requests",
+      "Local SEO: suburb landing pages, JSON-LD, sitemap, Google Search Console",
+    ],
+    live: "https://viccameleers.com",
+    icon: Code2,
+  },
   {
     id: 1,
     featured: true,
@@ -239,10 +267,18 @@ function ProjectCard({ project, index }: { project: typeof PROJECTS[0]; index: n
         </div>
 
         <div className="flex items-center gap-3 pt-3 border-t border-[var(--border)]">
-          <a href={project.github} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors font-mono text-[9px]">
-            <GithubIcon /> GitHub
-          </a>
+          {project.live && (
+            <a href={project.live} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[var(--gold)] hover:underline transition-colors font-mono text-[9px]">
+              ↗ Live site
+            </a>
+          )}
+          {project.github && (
+            <a href={project.github} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors font-mono text-[9px]">
+              <GithubIcon /> GitHub
+            </a>
+          )}
           <div className="flex-1" />
           <span className="font-mono text-[9px] text-[#333]"># {String(project.id).padStart(2, "0")}</span>
         </div>

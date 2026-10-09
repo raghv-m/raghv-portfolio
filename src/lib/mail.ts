@@ -21,6 +21,10 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
+// Only allow https:// links in admin-composed HTML — blocks javascript:/data: URI injection.
+const safeHref = (url: string | undefined | null) =>
+  url && /^https:\/\//i.test(url.trim()) ? esc(url.trim()) : undefined;
+
 const FROM = process.env.SMTP_FROM || "Raghav Mahajan <onboarding@resend.dev>";
 const TO = process.env.CONTACT_RECEIVER_EMAIL || "raaghvv0508@gmail.com";
 
@@ -96,9 +100,80 @@ function base(content: string, preview = "") {
 }
 
 // ─── Generic send ──────────────────────────────────────────────────────────
-export async function sendMail({ to, subject, html }: { to: string; subject: string; html: string }) {
+export async function sendMail({
+  to,
+  subject,
+  html,
+  attachments,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+  attachments?: { filename: string; content: Buffer; contentType: string }[];
+}) {
   const transport = getTransport();
-  await transport.sendMail({ from: FROM, to, subject, html });
+  await transport.sendMail({ from: FROM, to, subject, html, attachments });
+}
+
+// ─── Batched send ──────────────────────────────────────────────────────────
+// Sends in fixed-size concurrent chunks instead of one email at a time, so a
+// large subscriber list doesn't serialize into a single long-running request
+// that risks hitting the platform's function timeout.
+export async function sendMailBatch(
+  items: { to: string; subject: string; html: string }[],
+  concurrency = 10
+): Promise<{ sent: number; errors: { to: string; error: string }[] }> {
+  let sent = 0;
+  const errors: { to: string; error: string }[] = [];
+
+  for (let i = 0; i < items.length; i += concurrency) {
+    const chunk = items.slice(i, i + concurrency);
+    const results = await Promise.allSettled(chunk.map((item) => sendMail(item)));
+    results.forEach((result, idx) => {
+      if (result.status === "fulfilled") {
+        sent++;
+      } else {
+        errors.push({ to: chunk[idx].to, error: String(result.reason) });
+      }
+    });
+  }
+
+  return { sent, errors };
+}
+
+// ─── New-post subscriber notification ─────────────────────────────────────
+export async function notifySubscribersAboutPost(post: { title: string; slug: string; excerpt: string }) {
+  const { prisma } = await import("@/lib/prisma");
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
+  const subscribers = await prisma.subscriber.findMany({
+    where: { active: true },
+    select: { email: true, unsubscribeToken: true },
+  });
+  if (subscribers.length === 0) return;
+
+  const title = esc(post.title);
+  const excerpt = esc(post.excerpt);
+
+  const items = subscribers.map((sub) => {
+    const unsubLink = `${baseUrl}/unsubscribe?token=${sub.unsubscribeToken}`;
+    const html = `
+      <div style="font-family:sans-serif;max-width:560px;margin:auto;background:#0a0a0a;color:#e8e8e8;border-radius:12px;border:1px solid #222;overflow:hidden;">
+        <div style="padding:28px;border-bottom:1px solid #222;">
+          <p style="margin:0 0 6px;font-family:monospace;font-size:10px;color:#d4a017;letter-spacing:.15em;text-transform:uppercase;">New Post</p>
+          <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;">${title}</h1>
+          <p style="margin:0 0 20px;font-size:14px;color:#888;line-height:1.7;">${excerpt}</p>
+          <a href="${baseUrl}/blog/${post.slug}" style="display:inline-block;padding:10px 22px;border:1px solid #d4a017;border-radius:4px;font-size:12px;color:#d4a017;text-decoration:none;letter-spacing:.08em;text-transform:uppercase;">Read Post →</a>
+        </div>
+        <div style="padding:16px 28px;background:#0a0a0a;">
+          <p style="margin:0;font-size:11px;color:#444;">You&apos;re subscribed to Raghav&apos;s Cyber Daily. <a href="${unsubLink}" style="color:#555;">Unsubscribe</a></p>
+        </div>
+      </div>
+    `;
+    return { to: sub.email, subject: `New Post: ${post.title}`, html };
+  });
+
+  const { errors } = await sendMailBatch(items);
+  errors.forEach((e) => console.error(`[notify-subscribers] failed for ${e.to}:`, e.error));
 }
 
 // ─── Contact notification (to Raghav) ─────────────────────────────────────
@@ -159,6 +234,197 @@ export async function sendAutoReply(to: string, name: string) {
   await sendMail({ to, subject: "Message received — Raghav Mahajan", html });
 }
 
+// ─── Invoice (to client, PDF attached) ─────────────────────────────────────
+export async function sendInvoiceEmail({
+  to,
+  clientName,
+  invoiceNumber,
+  amount,
+  dueDate,
+  pdf,
+}: {
+  to: string;
+  clientName: string;
+  invoiceNumber: string;
+  amount: string;
+  dueDate: string;
+  pdf: Buffer;
+}) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
+  const due = new Intl.DateTimeFormat("en-CA", { dateStyle: "long", timeZone: "America/Edmonton" }).format(new Date(dueDate));
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Invoice ${esc(invoiceNumber)}</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Hi ${esc(clientName)},</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Your invoice is attached as a PDF.</p>
+
+    <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${GOLD};margin-bottom:28px;">
+      <p style="margin:0 0 6px;font-size:13px;color:${MUTED};">Amount due</p>
+      <p style="margin:0 0 14px;font-size:22px;font-weight:700;color:${TEXT};">${esc(amount)}</p>
+      <p style="margin:0;font-size:13px;color:${MUTED};">Due by <span style="color:${TEXT};">${esc(due)}</span></p>
+    </div>
+
+    <a href="${baseUrl}/portal/invoices" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">View in client portal</a>
+
+    <p style="margin:28px 0 0;font-size:12px;color:#555;">Questions about this invoice? Just reply to this email.</p>
+  `, `Invoice ${invoiceNumber}: ${amount}`);
+
+  await sendMail({
+    to,
+    subject: `Invoice ${invoiceNumber} from Raghav Mahajan`,
+    html,
+    attachments: [{ filename: `${invoiceNumber}.pdf`, content: pdf, contentType: "application/pdf" }],
+  });
+}
+
+// ─── Project estimate (to client) ──────────────────────────────────────────
+type EstimateEmailResult = {
+  lines: { label: string; detail?: string; oneTimeCents: number; monthlyCents: number }[];
+  oneTimeLowCents: number;
+  oneTimeHighCents: number;
+  monthlyCents: number;
+  myLowCents: number;
+  myHighCents: number;
+};
+
+const dollars = (cents: number) =>
+  new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", currencyDisplay: "narrowSymbol", maximumFractionDigits: 0 }).format(cents / 100);
+
+function estimateRows(result: EstimateEmailResult) {
+  return result.lines
+    .map(
+      (line) => `
+        <tr>
+          <td style="padding:8px 0;border-bottom:1px solid ${BORDER};font-size:13px;color:${TEXT};">${esc(line.label)}${line.detail ? `<br/><span style="font-size:11px;color:${MUTED};">${esc(line.detail)}</span>` : ""}</td>
+          <td style="padding:8px 0;border-bottom:1px solid ${BORDER};font-size:13px;color:${TEXT};text-align:right;white-space:nowrap;">${line.oneTimeCents ? dollars(line.oneTimeCents) : ""}${line.monthlyCents ? `${line.oneTimeCents ? "<br/>" : ""}<span style="color:${MUTED};">${dollars(line.monthlyCents)}/mo</span>` : ""}</td>
+        </tr>`,
+    )
+    .join("");
+}
+
+export async function sendEstimateEmail({
+  to,
+  name,
+  reference,
+  categoryLabel,
+  pages,
+  result,
+  portal,
+}: {
+  to: string;
+  name: string;
+  reference: string;
+  categoryLabel: string;
+  pages: number;
+  result: EstimateEmailResult;
+  portal: { url: string | null; loginUrl: string; newAccount: boolean };
+}) {
+  const portalBlock = portal.url
+    ? `
+    <div style="padding:20px;background:#0d0d0d;border-radius:8px;border:1px solid ${BORDER};margin-bottom:24px;">
+      <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.12em;text-transform:uppercase;">Your client portal</p>
+      <p style="margin:0 0 14px;font-size:13px;color:${MUTED};line-height:1.7;">${portal.newAccount ? "I've set up a portal for you" : "Your portal is ready"} where you can track this request, see progress, message me and view invoices.</p>
+      <p style="margin:0 0 14px;font-size:13px;color:${MUTED};">Sign-in email: <span style="color:${TEXT};">${esc(to)}</span></p>
+      <a href="${portal.url}" style="display:inline-block;padding:11px 22px;background:${GOLD};border-radius:4px;font-size:12px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">Set my password &amp; open portal</a>
+      <p style="margin:12px 0 0;font-size:11px;color:#555;">This button works once, for 24 hours. After that, sign in at <a href="${portal.loginUrl}" style="color:#777;">${esc(portal.loginUrl.replace(/^https?:\/\//, ""))}</a> (use "Forgot?" to get a fresh link any time).</p>
+    </div>`
+    : "";
+
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Project estimate · ${esc(reference)}</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Thanks, ${esc(name)}.</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Here's the estimate for your <span style="color:${TEXT};">${esc(categoryLabel)}</span> (${pages} page${pages === 1 ? "" : "s"}).</p>
+
+    <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${BORDER};margin-bottom:12px;">
+      <p style="margin:0 0 6px;font-size:12px;color:${MUTED};">Typical market quote</p>
+      <p style="margin:0;font-size:18px;color:${MUTED};text-decoration:line-through;">${dollars(result.oneTimeLowCents)} – ${dollars(result.oneTimeHighCents)} CAD</p>
+    </div>
+    <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${GOLD};margin-bottom:16px;">
+      <p style="margin:0 0 6px;font-size:13px;color:${GOLD};">My price</p>
+      <p style="margin:0;font-size:26px;font-weight:700;color:${TEXT};">${dollars(result.myLowCents)} – ${dollars(result.myHighCents)} <span style="font-size:12px;color:${MUTED};">CAD</span></p>
+      ${result.monthlyCents ? `<p style="margin:10px 0 0;font-size:13px;color:${MUTED};">Ongoing: <span style="color:${TEXT};">${dollars(result.monthlyCents)}/month</span></p>` : ""}
+    </div>
+    <p style="margin:0 0 24px;font-size:13px;color:${MUTED};line-height:1.8;">The market figure is what an agency or a team of specialists would typically quote for this. I'm one person handling design, development, security and launch myself, with no agency overhead, so I'll build it for less than half that, and quickly. I'll review your details and reply within 1–2 business days with a firm quote.</p>
+
+    ${portalBlock}
+
+    <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;color:${MUTED};letter-spacing:0.1em;text-transform:uppercase;">What the market estimate covers</p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">${estimateRows(result)}</table>
+
+    <p style="margin:0 0 20px;font-size:12px;color:${MUTED};line-height:1.7;">This is an estimate, not a quote. The final price depends on content, design detail and anything we learn while scoping. Taxes not included.</p>
+    <p style="margin:0;font-size:13px;color:${MUTED};">Questions? Just reply to this email.</p>
+  `, `Your project estimate ${reference}: ${dollars(result.myLowCents)} – ${dollars(result.myHighCents)}`);
+
+  await sendMail({ to, subject: `Your project estimate (${reference})`, html });
+}
+
+// ─── Project estimate (heads-up to Raghav) ─────────────────────────────────
+export async function sendEstimateNotification({
+  reference,
+  id,
+  name,
+  email,
+  company,
+  categoryLabel,
+  result,
+}: {
+  reference: string;
+  id: string;
+  name: string;
+  email: string;
+  company?: string;
+  categoryLabel: string;
+  result: EstimateEmailResult;
+}) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">New estimate · ${esc(reference)}</p>
+    <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:${TEXT};">${esc(name)}${company ? ` · ${esc(company)}` : ""}</h1>
+    <p style="margin:0 0 16px;font-size:14px;color:${MUTED};">${esc(email)} · ${esc(categoryLabel)}<br/>Your price shown: <span style="color:${TEXT};">${dollars(result.myLowCents)} – ${dollars(result.myHighCents)}</span> (market ${dollars(result.oneTimeLowCents)} – ${dollars(result.oneTimeHighCents)})${result.monthlyCents ? ` + ${dollars(result.monthlyCents)}/mo` : ""}<br/>A portal account was set up for them automatically.</p>
+    <a href="${baseUrl}/admin/estimates/${id}" style="display:inline-block;padding:11px 24px;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">Open in admin</a>
+  `, `New estimate from ${name}`);
+
+  await sendMail({ to: TO, subject: `[raghv.dev] New estimate ${reference} from ${name}`, html });
+}
+
+// ─── Onboarding questionnaire (to client) ───────────────────────────────────
+export async function sendQuestionnaireEmail({ to, name, url }: { to: string; name: string; url: string }) {
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Next step · Onboarding</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Let's get your project started, ${esc(name)}</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Please fill in a short questionnaire about your business and the project. It takes about 10 minutes, and I use your answers to prepare our agreement, so the details (business name, address, payment preferences) need to be accurate.</p>
+    <a href="${url}" style="display:inline-block;padding:12px 24px;background:${GOLD};border-radius:4px;font-size:12px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">Open the questionnaire</a>
+    <p style="margin:20px 0 0;font-size:12px;color:#555;">You'll be asked to sign in to your client portal first. Forgot your password? Use "Forgot?" on the sign-in page.</p>
+  `, "Your onboarding questionnaire");
+  await sendMail({ to, subject: "Your project questionnaire (about 10 minutes)", html });
+}
+
+// ─── Contract ready to sign (to client) ─────────────────────────────────────
+export async function sendContractToSignEmail({ to, name, number, title, url }: { to: string; name: string; number: string; title: string; url: string }) {
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Agreement ${esc(number)}</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Your agreement is ready to sign</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Hi ${esc(name)}, the <span style="color:${TEXT};">${esc(title)}</span> for your project is ready. Please read it through and sign it in your client portal. I've already signed on my side. Once you sign, you'll both get a PDF copy and I'll send the deposit invoice so we can start.</p>
+    <a href="${url}" style="display:inline-block;padding:12px 24px;background:${GOLD};border-radius:4px;font-size:12px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">Review &amp; sign</a>
+    <p style="margin:20px 0 0;font-size:12px;color:#555;">Questions or changes before signing? Just reply to this email.</p>
+  `, `Agreement ${number} is ready to sign`);
+  await sendMail({ to, subject: `Please review and sign: ${title} (${number})`, html });
+}
+
+// ─── Signed contract copy (to both parties) ─────────────────────────────────
+export async function sendContractSignedEmail({ to, name, number, clientName, pdf, forProvider }: { to: string; name: string; number: string; clientName: string; pdf: Buffer; forProvider: boolean }) {
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Agreement ${esc(number)} · Signed</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${forProvider ? `${esc(clientName)} signed the agreement` : `Thanks, ${esc(name)}. We're official.`}</h1>
+    <p style="margin:0 0 12px;font-size:15px;color:${MUTED};line-height:1.8;">${forProvider ? "The signed agreement is attached. Next: send the deposit invoice from the admin console." : "Your signed copy is attached for your records. I'll send the deposit invoice next, and work starts once it's paid. You can follow progress in your client portal."}</p>
+  `, `Agreement ${number} signed`);
+  await sendMail({
+    to,
+    subject: forProvider ? `[raghv.dev] ${clientName} signed ${number}` : `Your signed agreement (${number})`,
+    html,
+    attachments: [{ filename: `${number}-signed.pdf`, content: pdf, contentType: "application/pdf" }],
+  });
+}
+
 // ─── Newsletter welcome ────────────────────────────────────────────────────
 export async function sendWelcomeEmail(to: string, name: string | null, unsubscribeToken: string) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
@@ -215,29 +481,34 @@ export function buildNewsletterHtml({
   ctaUrl?: string;
   ctaText?: string;
 }) {
-  const sectionHtml = sections.map(s => `
+  const sectionHtml = sections.map(s => {
+    const link = safeHref(s.link);
+    return `
     <tr><td style="padding:20px 0 0;">
-      <p style="margin:0 0 4px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};text-transform:uppercase;letter-spacing:0.12em;">${s.heading}</p>
-      <p style="margin:0;font-size:14px;color:${MUTED};line-height:1.75;">${s.body}</p>
-      ${s.link ? `<a href="${s.link}" style="display:inline-block;margin-top:10px;font-size:12px;color:${GOLD};text-decoration:none;border-bottom:1px solid rgba(212,160,23,0.3);">Read more →</a>` : ""}
+      <p style="margin:0 0 4px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};text-transform:uppercase;letter-spacing:0.12em;">${esc(s.heading)}</p>
+      <p style="margin:0;font-size:14px;color:${MUTED};line-height:1.75;">${esc(s.body)}</p>
+      ${link ? `<a href="${link}" style="display:inline-block;margin-top:10px;font-size:12px;color:${GOLD};text-decoration:none;border-bottom:1px solid rgba(212,160,23,0.3);">Read more →</a>` : ""}
     </td></tr>
     <tr><td style="padding:20px 0 0;"><div style="height:1px;background:${BORDER};"></div></td></tr>
-  `).join("");
+  `;
+  }).join("");
+
+  const cta = safeHref(ctaUrl);
 
   return base(`
     ${issueNumber ? `<p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Issue #${issueNumber}</p>` : ""}
-    <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${title}</h1>
-    <p style="margin:0 0 28px;font-size:15px;color:${MUTED};line-height:1.8;">${intro}</p>
+    <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${esc(title)}</h1>
+    <p style="margin:0 0 28px;font-size:15px;color:${MUTED};line-height:1.8;">${esc(intro)}</p>
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       ${sectionHtml}
     </table>
 
-    ${ctaUrl ? `
+    ${cta ? `
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:28px;">
       <tr>
         <td>
-          <a href="${ctaUrl}" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">${ctaText ?? "Read More"}</a>
+          <a href="${cta}" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">${esc(ctaText ?? "Read More")}</a>
         </td>
       </tr>
     </table>` : ""}

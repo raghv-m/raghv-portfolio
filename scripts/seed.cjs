@@ -205,7 +205,7 @@ const posts = [
 ];
 
 function insert(post) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const payload = {
       requests: [{
         type: "execute",
@@ -243,7 +243,7 @@ function insert(post) {
               console.log("ERR:", post.title, JSON.stringify(r).slice(0, 200));
             }
             resolve();
-          } catch (e) { console.log("PARSE ERR:", d.slice(0, 200)); resolve(); }
+          } catch { console.log("PARSE ERR:", d.slice(0, 200)); resolve(); }
         });
       }
     );

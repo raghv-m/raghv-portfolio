@@ -74,7 +74,7 @@ export default function TerminalAnimation() {
         <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
         <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
         <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-        <span className="font-mono text-[10px] text-[#444] ml-2">
+        <span className="font-mono text-[10px] text-[#8a8a8a] ml-2">
           raghav@WAZUH01 — bash
         </span>
         <div className="ml-auto flex items-center gap-1.5">

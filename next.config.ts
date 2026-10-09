@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
+  // pdfkit reads its built-in font metrics from node_modules at runtime; bundling breaks that.
+  serverExternalPackages: ["pdfkit"],
   turbopack: {
     root: __dirname,
   },

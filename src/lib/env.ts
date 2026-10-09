@@ -1,11 +1,14 @@
 const required = [
+  // Turso (blog, contact, newsletter) until the data moves to Supabase
   "DATABASE_URL",
   "TURSO_AUTH_TOKEN",
-  "NEXTAUTH_SECRET",
-  "NEXTAUTH_URL",
-  "ADMIN_EMAIL",
-  "ADMIN_PASSWORD_HASH",
   "CSRF_SECRET",
+  // Supabase: logins, client portal, invoices
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "SUPABASE_SERVICE_ROLE_KEY",
+  // Encrypts the admin TOTP secret and signs the 2FA cookie
+  "MFA_ENCRYPTION_KEY",
 ] as const;
 
 export function validateEnv() {

@@ -33,7 +33,7 @@ export default function NewsletterClient({ subscribers, total, active }: Props) 
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-12">
+    <div className="min-h-screen pt-8 pb-12">
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         <h1 className="font-display text-2xl font-bold text-[var(--text)] mb-8">Newsletter</h1>
 

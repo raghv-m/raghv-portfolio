@@ -2,7 +2,7 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
 import { createHmac } from "crypto";
 import type { Duration } from "@upstash/ratelimit";
 
-export type Route = "contact" | "subscribe" | "posts" | "admin" | "login";
+export type Route = "contact" | "subscribe" | "posts" | "admin" | "login" | "estimate";
 
 const CONFIGS: Record<Route, { points: number; duration: number; upstashWindow: Duration }> = {
   contact:   { points: 3,   duration: 3600, upstashWindow: "1 h"  },
@@ -10,6 +10,7 @@ const CONFIGS: Record<Route, { points: number; duration: number; upstashWindow: 
   posts:     { points: 100, duration: 60,   upstashWindow: "1 m"  },
   admin:     { points: 20,  duration: 60,   upstashWindow: "1 m"  },
   login:     { points: 5,   duration: 900,  upstashWindow: "15 m" },
+  estimate:  { points: 5,   duration: 3600, upstashWindow: "1 h"  },
 };
 
 // ── In-memory fallback (dev / single-instance deploys) ──────────────────────
@@ -76,7 +77,11 @@ export async function rateLimit(
 
 export function getClientIp(req: Request): string {
   const headers = req instanceof Request ? req.headers : new Headers();
+  // x-vercel-forwarded-for is set by Vercel's edge network from the actual TCP
+  // connection and cannot be spoofed by the client, unlike x-forwarded-for,
+  // which client requests can supply arbitrary values for.
   return (
+    headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ||
     headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     headers.get("x-real-ip") ||
     "unknown"

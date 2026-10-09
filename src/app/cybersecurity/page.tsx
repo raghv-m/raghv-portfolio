@@ -1,13 +1,8 @@
 "use client";
-import dynamic from "next/dynamic";
+import { CyberSphere, SparklesCore } from "@/components/effects/deferred";
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-const SparklesCore = dynamic(
-  () => import("@/components/ui/sparkles").then((m) => m.SparklesCore),
-  { ssr: false }
-);
 
-const CyberSphere = dynamic(() => import("@/components/three/CyberSphere"), { ssr: false });
 import { Shield, Eye, Zap, Lock, ChevronRight } from "lucide-react";
 
 // MITRE ATT&CK techniques simplified — 12 tactics, select techniques per tactic

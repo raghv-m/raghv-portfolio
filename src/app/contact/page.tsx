@@ -1,12 +1,8 @@
 "use client";
+import { SmokeBackground } from "@/components/effects/deferred";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Globe, Lock, CheckCircle, Download } from "lucide-react";
-import dynamic from "next/dynamic";
-const SmokeBackground = dynamic(
-  () => import("@/components/ui/spooky-smoke-animation").then((m) => m.SmokeBackground),
-  { ssr: false }
-);
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">

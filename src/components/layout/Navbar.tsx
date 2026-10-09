@@ -14,7 +14,9 @@ const LINKS = [
 { href: "/homelab", label: "Home Lab" },
 { href: "/projects", label: "Projects" },
 { href: "/blog", label: "Blog" },
+{ href: "/estimate", label: "Estimate" },
 { href: "/contact", label: "Contact" },
+{ href: "/auth/login", label: "Client login" },
 ];
 
 export default function Navbar() {
@@ -103,6 +105,8 @@ export default function Navbar() {
             <button
               className="lg:hidden text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               onClick={() => setOpen(!open)}
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
             >
               {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>

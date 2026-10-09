@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 permissions:
   contents: read
@@ -26,7 +26,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -48,6 +48,12 @@ jobs:
 
       - name: ESLint
         run: npm run lint
+
+      - name: Database access rules (Supabase RLS)
+        run: npm run test:db
+
+      - name: Unit tests (admin TOTP)
+        run: npm run test:unit
 
       # ── Build validation ────────────────────────────────────────
       - name: Generate Prisma client

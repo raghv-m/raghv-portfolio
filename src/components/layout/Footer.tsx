@@ -25,7 +25,21 @@ const LINKS = [
     { label: "Certifications", href: "/certifications" },
     { label: "Career", href: "/career" },
     { label: "Blog", href: "/blog" },
+    { label: "Daily security news", href: "/news" },
   ],
+  [
+    { label: "Get an estimate", href: "/estimate" },
+    { label: "Contact", href: "/contact" },
+    { label: "Client portal", href: "/auth/login" },
+  ],
+];
+
+const LEGAL = [
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+  { label: "Cookies", href: "/cookies" },
+  { label: "Refunds", href: "/refunds" },
+  { label: "Accessibility", href: "/accessibility" },
 ];
 
 export default function Footer() {
@@ -60,11 +74,11 @@ export default function Footer() {
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <a href="https://github.com/HomeLab-Raghav" target="_blank" rel="noopener noreferrer"
+              <a href="https://github.com/HomeLab-Raghav" target="_blank" rel="noopener noreferrer" aria-label="GitHub"
                 className="text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors">
                 <GithubIcon />
               </a>
-              <a href="https://linkedin.com/in/raghav-mahajan-17611b24b" target="_blank" rel="noopener noreferrer"
+              <a href="https://linkedin.com/in/raghav-mahajan-17611b24b" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
                 className="text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors">
                 <LinkedinIcon />
               </a>
@@ -90,12 +104,16 @@ export default function Footer() {
         <div className="divider mb-5" />
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="font-mono text-[10px] text-[#333]">
+          <p className="font-mono text-[10px] text-[#8a8a8a]">
             © {new Date().getFullYear()} Raghav Mahajan · Edmonton, AB · ISC2 CC · Security+ EARNED
           </p>
-          <p className="font-mono text-[10px] text-[#333]">
-            Built with Next.js · Framer Motion · Three.js
-          </p>
+          <nav aria-label="Legal" className="flex flex-wrap gap-x-4 gap-y-1">
+            {LEGAL.map((link) => (
+              <Link key={link.href} href={link.href} className="font-mono text-[10px] text-[#999] hover:text-[var(--gold)] transition-colors">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </div>
     </footer>

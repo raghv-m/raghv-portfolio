@@ -34,7 +34,7 @@ export function MfaEnroll({ next }: { next?: string }) {
       <input type="hidden" name="intent" value="confirm" />
       <p className="text-sm text-[var(--text-muted)]">1. Scan this with your authenticator app.</p>
       {/* eslint-disable-next-line @next/next/no-img-element -- data: URL generated on the server */}
-      <img src={current.qrCodeDataUrl} alt="QR code for your authenticator app" className="mx-auto size-48 rounded-lg bg-white p-2" />
+      <img src={current.qrCodeDataUrl} alt="QR code for your authenticator app" width={192} height={192} className="mx-auto size-48 rounded-lg bg-white p-2" />
       <details className="text-xs text-[var(--text-muted)]">
         <summary className="cursor-pointer">Can&apos;t scan? Enter this key instead</summary>
         <code className="mt-2 block break-all font-mono text-[var(--text)]">{current.manualKey}</code>

@@ -18,6 +18,21 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "avatars.githubusercontent.com" },
     ],
   },
+  // Long-lived caching for files in /public. They aren't fingerprinted like /_next/static
+  // (which Next already serves as immutable for a year), so allow a day and revalidate in the
+  // background for a week: a changed logo still shows up within a day.
+  async headers() {
+    return [
+      {
+        source: "/:file*(svg|png|jpg|jpeg|webp|avif|ico|woff2)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+      },
+      {
+        source: "/resume.pdf",
+        headers: [{ key: "Cache-Control", value: "public, max-age=3600, stale-while-revalidate=86400" }],
+      },
+    ];
+  },
   async redirects() {
     return [{ source: "/projects", destination: "/portfolio", statusCode: 301 }];
   },

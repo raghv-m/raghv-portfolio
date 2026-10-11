@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ServiceNotice } from "@/components/layout/ServiceNotice";
+import { SmartImage } from "@/components/ui/SmartImage";
 import { prisma } from "@/lib/prisma";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Callout } from "@/components/blog/Callout";
@@ -146,10 +147,9 @@ export default async function BlogPostPage({ params }: Props) {
     td: (props: React.HTMLAttributes<HTMLTableCellElement>) => (
       <td className="px-4 py-2.5 text-[var(--text-muted)] border-b border-[var(--border)] last-of-type:border-0" {...props} />
     ),
-    img: ({ src, alt }: { src?: string; alt?: string }) => (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={alt || ""} className="my-6 rounded-xl w-full" style={{ border: "1px solid var(--border)" }} />
-    ),
+    // Images inside a post are below the fold: lazy, in a 16:9 box so nothing jumps while loading.
+    img: ({ src, alt }: { src?: string; alt?: string }) =>
+      src ? <SmartImage src={src} alt={alt || ""} className="my-6 rounded-xl" style={{ border: "1px solid var(--border)" }} /> : null,
   };
 
   return (
@@ -202,9 +202,9 @@ export default async function BlogPostPage({ params }: Props) {
           {/* Article */}
           <article className={headings.length > 0 ? "lg:col-span-3" : "lg:col-span-4"}>
             {/* Cover image */}
+            {/* Usually the largest thing on screen, so it loads first (priority), never lazily. */}
             {post.coverImage && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={post.coverImage} alt={post.title} className="w-full rounded-2xl mb-8 aspect-video object-cover" style={{ border: "1px solid var(--border)" }} />
+              <SmartImage src={post.coverImage} alt={post.title} priority className="rounded-2xl mb-8" style={{ border: "1px solid var(--border)" }} />
             )}
 
             {/* Meta */}

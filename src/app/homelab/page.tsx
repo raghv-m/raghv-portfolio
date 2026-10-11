@@ -247,7 +247,7 @@ export default function HomelabPage() {
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.96) 100%)" }} />
         <div className="max-w-6xl mx-auto px-6 relative z-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-2">
+          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }} className="mb-2">
             <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">HOME LAB</p>
             <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
               HomeLab <span className="gradient-gold">Corp</span>

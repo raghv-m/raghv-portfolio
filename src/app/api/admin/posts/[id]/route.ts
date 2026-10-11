@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
@@ -64,9 +64,13 @@ async function handlePUT(req: NextRequest, { params }: Params) {
   // Notify if just published with notifySubscribers flag
   const justPublished = !existing.published && post.published;
   if (justPublished && post.notifySubscribers) {
-    import("@/lib/mail").then(({ notifySubscribersAboutPost }) =>
-      notifySubscribersAboutPost(post)
-    ).catch((e) => console.error("[notify-subscribers]", e));
+    // after(): runs once the response is sent, and Vercel keeps the function alive until it
+    // finishes. A bare un-awaited promise can be frozen mid-send, so emails silently never go out.
+    after(() =>
+      import("@/lib/mail")
+        .then(({ notifySubscribersAboutPost }) => notifySubscribersAboutPost(post))
+        .catch((e) => console.error("[notify-subscribers]", e)),
+    );
   }
 
   return NextResponse.json(post);

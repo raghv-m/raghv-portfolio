@@ -64,7 +64,7 @@ export async function openTasks(limit = 50) {
 
 /** Starts a project for a client, optionally from a signed contract (title, value and milestones come from it). */
 export async function createProject(
-  actorId: string,
+  actorId: string | null,
   input: { clientId: string; title?: string; contractId?: string | null; description?: string; endDate?: string | null; valueCents?: number },
 ): Promise<Result<{ id: string }>> {
   const { data: client } = await admin().from("profiles").select("id, tenant_id, role").eq("id", input.clientId).maybeSingle();
@@ -77,6 +77,9 @@ export async function createProject(
   let milestones: string[] = ["Discovery & content", "Design approved", "Build complete", "Review & fixes", "Launch"];
 
   if (input.contractId) {
+    // One project per contract: signing starts it automatically, so a later manual start reuses it.
+    const { data: already } = await admin().from("projects").select("id").eq("contract_id", input.contractId).maybeSingle();
+    if (already) return { ok: true, data: { id: already.id } };
     const { data: contract } = await admin().from("contracts").select("*").eq("id", input.contractId).maybeSingle();
     if (!contract || contract.client_id !== client.id) return { ok: false, error: "Contract not found for this client" };
     const v = contract.variables as { projectTitle?: string; feeCents?: number; targetLaunch?: string; schedule?: { label: string }[] };

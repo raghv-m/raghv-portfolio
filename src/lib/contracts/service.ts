@@ -8,6 +8,8 @@ import { portalAccessFor } from "@/lib/clients";
 import { friendlyMailError, OWNER_INBOX, sendContractSignedEmail, sendContractToSignEmail, sendQuestionnaireEmail, signInUrl } from "@/lib/mail";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
+import { createProject } from "@/lib/crm";
+
 import { renderContractPdf } from "./pdf";
 import type { QuestionnaireAnswers } from "./questionnaire";
 import { buildContractBody, DEFAULT_EXCLUSIONS, money, SCHEDULE_PRESETS, scheduleAmounts, type ContractVariables } from "./template";
@@ -304,6 +306,14 @@ export async function signContract(
 
   await logAudit({ actorId: userId, action: "contract.sign", resourceType: "contract", resourceId: id, changes: { number: contract.number, sha256: contract.body_sha256 } });
 
+  // The signed agreement starts the project, so the client sees progress in their portal right
+  // away. Never fails the signature: the admin can still start it by hand.
+  try {
+    await startProjectFromContract(id);
+  } catch (e) {
+    console.error("[contracts] couldn't start the project after signing", e);
+  }
+
   for (const to of [vars.client.email, OWNER_INBOX]) {
     let emailError: string | null = null;
     try {
@@ -315,6 +325,26 @@ export async function signContract(
     await logEmail({ type: "contract_signed", to, contractId: id, error: emailError });
   }
   return { ok: true, data: undefined };
+}
+
+/**
+ * Creates the project for a signed contract (title, value and milestones from the contract) if it
+ * doesn't exist yet, and opens its timeline. Safe to call more than once.
+ */
+export async function startProjectFromContract(contractId: string): Promise<string | null> {
+  const { data: existing } = await admin().from("projects").select("id").eq("contract_id", contractId).maybeSingle();
+  if (existing) return existing.id;
+  const { data: contract } = await admin().from("contracts").select("client_id, status").eq("id", contractId).maybeSingle();
+  if (!contract || contract.status !== "signed") return null;
+  const result = await createProject(null, { clientId: contract.client_id, contractId });
+  if (!result.ok) throw new Error(result.error);
+  await admin().from("project_updates").insert({
+    project_id: result.data.id,
+    kind: "update",
+    title: "Agreement signed: your project has started",
+    body: "Thanks for signing. Next up is the deposit invoice, then discovery and content. You'll see every step here as it happens.",
+  });
+  return result.data.id;
 }
 
 export async function voidContract(actorId: string, id: string): Promise<Result> {

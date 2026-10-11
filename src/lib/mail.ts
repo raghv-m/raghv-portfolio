@@ -536,3 +536,9 @@ export function buildNewsletterHtml({
     ${cta ? `<div style="height:22px;line-height:22px;">&nbsp;</div>${button(cta, esc(ctaText ?? "Read more"))}` : ""}
   `, title);
 }
+
+/**
+ * The layout and building blocks, for emails rendered elsewhere: scripts/sync-supabase-email-
+ * templates.mts uses them so Supabase's own account emails (password reset etc.) match ours.
+ */
+export const emailDesign = { layout, eyebrow, heading, para, small, button, facts, strong };

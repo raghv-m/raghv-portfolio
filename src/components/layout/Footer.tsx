@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Shield } from "lucide-react";
+import Image from "next/image";
 import SubscribeWidget from "@/components/newsletter/SubscribeWidget";
 
 const GithubIcon = () => (
@@ -57,11 +57,8 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-10 mb-10">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-7 h-7 border border-[rgba(212,160,23,0.4)] rounded flex items-center justify-center">
-                <Shield className="w-3.5 h-3.5 text-[var(--gold)]" />
-              </div>
-              <span className="font-mono text-sm font-semibold text-[var(--gold)]">raghv.dev</span>
+            <div className="mb-4">
+              <Image src="/logo-mobile.svg" alt="RAGHV.DEV" width={130} height={52} unoptimized className="h-12 w-auto" />
             </div>
             <p className="text-[var(--text-muted)] text-sm leading-relaxed max-w-xs mb-5">
               Cybersecurity Analyst in Training. Building defensive systems through real-world labs,

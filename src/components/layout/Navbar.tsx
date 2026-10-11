@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Shield, Menu, X, Download } from "lucide-react";
@@ -23,14 +23,27 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 200, damping: 40 });
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 30);
-    window.addEventListener("scroll", fn);
+    fn();
+    window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  // While the mobile menu is open: Escape closes it and the page behind doesn't scroll.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = overflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setOpen(false));
@@ -40,18 +53,13 @@ export default function Navbar() {
   return (
     <>
       <motion.header
-        initial={{ y: -60, opacity: 0 }}
+        initial={reduceMotion ? false : { y: -16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "bg-[rgba(10,10,10,0.95)] backdrop-blur-xl border-b border-[#222]" : "bg-transparent"
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className={`fixed top-0 left-0 right-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-300 ${
+          scrolled || open ? "bg-[rgba(10,10,10,0.92)] backdrop-blur-xl border-[#222]" : "bg-transparent border-transparent"
         }`}
       >
-        {/* Scroll progress bar */}
-        <motion.div
-          className="absolute bottom-0 left-0 right-0 h-[1px] origin-left"
-          style={{ scaleX, background: "linear-gradient(90deg, var(--gold), var(--gold-light))" }}
-        />
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
@@ -64,21 +72,23 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden xl:flex items-center gap-1" aria-label="Main">
             {LINKS.map((link) => {
               const active = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative px-3 py-1.5 font-display text-xs font-medium tracking-wide transition-colors duration-200 ${
+                  aria-current={active ? "page" : undefined}
+                  className={`nav-link relative px-3 py-1.5 font-display text-xs font-medium tracking-wide transition-colors duration-200 ${
                     active ? "text-[var(--gold)]" : "text-[var(--text-muted)] hover:text-[var(--text)]"
                   }`}
                 >
                   {link.label}
                   {active && (
-                    <motion.div
+                    <motion.span
                       layoutId="nav-active"
+                      transition={{ type: "spring", stiffness: 500, damping: 40 }}
                       className="absolute bottom-0 left-3 right-3 h-px bg-[var(--gold)]"
                     />
                   )}
@@ -89,7 +99,7 @@ export default function Navbar() {
 
           {/* Status + resume + mobile toggle */}
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-1.5">
+            <div className="hidden xl:flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] pulse-green" />
               <span className="font-mono text-[10px] text-[var(--green)] tracking-wider">AVAILABLE</span>
             </div>
@@ -103,18 +113,30 @@ export default function Navbar() {
               Resume
             </a>
             <button
-              className="lg:hidden text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+              className="xl:hidden -mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               onClick={() => setOpen(!open)}
               aria-label={open ? "Close menu" : "Open menu"}
               aria-expanded={open}
+              aria-controls="mobile-menu"
             >
-              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={open ? "close" : "open"}
+                  initial={reduceMotion ? false : { opacity: 0, rotate: -45 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, rotate: 45 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex"
+                >
+                  {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </motion.span>
+              </AnimatePresence>
             </button>
           </div>
         </div>
       </motion.header>
 
-      {/* Mobile menu — full-height slide-in from right */}
+      {/* Mobile menu: full-height panel that slides in from the right */}
       <AnimatePresence>
         {open && (
           <>
@@ -127,32 +149,43 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
             />
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
+              id="mobile-menu"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menu"
+              initial={reduceMotion ? { opacity: 0 } : { x: "100%" }}
+              animate={reduceMotion ? { opacity: 1 } : { x: 0 }}
+              exit={reduceMotion ? { opacity: 0 } : { x: "100%" }}
               transition={{ type: "spring", stiffness: 380, damping: 38 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-72 bg-[rgba(10,10,10,0.99)] backdrop-blur-xl flex flex-col"
+              className="fixed top-0 right-0 bottom-0 z-50 w-72 max-w-[85vw] bg-[rgba(10,10,10,0.99)] backdrop-blur-xl flex flex-col"
               style={{ borderLeft: "1px solid #222" }}
             >
               <div className="flex items-center justify-between px-6 h-14">
                 <span className="font-mono text-sm font-semibold text-[var(--gold)]">raghv.dev</span>
-                <button onClick={() => setOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <button onClick={() => setOpen(false)} aria-label="Close menu" autoFocus className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <nav className="flex-1 overflow-y-auto py-4">
-                {LINKS.map((link) => (
-                  <Link
+              <nav className="flex-1 overflow-y-auto py-4" aria-label="Main">
+                {LINKS.map((link, i) => (
+                  <motion.div
                     key={link.href}
-                    href={link.href}
-                    className={`flex items-center px-6 min-h-[44px] font-display text-sm transition-colors ${
-                      pathname === link.href
-                        ? "text-[var(--gold)]"
-                        : "text-[var(--text-muted)] hover:text-[var(--text)]"
-                    }`}
+                    initial={reduceMotion ? false : { opacity: 0, x: 12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 + i * 0.025, duration: 0.25, ease: "easeOut" }}
                   >
-                    {link.label}
-                  </Link>
+                    <Link
+                      href={link.href}
+                      aria-current={pathname === link.href ? "page" : undefined}
+                      className={`flex items-center px-6 min-h-[44px] font-display text-sm transition-colors border-l-2 ${
+                        pathname === link.href
+                          ? "text-[var(--gold)] border-[var(--gold)]"
+                          : "text-[var(--text-muted)] hover:text-[var(--text)] border-transparent"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
                 ))}
               </nav>
               <div className="px-6 pb-8 pt-4 border-t border-[#222] flex flex-col gap-4">

@@ -105,14 +105,17 @@ export async function sendMail({
   subject,
   html,
   attachments,
+  replyTo = TO,
 }: {
   to: string;
   subject: string;
   html: string;
   attachments?: { filename: string; content: Buffer; contentType: string }[];
+  replyTo?: string;
 }) {
   const transport = getTransport();
-  await transport.sendMail({ from: FROM, to, subject, html, attachments });
+  // The sending address can't receive mail, so replies go to the inbox in CONTACT_RECEIVER_EMAIL.
+  await transport.sendMail({ from: FROM, to, subject, html, attachments, replyTo });
 }
 
 // ─── Batched send ──────────────────────────────────────────────────────────
@@ -202,7 +205,7 @@ export async function sendContactNotification(data: {
     <a href="mailto:${encodeURIComponent(data.email)}?subject=${encodeURIComponent("Re: " + data.subject)}" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">Reply to ${esc(data.name)}</a>
   `, `New message from ${esc(data.name)}`);
 
-  await sendMail({ to: TO, subject: `[raghv.dev] ${data.subject}`, html });
+  await sendMail({ to: TO, subject: `[raghv.dev] ${data.subject}`, html, replyTo: data.email });
 }
 
 // ─── Contact auto-reply (to sender) ───────────────────────────────────────
@@ -383,7 +386,7 @@ export async function sendEstimateNotification({
     <a href="${baseUrl}/admin/estimates/${id}" style="display:inline-block;padding:11px 24px;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">Open in admin</a>
   `, `New estimate from ${name}`);
 
-  await sendMail({ to: TO, subject: `[raghv.dev] New estimate ${reference} from ${name}`, html });
+  await sendMail({ to: TO, subject: `[raghv.dev] New estimate ${reference} from ${name}`, html, replyTo: email });
 }
 
 // ─── Client portal invite and password reset (to client) ────────────────────

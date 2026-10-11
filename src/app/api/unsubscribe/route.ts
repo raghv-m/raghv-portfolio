@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { withApiErrors } from "@/lib/api";
 
 // GET: redirect to the confirmation page — do NOT perform the unsubscribe.
 // Mail security scanners and prefetchers follow GET links, which would silently
 // unsubscribe users who never clicked. The actual action requires a POST.
-export async function GET(req: NextRequest) {
+async function handleGET(req: NextRequest) {
   const token = new URL(req.url).searchParams.get("token");
   if (!token) return NextResponse.redirect(new URL("/unsubscribe?status=invalid", req.url));
   return NextResponse.redirect(new URL(`/unsubscribe?token=${encodeURIComponent(token)}`, req.url));
 }
 
 // POST: performs the unsubscribe. Called from the confirmation form on /unsubscribe.
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   let token: string | null = null;
   const contentType = req.headers.get("content-type") ?? "";
 
@@ -35,3 +36,7 @@ export async function POST(req: NextRequest) {
   await prisma.subscriber.update({ where: { id: sub.id }, data: { active: false } });
   return NextResponse.redirect(new URL("/unsubscribe?status=done", req.url));
 }
+
+export const GET = withApiErrors("GET /api/unsubscribe", handleGET);
+
+export const POST = withApiErrors("POST /api/unsubscribe", handlePOST);

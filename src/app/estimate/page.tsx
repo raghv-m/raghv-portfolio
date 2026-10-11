@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { EstimateWizard } from "@/components/estimate/EstimateWizard";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata, site } from "@/config/site";
+import { ServiceNotice } from "@/components/layout/ServiceNotice";
 import { getActiveCatalog } from "@/lib/estimator/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -16,7 +17,16 @@ export const metadata: Metadata = pageMetadata(
 export const revalidate = 300;
 
 export default async function EstimatePage() {
-  const catalog = isSupabaseConfigured() && process.env.SUPABASE_SERVICE_ROLE_KEY ? await getActiveCatalog() : [];
+  let catalog: Awaited<ReturnType<typeof getActiveCatalog>> = [];
+  let unavailable = false;
+  if (isSupabaseConfigured() && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    try {
+      catalog = await getActiveCatalog();
+    } catch (error) {
+      console.error("[estimate] price list failed to load", error);
+      unavailable = true;
+    }
+  }
 
   return (
     <div className="min-h-screen pt-28 pb-24">
@@ -43,7 +53,9 @@ export default async function EstimatePage() {
           </p>
         </header>
         <div className="mt-12">
-          {catalog.length ? (
+          {unavailable ? (
+            <ServiceNotice what="The estimator" />
+          ) : catalog.length ? (
             <EstimateWizard catalog={catalog} />
           ) : (
             <p className="text-[var(--text-muted)]">The estimator is being set up. Please use the contact page for now.</p>

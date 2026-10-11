@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { prisma } from "@/lib/prisma";
+import { apiError, withApiErrors } from "@/lib/api";
 
-export async function PATCH(
+async function handlePATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await requireAdmin();
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return apiError(401, "Please sign in again.");
   }
 
   const { id } = await params;
@@ -20,3 +21,5 @@ export async function PATCH(
 
   return NextResponse.json({ ok: true });
 }
+
+export const PATCH = withApiErrors("PATCH /api/admin/messages/[id]/read", handlePATCH);

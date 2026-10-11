@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { generateCsrfToken } from "@/lib/csrf";
+import { apiError, withApiErrors } from "@/lib/api";
 
-export async function GET() {
+async function handleGET() {
   try {
     const token = generateCsrfToken();
     const res = NextResponse.json({ token });
@@ -16,6 +17,8 @@ export async function GET() {
     });
     return res;
   } catch {
-    return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
+    return apiError(500, "Something went wrong on our side. Please try again.");
   }
 }
+
+export const GET = withApiErrors("GET /api/csrf", handleGET);

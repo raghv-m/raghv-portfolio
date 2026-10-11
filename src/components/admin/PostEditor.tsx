@@ -142,7 +142,7 @@ export default function PostEditor({ initial }: Props) {
       const method = id ? "PUT" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const json = await res.json();
-      if (!res.ok) { setError(json.error?.message ?? JSON.stringify(json.error) ?? "Save failed"); return; }
+      if (!res.ok) { setError(typeof json.error === "string" ? json.error : "Couldn't save the post. Please try again."); return; }
       if (!id) {
         setSavedId(json.id);
         router.push(`/admin/posts/${json.id}`);

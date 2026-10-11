@@ -1,6 +1,8 @@
 "use client";
 import { SmokeBackground } from "@/components/effects/deferred";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+
+import { FieldError, focusFirstInvalid, invalidProps } from "@/components/ui/FieldError";
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Globe, Lock, CheckCircle, Download } from "lucide-react";
 
@@ -22,6 +24,18 @@ export default function ContactPage() {
   const [csrf, setCsrf] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<"name" | "email" | "subject" | "message", string>>>({});
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Same rules as the server (api/contact), so people see problems before sending.
+  const validate = () => {
+    const errors: typeof fieldErrors = {};
+    if (!form.name.trim()) errors.name = "Enter your name.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.email = "Enter a valid email address, like jane@company.com.";
+    if (!form.subject) errors.subject = "Choose a subject.";
+    if (form.message.trim().length < 10) errors.message = "Write at least a sentence (10 characters or more).";
+    return errors;
+  };
 
   useEffect(() => {
     fetch("/api/csrf").then((r) => r.json()).then((d) => setCsrf(d.token)).catch(() => {});
@@ -29,6 +43,12 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errors = validate();
+    setFieldErrors(errors);
+    if (Object.keys(errors).length) {
+      focusFirstInvalid(formRef.current);
+      return;
+    }
     setState("sending");
     setError("");
     try {
@@ -41,11 +61,11 @@ export default function ContactPage() {
         setState("done");
       } else {
         const d = await res.json();
-        setError(d.error || "Something went wrong. Try emailing directly.");
+        setError(typeof d.error === "string" ? d.error : "Your message couldn't be sent. Please try again, or email raaghvv0508@gmail.com.");
         setState("error");
       }
     } catch {
-      setError("Network error. Please try emailing directly.");
+      setError("Couldn't reach the server. Check your connection and try again, or email raaghvv0508@gmail.com.");
       setState("error");
     }
   };
@@ -187,9 +207,9 @@ export default function ContactPage() {
                     </div>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-4">
                     {/* Honeypot */}
-                    <input type="text" name="website" className="hidden" value={form.website}
+                    <input type="text" name="website" className="hidden" aria-hidden="true" value={form.website}
                       onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex={-1} autoComplete="off" />
 
                     <p className="font-mono text-[9px] text-[var(--text-muted)] mb-4">
@@ -197,51 +217,64 @@ export default function ContactPage() {
                     </p>
 
                     <div className="grid sm:grid-cols-2 gap-4">
-                      {[
-                        { key: "name", label: "YOUR NAME", placeholder: "Jane Smith", type: "text" },
-                        { key: "email", label: "EMAIL", placeholder: "jane@company.com", type: "email" },
-                      ].map((f) => (
+                      {([
+                        { key: "name", label: "YOUR NAME", placeholder: "Jane Smith", type: "text", autoComplete: "name" },
+                        { key: "email", label: "EMAIL", placeholder: "jane@company.com", type: "email", autoComplete: "email" },
+                      ] as const).map((f) => (
                         <div key={f.key}>
-                          <label className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5">{f.label}</label>
+                          <label htmlFor={`contact-${f.key}`} className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5">{f.label}</label>
                           <input
+                            id={`contact-${f.key}`}
+                            name={f.key}
                             type={f.type}
                             required
+                            autoComplete={f.autoComplete}
+                            {...invalidProps(f.key, fieldErrors[f.key])}
                             placeholder={f.placeholder}
                             value={form[f.key as keyof typeof form]}
                             onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                            className="w-full bg-[var(--card)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono placeholder-[#333] focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors"
+                            className="w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono placeholder-[#333] focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors"
                           />
+                          <FieldError name={f.key} message={fieldErrors[f.key]} />
                         </div>
                       ))}
                     </div>
 
                     <div>
-                      <label className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5">SUBJECT</label>
+                      <label htmlFor="contact-subject" className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5">SUBJECT</label>
                       <select
+                        id="contact-subject"
+                        name="subject"
                         required
+                        {...invalidProps("subject", fieldErrors.subject)}
                         value={form.subject}
                         onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                        className="w-full bg-[var(--card)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors"
+                        className="w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors"
                       >
                         <option value="">Select a subject...</option>
                         {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
                       </select>
+                      <FieldError name="subject" message={fieldErrors.subject} />
                     </div>
 
                     <div>
-                      <label className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5">MESSAGE</label>
+                      <label htmlFor="contact-message" className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5">MESSAGE</label>
                       <textarea
+                        id="contact-message"
+                        name="message"
                         required
+                        {...invalidProps("message", fieldErrors.message)}
                         rows={5}
                         placeholder="Tell me about the role, project, or opportunity..."
                         value={form.message}
                         onChange={(e) => setForm({ ...form, message: e.target.value })}
-                        className="w-full bg-[var(--card)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono placeholder-[#333] focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors resize-none"
+                        className="w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono placeholder-[#333] focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors resize-none"
                       />
+                      <FieldError name="message" message={fieldErrors.message} />
                     </div>
 
                     {state === "error" && (
-                      <p className="font-mono text-[10px] text-[var(--red)] bg-[rgba(255,68,68,0.08)] px-3 py-2 rounded border border-[rgba(255,68,68,0.2)]">
+                      <p role="alert" className="font-mono text-[10px] text-[var(--red)] bg-[rgba(255,68,68,0.08)] px-3 py-2 rounded border border-[rgba(255,68,68,0.2)]">
                         {error}
                       </p>
                     )}

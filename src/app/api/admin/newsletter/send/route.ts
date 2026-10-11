@@ -3,21 +3,22 @@ import { requireAdmin } from "@/lib/requireAdmin";
 import { prisma } from "@/lib/prisma";
 import { sendMailBatch } from "@/lib/mail";
 import { z } from "zod";
+import { apiError, withApiErrors, zodMessage } from "@/lib/api";
 
 const sendSchema = z.object({
   subject: z.string().min(1).max(200),
   html: z.string().min(1),
 });
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return apiError(401, "Please sign in again.");
 
   let body: unknown;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return apiError(400, "The request couldn't be read. Please try again."); }
 
   const parsed = sendSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
+  if (!parsed.success) return apiError(422, zodMessage(parsed.error));
 
   const subscribers = await prisma.subscriber.findMany({ where: { active: true }, select: { email: true, name: true, unsubscribeToken: true } });
   if (subscribers.length === 0) return NextResponse.json({ ok: true, sent: 0 });
@@ -39,3 +40,5 @@ export async function POST(req: NextRequest) {
     errors: errors.map((e) => `${e.to}: ${e.error}`),
   });
 }
+
+export const POST = withApiErrors("POST /api/admin/newsletter/send", handlePOST);

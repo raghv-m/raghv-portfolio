@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
     return [{ source: "/projects", destination: "/portfolio", statusCode: 301 }];
   },
   experimental: {
+    // forbidden() and unauthorized(), with app/forbidden.tsx and app/unauthorized.tsx.
+    authInterrupts: true,
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },
 } as NextConfig;

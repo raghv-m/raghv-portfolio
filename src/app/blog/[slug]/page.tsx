@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ServiceNotice } from "@/components/layout/ServiceNotice";
 import { prisma } from "@/lib/prisma";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Callout } from "@/components/blog/Callout";
@@ -14,7 +15,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.post.findUnique({ where: { slug, published: true } });
+  const post = await prisma.post.findUnique({ where: { slug, published: true } }).catch(() => null);
   if (!post) return { title: "Post not found" };
   const url = `${site.url}/blog/${post.slug}`;
   return {
@@ -39,7 +40,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = await prisma.post.findUnique({ where: { slug, published: true } });
+  const loaded = await prisma.post.findUnique({ where: { slug, published: true } }).then(
+    (post) => ({ ok: true as const, post }),
+    (error: unknown) => {
+      console.error("[blog] post failed to load", error);
+      return { ok: false as const, post: null };
+    },
+  );
+  const post = loaded.post;
+  if (!loaded.ok) {
+    return (
+      <div className="min-h-screen pt-28 pb-24">
+        <div className="max-w-3xl mx-auto px-6">
+          <ServiceNotice what="This post" />
+        </div>
+      </div>
+    );
+  }
   if (!post) notFound();
 
   // Increment views (fire and forget)

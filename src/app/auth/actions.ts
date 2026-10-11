@@ -19,7 +19,8 @@ import { rateLimit } from "@/lib/rateLimit";
 import { getSignedIn } from "@/lib/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export type FormState = { error?: string; message?: string } | undefined;
+/** `field` names the input an error is about, so the form can show it inline and focus it. */
+export type FormState = { error?: string; message?: string; field?: string } | undefined;
 
 /** Only same-site relative paths: blocks open redirects like ?next=//evil.com or https://... */
 function safeNext(value: FormDataEntryValue | null, fallback: string): string {
@@ -54,7 +55,12 @@ const credentials = z.object({
 
 export async function signInAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const parsed = credentials.safeParse({ email: formData.get("email"), password: formData.get("password") });
-  if (!parsed.success) return { error: "Enter your email and password." };
+  if (!parsed.success) {
+    const emailBad = parsed.error.issues.some((i) => i.path[0] === "email");
+    return emailBad
+      ? { error: "Enter a valid email address.", field: "email" }
+      : { error: "Enter your password.", field: "password" };
+  }
   const email = parsed.data.email.toLowerCase();
 
   const limit = await rateLimit(email, "login");
@@ -91,7 +97,7 @@ export async function signOutAction(): Promise<void> {
 
 export async function requestPasswordResetAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const email = z.email().safeParse(formData.get("email"));
-  if (!email.success) return { error: "Enter a valid email." };
+  if (!email.success) return { error: "Enter a valid email address.", field: "email" };
 
   const limit = await rateLimit(`reset:${email.data.toLowerCase()}`, "login");
   if (limit.success) {
@@ -114,8 +120,8 @@ const newPassword = z
 
 export async function updatePasswordAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const password = newPassword.safeParse(formData.get("password"));
-  if (!password.success) return { error: password.error.issues[0]?.message };
-  if (formData.get("password") !== formData.get("confirm")) return { error: "The two passwords don't match." };
+  if (!password.success) return { error: password.error.issues[0]?.message, field: "password" };
+  if (formData.get("password") !== formData.get("confirm")) return { error: "The two passwords don't match.", field: "confirm" };
 
   const signedIn = await getSignedIn();
   if (!signedIn) return { error: "Your reset link has expired. Request a new one." };

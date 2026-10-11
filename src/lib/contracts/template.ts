@@ -32,7 +32,7 @@ export type ContractVariables = {
   jurisdiction: string;
 };
 
-const money = (cents: number, currency: string) =>
+export const money = (cents: number, currency: string) =>
   `${new Intl.NumberFormat("en-CA", { style: "currency", currency: currency.toUpperCase(), currencyDisplay: "narrowSymbol" }).format(cents / 100)} ${currency.toUpperCase()}`;
 
 const date = (iso?: string) =>

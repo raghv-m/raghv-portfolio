@@ -77,9 +77,12 @@ test("signed contract renders to a multi-page PDF with a signature page", async 
     body: buildContractBody(vars),
     bodySha256: "a".repeat(64),
     provider: { name: "Raghav Mahajan (sole proprietor)", signatureName: "Raghav Mahajan", signedAt: "2026-10-09T18:00:00Z" },
-    client: { name: "Acme Widgets Ltd.", signatureName: "Jane Doe", title: "Director", signedAt: "2026-10-10T18:00:00Z", ipHash: "f".repeat(64), userAgent: "Mozilla/5.0" },
+    client: { name: "Acme Widgets Ltd.", signatureName: "Jane Doe", title: "Director", signedAt: "2026-10-10T18:00:00Z" },
+    summary: { projectTitle: "Business website", effectiveDate: "2026-10-09", targetLaunch: "2026-11-30", fee: "$1,234.57 CAD", schedule: ["Deposit, on signing: $493.83 CAD (40%)"] },
   });
   assert.equal(pdf.subarray(0, 5).toString(), "%PDF-");
   const pages = pdf.toString("latin1").match(/\/Type \/Page\b/g)?.length ?? 0;
   assert.ok(pages >= 4, `expected several pages, got ${pages}`);
+  // Page numbers written into the bottom margin used to add a blank page after every page.
+  assert.ok(pages <= 7, `expected no blank pages, got ${pages}`);
 });

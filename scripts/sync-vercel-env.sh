@@ -32,11 +32,19 @@ for name in "${SET[@]}"; do
   if [ -z "$value" ]; then echo "skipped  $name (no value in .env.local)"; continue; fi
   # NEXT_PUBLIC_ values ship to the browser by design; Vercel refuses key-like ones without --type config.
   type=(); [[ $name == NEXT_PUBLIC_* ]] && type=(--type config)
+  # Remove once from every environment, then add to each. Removing per environment inside the
+  # loop deletes the copies just added: Vercel keeps one record per variable across environments.
   for env in "${ENVS[@]}"; do
     $VERCEL env rm "$name" "$env" --yes >/dev/null 2>&1 || true
-    printf '%s' "$value" | $VERCEL env add "$name" "$env" "${type[@]}" --yes >/dev/null 2>&1 && echo "set      $name ($env)" || echo "FAILED   $name ($env)"
+  done
+  for env in "${ENVS[@]}"; do
+    printf '%s' "$value" | $VERCEL env add "$name" "$env" ${type[@]+"${type[@]}"} --yes >/dev/null 2>&1 && echo "set      $name ($env)" || echo "FAILED   $name ($env)"
   done
 done
 
+echo
+echo "Production now has:"
+$VERCEL env ls production 2>/dev/null | grep -oE "^ +[A-Z_]+" | tr -d ' ' | sort | tr '
+' ' '
 echo
 echo "Done. Redeploy for the changes to take effect (Vercel -> Deployments -> Redeploy)."

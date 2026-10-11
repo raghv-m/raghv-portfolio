@@ -64,6 +64,8 @@ const C = {
   goldSoft: "#1d1806",
   green: "#3ddc97",
 };
+// Always the production URL: an email can be opened years later, from any device.
+const LOGO_URL = "https://www.raghv.dev/logo-email.png";
 const SANS = "'Helvetica Neue',Helvetica,Arial,sans-serif";
 const MONO = "'SFMono-Regular',Menlo,Consolas,'Courier New',monospace";
 
@@ -144,10 +146,8 @@ function layout(content: string, preview: string) {
     <tr><td align="center" style="padding:36px 12px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;">
         <tr><td style="padding:0 6px 18px;">
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-            <td width="30" height="30" align="center" valign="middle" style="width:30px;height:30px;border:1px solid #4a3a08;border-radius:6px;font-family:${MONO};font-size:13px;font-weight:700;color:${C.gold};">R</td>
-            <td style="padding-left:10px;font-family:${MONO};font-size:14px;font-weight:600;letter-spacing:0.06em;color:${C.gold};">raghv.dev</td>
-          </tr></table>
+          <!-- PNG, not SVG: most email clients don't render SVG. Gold version, made for dark backgrounds. -->
+          <a href="${site.url}" style="text-decoration:none;"><img src="${LOGO_URL}" width="120" height="48" alt="RAGHV.DEV" style="display:block;width:120px;height:48px;border:0;outline:none;color:${C.gold};font-family:${MONO};font-size:14px;font-weight:700;letter-spacing:0.12em;"/></a>
         </td></tr>
         <tr><td bgcolor="${C.card}" style="background:${C.card};border:1px solid ${C.border};border-radius:12px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">

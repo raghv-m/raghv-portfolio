@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, Menu, X, Download } from "lucide-react";
+import { Menu, X, Download } from "lucide-react";
 
 const LINKS = [
  { href: "/about", label: "About" },
@@ -62,13 +63,9 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 border border-[rgba(212,160,23,0.4)] rounded flex items-center justify-center group-hover:border-[var(--gold)] group-hover:shadow-[0_0_10px_rgba(212,160,23,0.3)] transition-all duration-300">
-              <Shield className="w-3.5 h-3.5 text-[var(--gold)]" />
-            </div>
-            <span className="font-mono text-sm font-semibold text-[var(--gold)] tracking-wider">
-              raghv.dev
-            </span>
+          <Link href="/" aria-label="RAGHV.DEV home" className="flex items-center opacity-95 hover:opacity-100 transition-opacity">
+            {/* The logo is above the fold on every page: load it right away, never lazily. */}
+            <Image src="/logo-mobile.svg" alt="RAGHV.DEV" width={110} height={44} priority unoptimized className="h-10 w-auto" />
           </Link>
 
           {/* Desktop nav */}
@@ -161,7 +158,7 @@ export default function Navbar() {
               style={{ borderLeft: "1px solid #222" }}
             >
               <div className="flex items-center justify-between px-6 h-14">
-                <span className="font-mono text-sm font-semibold text-[var(--gold)]">raghv.dev</span>
+                <Image src="/logo-mobile.svg" alt="RAGHV.DEV" width={100} height={40} unoptimized className="h-9 w-auto" />
                 <button onClick={() => setOpen(false)} aria-label="Close menu" autoFocus className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
                   <X className="w-5 h-5" />
                 </button>

@@ -28,6 +28,24 @@ const safeHref = (url: string | undefined | null) =>
   url && /^https:\/\//i.test(url.trim()) ? esc(url.trim()) : undefined;
 
 const FROM = process.env.SMTP_FROM || "Raghav Mahajan <onboarding@resend.dev>";
+
+/**
+ * Each kind of email comes from its own address on the sending domain (taken from SMTP_FROM):
+ *  - hello@   enquiries, estimates, questionnaires, portal invites, project updates, newsletter
+ *  - billing@ contracts and invoices
+ *  - support@ account emails (password resets are sent by Supabase, also as support@)
+ * Replies go to the same address; the domain forwards all of them to the owner's inbox.
+ */
+export type Sender = "hello" | "billing" | "support";
+const SENDER_NAME = FROM.match(/^\s*"?([^"<]+?)"?\s*</)?.[1] ?? "Raghav Mahajan";
+const SENDER_DOMAIN = FROM.match(/@([^>\s]+)/)?.[1] ?? "";
+// Resend's shared test domain can only send from its own address, so keep FROM as is there.
+const OWN_DOMAIN = SENDER_DOMAIN && !/(^|\.)resend\.dev$/i.test(SENDER_DOMAIN);
+const senderAddress = (sender: Sender) => (OWN_DOMAIN ? `${sender}@${SENDER_DOMAIN}` : null);
+const fromFor = (sender: Sender) => {
+  const address = senderAddress(sender);
+  return address ? `${SENDER_NAME} <${address}>` : FROM;
+};
 const TO = process.env.CONTACT_RECEIVER_EMAIL || "raaghvv0508@gmail.com";
 
 /** The sign-in page, continuing to `next` afterwards. Never expires, unlike one-time links. */
@@ -186,17 +204,21 @@ export async function sendMail({
   subject,
   html,
   attachments,
-  replyTo = TO,
+  from = "hello",
+  replyTo,
 }: {
   to: string;
   subject: string;
   html: string;
   attachments?: { filename: string; content: Buffer; contentType: string }[];
+  from?: Sender;
   replyTo?: string;
 }) {
   const transport = getTransport();
-  // The sending address can't receive mail, so replies go to the inbox in CONTACT_RECEIVER_EMAIL.
-  await transport.sendMail({ from: FROM, to, subject, html, text: toText(html), attachments, replyTo });
+  // Replies go to the sending address (forwarded to the owner), or the owner's inbox if the
+  // site is still on Resend's test domain.
+  const reply = replyTo ?? senderAddress(from) ?? TO;
+  await transport.sendMail({ from: fromFor(from), to, subject, html, text: toText(html), attachments, replyTo: reply });
 }
 
 // ─── Batched send ──────────────────────────────────────────────────────────
@@ -313,6 +335,7 @@ export async function sendInvoiceEmail({
   await sendMail({
     to,
     subject: `Invoice ${invoiceNumber} from Raghav Mahajan (${amount})`,
+    from: "billing",
     html,
     attachments: [{ filename: `${invoiceNumber}.pdf`, content: pdf, contentType: "application/pdf" }],
   });
@@ -473,7 +496,7 @@ export async function sendContractToSignEmail({ to, name, number, title, access 
     ${portalAccess(access, "Review and sign")}
     ${small("Questions or changes before signing? Just reply to this email.")}
   `, `Agreement ${number} is ready to sign`);
-  await sendMail({ to, subject: `Please review and sign: ${title} (${number})`, html });
+  await sendMail({ to, subject: `Please review and sign: ${title} (${number})`, html, from: "billing" });
 }
 
 // ─── Signed contract copy (to both parties) ─────────────────────────────────
@@ -492,6 +515,7 @@ export async function sendContractSignedEmail({ to, name, number, clientName, pd
   await sendMail({
     to,
     subject: forProvider ? `[raghv.dev] ${clientName} signed ${number}` : `Your signed agreement (${number})`,
+    from: "billing",
     html,
     attachments: [{ filename: `${number}-signed.pdf`, content: pdf, contentType: "application/pdf" }],
   });

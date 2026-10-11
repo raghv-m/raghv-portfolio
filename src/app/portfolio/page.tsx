@@ -152,7 +152,7 @@ const PROJECTS: {
     statusColor: "var(--green)",
     stack: ["Next.js 15", "React Three Fiber", "Framer Motion", "Prisma", "NextAuth"],
     color: "var(--gold)",
-    description: "This portfolio, built with security and premium UX as primary requirements. Full security hardening: CSP headers, CSRF protection on forms, rate limiting (3 contacts/hour), IP hashing before storage, honeypot field, no raw IPs ever stored. R3F 3D particle field, custom gold cursor, grain overlay, and animated terminal.",
+    description: "This portfolio, built with security and premium UX as primary requirements. Full security hardening: CSP headers, CSRF protection on forms, rate limiting (3 contacts/hour), IP hashing before storage, honeypot field, no raw IPs ever stored. R3F 3D particle field, custom gold cursor and animated terminal.",
     impact: ["CSP + HSTS + X-Frame-Options security headers", "CSRF tokens + Zod validation on all API routes", "Rate limiting with RateLimiterMemory (3/hour contact)", "IP hashing via salted hash, never raw IPs in DB"],
     github: "https://github.com/HomeLab-Raghav",
     icon: Shield,

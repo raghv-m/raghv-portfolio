@@ -249,56 +249,70 @@ body {
   background: rgba(0,255,136,0.06);
 }
 
-/* ── Button ──────────────────────────────────────────────────── */
-.btn-gold {
+/* ── Button ── */
+/* One style for every button: outlined gold, uppercase, arrow after the label that nudges
+   right on hover. The old class names all map to it. Add .btn-no-arrow for Back/Cancel. */
+.btn-gold,
+.btn-ghost,
+.btn-solid-gold,
+.btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.65rem 1.5rem;
+  padding: 0.75rem 1.75rem;
   font-family: var(--font-space-grotesk), sans-serif;
   font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid var(--gold);
-  color: var(--gold);
+  border: 1px solid #D4A017;
+  color: #D4A017;
   background: transparent;
   border-radius: 4px;
-  transition: all 0.25s;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
 }
-.btn-gold:hover {
-  background: rgba(212,160,23,0.1);
-  box-shadow: 0 0 30px rgba(212,160,23,0.25);
+.btn-gold::after,
+.btn-ghost::after,
+.btn-solid-gold::after,
+.btn-primary::after {
+  content: "\2192";
+  display: inline-block;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-no-arrow::after { content: none !important; }
+.btn-gold:hover,
+.btn-ghost:hover,
+.btn-solid-gold:hover,
+.btn-primary:hover {
   color: var(--gold-light);
+  border-color: var(--gold-light);
 }
-.btn-solid-gold {
-  background: var(--gold);
-  color: #0a0a0a;
-  border: 1px solid var(--gold);
+.btn-gold:hover::after,
+.btn-ghost:hover::after,
+.btn-solid-gold:hover::after,
+.btn-primary:hover::after { transform: translateX(4px); }
+.btn-gold:focus-visible,
+.btn-ghost:focus-visible,
+.btn-solid-gold:focus-visible,
+.btn-primary:focus-visible {
+  outline: 2px solid #D4A017;
+  outline-offset: 3px;
 }
-.btn-solid-gold:hover {
-  background: var(--gold-light);
-  box-shadow: 0 0 30px rgba(212,160,23,0.4);
+.btn-gold:disabled,
+.btn-ghost:disabled,
+.btn-solid-gold:disabled,
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.5rem;
-  font-family: var(--font-space-grotesk), sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  background: transparent;
-  border-radius: 4px;
-  transition: all 0.25s;
-}
-.btn-ghost:hover {
-  border-color: var(--text-muted);
-  color: var(--text);
+.btn-gold:disabled::after,
+.btn-ghost:disabled::after,
+.btn-solid-gold:disabled::after,
+.btn-primary:disabled::after { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .btn-gold::after, .btn-ghost::after, .btn-solid-gold::after, .btn-primary::after { transition: none; }
 }
 
 /* ── Alert feed ──────────────────────────────────────────────── */

@@ -214,7 +214,7 @@ export async function sendAutoReply(to: string, name: string) {
 
     <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${GOLD};margin-bottom:28px;">
       <p style="margin:0;font-size:13px;color:${MUTED};line-height:1.7;">If it's urgent, connect with me directly on
-        <a href="https://linkedin.com/in/raghav-mahajan-17611b24b" style="color:${GOLD};text-decoration:none;">LinkedIn</a> —
+        <a href="https://linkedin.com/in/raghav-mahajan-17611b24b" style="color:${GOLD};text-decoration:none;">LinkedIn</a> ·
         I check messages there daily.
       </p>
     </div>
@@ -231,7 +231,7 @@ export async function sendAutoReply(to: string, name: string) {
     </table>
   `, `I got your message, ${name}`);
 
-  await sendMail({ to, subject: "Message received — Raghav Mahajan", html });
+  await sendMail({ to, subject: "Message received: Raghav Mahajan", html });
 }
 
 // ─── Invoice (to client, PDF attached) ─────────────────────────────────────
@@ -434,7 +434,7 @@ export async function sendWelcomeEmail(to: string, name: string | null, unsubscr
     <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Raghav's Cyber Daily</p>
     <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">You're in${name ? `, ${esc(name)}` : ""}.</h1>
     <p style="margin:0 0 24px;font-size:15px;color:${MUTED};line-height:1.8;">
-      Welcome to my newsletter. You'll get <span style="color:${TEXT};">lab writeups, security research, and notes on the path to offensive security</span> — whenever something worth reading is ready. No filler, no spam.
+      Welcome to my newsletter. You'll get <span style="color:${TEXT};">lab writeups, security research, and notes on the path to offensive security</span>, whenever something worth reading is ready. No filler, no spam.
     </p>
 
     <div style="padding:20px 24px;background:#0d0d0d;border-radius:8px;border:1px solid ${BORDER};margin-bottom:28px;">

@@ -65,7 +65,7 @@ export default async function PortalHome() {
                       <span className="block text-[var(--text)] font-medium">{t.title}</span>
                       <span className="block text-sm text-[var(--text-muted)]">{t.detail}</span>
                     </span>
-                    <span className="btn-gold shrink-0">Open →</span>
+                    <span className="btn-gold shrink-0">Open</span>
                   </Link>
                 </li>
               ))}

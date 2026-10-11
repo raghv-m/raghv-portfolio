@@ -63,7 +63,7 @@ export default function NewsletterClient({ subscribers, total, active }: Props) 
               <label className="font-mono text-[10px] text-[var(--text-muted)] block mb-1">SUBJECT</label>
               <input
                 className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--gold)]"
-                placeholder="Raghav's Cyber Daily — Issue #1"
+                placeholder="Raghav's Cyber Daily: Issue #1"
                 value={subject}
                 onChange={e => setSubject(e.target.value)}
               />

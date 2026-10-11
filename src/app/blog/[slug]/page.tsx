@@ -235,7 +235,7 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* Nav to next/prev posts */}
             <div className="mt-12 pt-6 border-t border-[var(--border)]">
-              <Link href="/blog" className="btn-ghost">← All Posts</Link>
+              <Link href="/blog" className="btn-ghost btn-no-arrow">← All Posts</Link>
             </div>
           </article>
         </div>

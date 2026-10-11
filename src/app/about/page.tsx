@@ -3,7 +3,7 @@ import { SmokeBackground, SparklesCore } from "@/components/effects/deferred";
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Download } from "lucide-react";
+import { Download } from "lucide-react";
 
 
 const STAGES = [
@@ -14,11 +14,11 @@ const STAGES = [
     period: "2022–2025",
     color: "var(--text-muted)",
     accent: "#8a6914",
-    narrative: `I learned how to operate under pressure long before I ever opened a terminal. Running a kitchen line during Friday dinner rush — orders stacking, tickets flying, three timers in your head at once — that's where operational discipline gets hard-wired.
+    narrative: `I learned how to operate under pressure long before I ever opened a terminal. Running a kitchen line during Friday dinner rush, with orders stacking, tickets flying and three timers in your head at once. That's where operational discipline gets hard-wired.
 
 I managed kitchen staff at Leopold's and worked the line at Boston Pizza, Earls, and St. Louis. The job wasn't glamorous, but it taught me something no certification can: how to stay calm when everything is on fire, document what happened, and figure out the root cause later.
 
-I didn't know it then, but I was already developing the incident response mindset. In a SOC, an alert fires — you triage, escalate, and write the post-mortem. In a kitchen, an order goes wrong — you fix it fast, you communicate clearly, you document why. Same mental model. Different domain.`,
+I didn't know it then, but I was already developing the incident response mindset. In a SOC, an alert fires and you triage, escalate, and write the post-mortem. In a kitchen, an order goes wrong and you fix it fast, you communicate clearly, you document why. Same mental model. Different domain.`,
     icon: (
       <svg viewBox="0 0 120 120" className="w-24 h-24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <rect x="20" y="55" width="80" height="40" rx="4" strokeOpacity="0.4" />
@@ -40,11 +40,11 @@ I didn't know it then, but I was already developing the incident response mindse
     period: "2023–Present",
     color: "var(--gold-muted)",
     accent: "var(--gold)",
-    narrative: `Getting my Alberta Security Guard license was the first time I wore a professional identity I could build on. Impact Security, ADESA Auction, Covenant Health — I was monitoring systems, managing access, and writing incident reports. The work was physical, but the thinking was analytical.
+    narrative: `Getting my Alberta Security Guard license was the first time I wore a professional identity I could build on. Impact Security, ADESA Auction, Covenant Health. I was monitoring systems, managing access, and writing incident reports. The work was physical, but the thinking was analytical.
 
 I started noticing the parallels immediately. CCTV monitoring is log monitoring. Access control is IAM. Incident escalation is SOC escalation. The language was different but the mechanics were identical.
 
-The 5 W's framework I used to write incident reports — Who, What, When, Where, Why — is the same structure used in digital IR documentation. I was doing security operations before I knew what that phrase meant in a technical context. That realization made me want to go deeper.`,
+The 5 W's framework I used to write incident reports (Who, What, When, Where, Why) is the same structure used in digital IR documentation. I was doing security operations before I knew what that phrase meant in a technical context. That realization made me want to go deeper.`,
     icon: (
       <svg viewBox="0 0 120 120" className="w-24 h-24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M60 15 L60 15 C40 15 25 30 25 50 L25 75 L60 105 L95 75 L95 50 C95 30 80 15 60 15Z" strokeOpacity="0.5" />
@@ -62,9 +62,9 @@ The 5 W's framework I used to write incident reports — Who, What, When, Where,
     period: "2022–Present",
     color: "var(--blue)",
     accent: "var(--blue)",
-    narrative: `I taught myself to code during the pandemic and never stopped. What started as curiosity became a freelance practice — building full-stack applications for clients, managing Ubuntu servers, and learning the hard way that security has to be designed in, not bolted on.
+    narrative: `I taught myself to code during the pandemic and never stopped. What started as curiosity became a freelance practice: building full-stack applications for clients, managing Ubuntu servers, and learning the hard way that security has to be designed in, not bolted on.
 
-I built ImmigrateX, a Next.js SaaS platform with authentication, RBAC, and payment integrations. I ran the server — UFW rules, SSL/TLS certs, PM2 process management, cron jobs. I configured monitoring and set up alerts when things broke at 3am.
+I built ImmigrateX, a Next.js SaaS platform with authentication, RBAC, and payment integrations. I ran the server myself: UFW rules, SSL/TLS certs, PM2 process management, cron jobs. I configured monitoring and set up alerts when things broke at 3am.
 
 Every OWASP vulnerability I studied became concrete when I was the one patching it. SQL injection stopped being a concept when I understood parameterized queries not as a best practice, but as the only correct way to talk to a database. That's the developer-to-defender bridge: knowing how attacks work because you've written the code they target.`,
     icon: (
@@ -89,11 +89,11 @@ Every OWASP vulnerability I studied became concrete when I was the one patching 
     period: "2024–Present",
     color: "var(--gold)",
     accent: "var(--gold)",
-    narrative: `This is where everything converged. ISC2 CC. Google Cybersecurity. CompTIA Security+. A home lab running on real hardware — Windows Server 2022 domain controller, Ubuntu web server, Kali Linux attack box, Wazuh SIEM. Not a virtual sandbox. A production-grade simulation lab I built myself.
+    narrative: `This is where everything converged. ISC2 CC. Google Cybersecurity. CompTIA Security+. A home lab running on real hardware: a Windows Server 2022 domain controller, Ubuntu web server, Kali Linux attack box, Wazuh SIEM. Not a virtual sandbox. A production-grade simulation lab I built myself.
 
 I'm running Wazuh agents on every endpoint. I write detection rules. I generate attack traffic and watch it hit the SIEM. I run Nmap, Hydra, and Gobuster against my own network and see exactly what the defender sees on the other side.
 
-Security+ is earned. TryHackMe SOC Level 1 is 65% complete. Every lab builds the muscle memory for the role I'm targeting. I don't want to study security — I want to practice it. The home lab is where that happens.`,
+Security+ is earned. TryHackMe SOC Level 1 is 65% complete. Every lab builds the muscle memory for the role I'm targeting. I don't want to just study security. I want to practice it. The home lab is where that happens.`,
     icon: (
       <svg viewBox="0 0 120 120" className="w-24 h-24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <rect x="20" y="35" width="80" height="55" rx="4" strokeOpacity="0.4" />
@@ -117,11 +117,11 @@ Security+ is earned. TryHackMe SOC Level 1 is 65% complete. Every lab builds the
     period: "Target: 2025–2026",
     color: "var(--green)",
     accent: "var(--green)",
-    narrative: `This is the role I'm building toward. SOC Analyst — Tier 1 at a company in Edmonton, or remote. Every cert I'm earning, every lab I'm running, every detection rule I'm writing is aimed at this exact outcome.
+    narrative: `This is the role I'm building toward. SOC Analyst, Tier 1, at a company in Edmonton, or remote. Every cert I'm earning, every lab I'm running, every detection rule I'm writing is aimed at this exact outcome.
 
 I'm not just studying the theory. I understand what a SOC shift looks like. I know how to triage an alert, how to write an escalation ticket, how to build a timeline from log data, and how to document an incident from detection to closure.
 
-The path after that is mapped out — T2, Security Engineer, Security Architect. But right now, the mission is to land the first role, build real experience, and prove that the home lab, the certs, and the mindset that started in a kitchen and a guard booth actually matter at the SOC level.
+The path after that is mapped out: T2, Security Engineer, Security Architect. But right now, the mission is to land the first role, build real experience, and prove that the home lab, the certs, and the mindset that started in a kitchen and a guard booth actually matter at the SOC level.
 
 I'm ready. This portfolio is the proof.`,
     icon: (
@@ -289,7 +289,7 @@ export default function AboutPage() {
               <span className="gradient-gold">The Analyst</span>
             </h1>
             <p className="text-[var(--text-muted)] text-lg leading-relaxed mb-8">
-              From kitchen operations to security operations — five stages of a non-traditional path
+              From kitchen operations to security operations: five stages of a non-traditional path
               into cybersecurity, told in first person.
             </p>
             <div className="glow-line mb-12 max-w-24 mx-auto" />
@@ -340,7 +340,7 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Link href="/portfolio" className="btn-gold">
-                View Projects <ArrowRight className="w-3.5 h-3.5" />
+                View Projects
               </Link>
               <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="btn-ghost">
                 <Download className="w-3.5 h-3.5" /> Download Resume

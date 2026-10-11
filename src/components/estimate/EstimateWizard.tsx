@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Loader2, Minus, Plus, Send } from "lucide-react";
+import { ArrowLeft, Check, CheckCircle2, Loader2, Minus, Plus, Send } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 
 import { submitEstimateAction } from "@/app/estimate/actions";
@@ -264,12 +264,12 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
 
         {step > 0 && (
           <div className="mt-8 flex items-center justify-between gap-4">
-            <button type="button" onClick={() => go(step - 1)} className="btn-ghost inline-flex items-center gap-2">
+            <button type="button" onClick={() => go(step - 1)} className="btn-ghost btn-no-arrow inline-flex items-center gap-2">
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
             {step < STEPS.length - 1 ? (
               <button type="button" disabled={!canContinue} onClick={() => go(step + 1)} className="btn-gold">
-                {step >= 2 && step <= 4 && !(step === 2 ? form.features.length : step === 3 ? form.integrations.length : 1) ? "Skip" : "Continue"} <ArrowRight className="w-3.5 h-3.5" />
+                {step >= 2 && step <= 4 && !(step === 2 ? form.features.length : step === 3 ? form.integrations.length : 1) ? "Skip" : "Continue"}
               </button>
             ) : (
               <button type="button" disabled={pending} onClick={submit} className="btn-solid-gold inline-flex items-center gap-2">
@@ -425,7 +425,7 @@ function EstimatePanel({ estimate, categoryLabel, pages }: { estimate: EstimateR
                       <span className="text-[var(--text)] tabular-nums shrink-0">
                         {line.oneTimeCents ? formatDollars(line.oneTimeCents) : ""}
                         {line.monthlyCents ? `${line.oneTimeCents ? " + " : ""}${formatDollars(line.monthlyCents)}/mo` : ""}
-                        {!line.oneTimeCents && !line.monthlyCents ? "—" : ""}
+                        {!line.oneTimeCents && !line.monthlyCents ? "-" : ""}
                       </span>
                     </motion.li>
                   ))}

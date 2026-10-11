@@ -73,7 +73,7 @@ export default function ContactPage() {
             >
               <span className="w-2 h-2 rounded-full bg-[var(--green)] pulse-green" />
               <span className="font-mono text-[11px] text-[var(--green)] tracking-wider">
-                AVAILABLE FOR OPPORTUNITIES — 2025/2026
+                AVAILABLE FOR OPPORTUNITIES · 2025/2026
               </span>
             </motion.div>
             <div className="glow-line mt-6 max-w-24 mx-auto" />
@@ -164,7 +164,7 @@ export default function ContactPage() {
                 <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-                <span className="font-mono text-[10px] text-[var(--text-muted)] ml-2">secure-compose — raghv.dev</span>
+                <span className="font-mono text-[10px] text-[var(--text-muted)] ml-2">secure-compose · raghv.dev</span>
                 <Lock className="w-2.5 h-2.5 text-[var(--gold)] ml-auto" />
               </div>
 

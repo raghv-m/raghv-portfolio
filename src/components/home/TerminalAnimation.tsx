@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 const COMMANDS = [
   { cmd: "ssh raghav@192.168.56.104", output: "Connected to WAZUH01 · homecorp.local" },
-  { cmd: "systemctl status wazuh-manager", output: "● wazuh-manager.service — active (running)" },
+  { cmd: "systemctl status wazuh-manager", output: "● wazuh-manager.service - active (running)" },
   { cmd: "nmap -sV -p 1-1000 192.168.56.102", output: "23/tcp open  telnet  · 80/tcp open http · 443/tcp open ssl" },
   { cmd: "tail -f /var/log/wazuh/alerts/alerts.json", output: '[ALERT] rule.id:5710 · "SSH brute force" · level:10' },
   { cmd: "python3 parse_logs.py --threat-level high", output: "Found 3 high-severity events · Exporting report..." },
@@ -75,7 +75,7 @@ export default function TerminalAnimation() {
         <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
         <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
         <span className="font-mono text-[10px] text-[#8a8a8a] ml-2">
-          raghav@WAZUH01 — bash
+          raghav@WAZUH01: bash
         </span>
         <div className="ml-auto flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" style={{ boxShadow: "0 0 4px rgba(0,255,136,0.6)" }} />

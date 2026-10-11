@@ -17,17 +17,17 @@ const NODES = [
     desc: "Building the foundation in physical security operations while aggressively pursuing cybersecurity knowledge. Every shift at ADESA and Covenant Health is a lesson in incident response, access control, and documentation. The SOC mindset begins here.",
     skills: ["Incident Reporting", "Access Control", "SIEM Fundamentals", "Active Directory", "Linux Admin", "Python", "TCP/IP Networking"],
     certs: ["ISC2 CC ✓", "Google Cybersecurity ✓", "Security+ ✓"],
-    note: "The guard booth teaches the same mindset as the SOC — monitor, detect, respond, document.",
+    note: "The guard booth teaches the same mindset as the SOC: monitor, detect, respond, document.",
   },
   {
     id: "soc1",
     label: "2026",
-    title: "SOC Analyst — Tier 1",
+    title: "SOC Analyst, Tier 1",
     timeline: "Target: 2025–2026",
     status: "NEXT" as const,
     color: "var(--gold)",
     badge: null,
-    desc: "Entry point to the blue team. Alert triage, SIEM operations, ticket escalation, shift documentation. Learning the environment from the ground up — building the adversarial awareness that will eventually move me to the red side.",
+    desc: "Entry point to the blue team. Alert triage, SIEM operations, ticket escalation, shift documentation. Learning the environment from the ground up and building the adversarial awareness that will eventually move me to the red side.",
     skills: ["Alert Triage", "SIEM Operations", "Ticket Escalation", "Log Correlation", "IR Documentation", "Shift Reporting"],
     certs: ["CompTIA Security+"],
     note: "Edmonton-first. Open to remote. Primary short-term target.",
@@ -40,7 +40,7 @@ const NODES = [
     status: "PLANNED" as const,
     color: "var(--blue)",
     badge: null,
-    desc: "Deeper investigation, malware triage, threat hunting across the environment. Building the adversarial mindset that bridges blue to red — understanding how attackers think by watching them in action in the SIEM.",
+    desc: "Deeper investigation, malware triage, threat hunting across the environment. Building the adversarial mindset that bridges blue to red, understanding how attackers think by watching them in action in the SIEM.",
     skills: ["Threat Hunting", "Malware Triage", "IR Lead", "SIEM Rule Authoring", "MITRE ATT&CK", "Threat Intelligence"],
     certs: ["CySA+", "CASP+"],
     note: "This stage builds the offensive intuition essential for penetration testing.",
@@ -54,10 +54,10 @@ const NODES = [
     color: "var(--gold)",
     badge: "★ PRIMARY GOAL",
     isMilestone: true,
-    desc: "The long-term target. Offensive security assessments — identifying and exploiting vulnerabilities before real attackers do. Web app testing, network pentesting, Active Directory attacks, professional report writing.",
+    desc: "The long-term target. Offensive security assessments: identifying and exploiting vulnerabilities before real attackers do. Web app testing, network pentesting, Active Directory attacks, professional report writing.",
     skills: ["Vulnerability Assessment", "Exploit Development", "Metasploit", "Burp Suite", "Custom Tooling", "Professional Report Writing", "Client Communication"],
     certs: ["OSCP (north star certification)", "CEH", "eJPT"],
-    note: "OSCP is the milestone that unlocks this role. Everything I'm building — the lab, the certs, the scripting — feeds directly into this.",
+    note: "OSCP is the milestone that unlocks this role. Everything I'm building (the lab, the certs, the scripting) feeds directly into this.",
   },
   {
     id: "senior",
@@ -70,7 +70,7 @@ const NODES = [
     desc: "Independent assessments, specialized domain expertise, and leading red team engagements. Web app, network, Active Directory, and cloud penetration testing at the highest level.",
     skills: ["Web App PenTest", "Network PenTest", "AD & Cloud PenTest", "Red Team Leadership", "Security Research"],
     certs: ["OSED", "OSEP", "CRTO", "CISSP"],
-    note: "International ambitions — Dubai, Australia, or senior Canadian engagements.",
+    note: "International ambitions: Dubai, Australia, or senior Canadian engagements.",
   },
 ];
 
@@ -390,7 +390,7 @@ export default function CareerPage() {
               <span className="gradient-gold">Penetration Tester</span>
             </h1>
             <p className="text-[var(--text-muted)] text-base sm:text-lg leading-relaxed max-w-xl mx-auto mb-8">
-              Every step has a purpose. Every cert, every lab, every late night — it all points here.
+              Every step has a purpose. Every cert, every lab, every late night. It all points here.
             </p>
             <div className="inline-flex items-center gap-2 glass-gold rounded-full px-5 py-2">
               <Crosshair className="w-3.5 h-3.5 text-[var(--gold)]" />
@@ -444,7 +444,7 @@ export default function CareerPage() {
               Currently targeting <span className="gradient-gold">SOC Analyst roles</span>
             </h2>
             <p className="text-[var(--text-muted)] mb-8 max-w-md mx-auto">
-              Edmonton, AB — open to remote and relocation. Every role on this path is a step toward OSCP and beyond.
+              Edmonton, AB. Open to remote and relocation. Every role on this path is a step toward OSCP and beyond.
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
               <Link href="/contact" className="btn-gold">Get in Touch</Link>

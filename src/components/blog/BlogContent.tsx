@@ -39,7 +39,7 @@ export default function BlogContent({ posts }: { posts: Post[] }) {
               Field <span className="gradient-gold">Notes</span>
             </h1>
             <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-              Technical writeups from the home lab — detection engineering, cert study notes,
+              Technical writeups from the home lab: detection engineering, cert study notes,
               tool deep dives, and the non-traditional path into cybersecurity.
             </p>
             <div className="glow-line mt-6 max-w-24" />
@@ -139,7 +139,7 @@ export default function BlogContent({ posts }: { posts: Post[] }) {
             Get notified when new posts drop.
           </p>
           <Link href="/contact" className="btn-gold">
-            Stay in the loop <ArrowRight className="w-3.5 h-3.5" />
+            Stay in the loop
           </Link>
         </motion.div>
       </div>

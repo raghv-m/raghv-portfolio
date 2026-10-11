@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/requireAdmin";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { z } from "zod";
+import { apiError, withApiErrors, zodMessage } from "@/lib/api";
 
 const updateSchema = z.object({
   title: z.string().min(1).max(200).optional(),
@@ -20,39 +21,36 @@ const updateSchema = z.object({
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function GET(_req: NextRequest, { params }: Params) {
+async function handleGET(_req: NextRequest, { params }: Params) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return apiError(401, "Please sign in again.");
 
   const { id } = await params;
   const post = await prisma.post.findUnique({ where: { id } });
-  if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!post) return apiError(404, "That item doesn't exist.");
   return NextResponse.json(post);
 }
 
-export async function PUT(req: NextRequest, { params }: Params) {
+async function handlePUT(req: NextRequest, { params }: Params) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return apiError(401, "Please sign in again.");
 
   const ip = getClientIp(req);
   const limit = await rateLimit(ip, "admin");
   if (!limit.success) {
-    return NextResponse.json(
-      { error: "Rate limit exceeded" },
-      { status: 429, headers: { "Retry-After": String(Math.ceil((limit.msBeforeNext ?? 60000) / 1000)) } }
-    );
+    return apiError(429, "Too many requests. Please wait a bit and try again.", { "Retry-After": String(Math.ceil((limit.msBeforeNext ?? 60000) / 1000)) });
   }
 
   const { id } = await params;
 
   const existing = await prisma.post.findUnique({ where: { id } });
-  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!existing) return apiError(404, "That item doesn't exist.");
 
   let body: unknown;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return apiError(400, "The request couldn't be read. Please try again."); }
 
   const parsed = updateSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
+  if (!parsed.success) return apiError(422, zodMessage(parsed.error));
 
   const { tags, notifySubscribers, ...rest } = parsed.data;
   const data: Record<string, unknown> = { ...rest };
@@ -74,23 +72,26 @@ export async function PUT(req: NextRequest, { params }: Params) {
   return NextResponse.json(post);
 }
 
-export async function DELETE(req: NextRequest, { params }: Params) {
+async function handleDELETE(req: NextRequest, { params }: Params) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return apiError(401, "Please sign in again.");
 
   const ip = getClientIp(req);
   const limit = await rateLimit(ip, "admin");
   if (!limit.success) {
-    return NextResponse.json(
-      { error: "Rate limit exceeded" },
-      { status: 429, headers: { "Retry-After": String(Math.ceil((limit.msBeforeNext ?? 60000) / 1000)) } }
-    );
+    return apiError(429, "Too many requests. Please wait a bit and try again.", { "Retry-After": String(Math.ceil((limit.msBeforeNext ?? 60000) / 1000)) });
   }
 
   const { id } = await params;
   const post = await prisma.post.findUnique({ where: { id } });
-  if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!post) return apiError(404, "That item doesn't exist.");
 
   await prisma.post.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
+
+export const GET = withApiErrors("GET /api/admin/posts/[id]", handleGET);
+
+export const PUT = withApiErrors("PUT /api/admin/posts/[id]", handlePUT);
+
+export const DELETE = withApiErrors("DELETE /api/admin/posts/[id]", handleDELETE);

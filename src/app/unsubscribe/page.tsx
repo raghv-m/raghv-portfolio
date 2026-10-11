@@ -43,7 +43,7 @@ export default async function UnsubscribePage({
             >
               Yes, unsubscribe me
             </button>
-            <Link href="/" className="btn-ghost">Cancel</Link>
+            <Link href="/" className="btn-ghost btn-no-arrow">Cancel</Link>
           </form>
         </div>
       </div>

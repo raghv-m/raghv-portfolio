@@ -3,10 +3,11 @@
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Loader2, Minus, Plus, Send } from "lucide-react";
+import { ArrowLeft, Check, CheckCircle2, Loader2, Minus, Plus, Send } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 
 import { submitEstimateAction } from "@/app/estimate/actions";
+import { FieldError, invalidProps } from "@/components/ui/FieldError";
 import { estimatorConfig } from "@/config/estimator";
 import { formatDollars, priceEstimate, type EstimateResult, type PricingItem } from "@/lib/estimator/engine";
 import { BUDGET_LABELS, TIMELINE_LABELS } from "@/lib/estimator/schema";
@@ -67,6 +68,7 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
     website: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<"name" | "email" | "consent", string>>>({});
   const [submitted, setSubmitted] = useState<{ reference: string; result: EstimateResult; emailed: boolean } | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -96,8 +98,16 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
 
   function submit() {
     setError(null);
-    if (!form.name.trim() || !/^\S+@\S+\.\S+$/.test(form.email)) return setError("Add your name and a valid email so I can send the estimate.");
-    if (!form.consent) return setError("Please agree to the privacy policy so I can reply.");
+    const errors: typeof fieldErrors = {};
+    if (!form.name.trim()) errors.name = "Enter your name.";
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) errors.email = "Enter a valid email address so I can send the estimate.";
+    if (!form.consent) errors.consent = "Please agree to the privacy policy so I can reply.";
+    setFieldErrors(errors);
+    const first = (["name", "email", "consent"] as const).find((k) => errors[k]);
+    if (first) {
+      requestAnimationFrame(() => document.getElementById(first === "consent" ? "consent" : first)?.focus());
+      return;
+    }
     startTransition(async () => {
       const result = await submitEstimateAction({
         ...form,
@@ -219,11 +229,13 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="name" className={labelClass}>Name *</label>
-                      <input id="name" required autoComplete="name" value={form.name} onChange={(e) => set("name", e.target.value)} className={inputClass} />
+                      <input id="name" required autoComplete="name" {...invalidProps("name", fieldErrors.name)} value={form.name} onChange={(e) => set("name", e.target.value)} className={`${inputClass} aria-[invalid=true]:border-[var(--red)]`} />
+                      <FieldError name="name" message={fieldErrors.name} />
                     </div>
                     <div>
                       <label htmlFor="email" className={labelClass}>Email *</label>
-                      <input id="email" type="email" required autoComplete="email" value={form.email} onChange={(e) => set("email", e.target.value)} className={inputClass} />
+                      <input id="email" type="email" required autoComplete="email" {...invalidProps("email", fieldErrors.email)} value={form.email} onChange={(e) => set("email", e.target.value)} className={`${inputClass} aria-[invalid=true]:border-[var(--red)]`} />
+                      <FieldError name="email" message={fieldErrors.email} />
                     </div>
                     <div>
                       <label htmlFor="company" className={labelClass}>Business name</label>
@@ -244,12 +256,13 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
                   <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" value={form.website} onChange={(e) => set("website", e.target.value)} className="absolute -left-[9999px] h-0 w-0 opacity-0" name="website" />
 
                   <label className="flex items-start gap-3 text-sm text-[var(--text-muted)] cursor-pointer">
-                    <input type="checkbox" checked={form.consent} onChange={(e) => set("consent", e.target.checked)} className="mt-1 accent-[#d4a017]" />
+                    <input id="consent" type="checkbox" {...invalidProps("consent", fieldErrors.consent)} checked={form.consent} onChange={(e) => set("consent", e.target.checked)} className="mt-1 accent-[#d4a017]" />
                     <span>
                       I agree to my details being used to reply to this request, as described in the{" "}
                       <Link href="/privacy" target="_blank" className="text-[var(--gold)] hover:underline">privacy policy</Link>.
                     </span>
                   </label>
+                  <FieldError name="consent" message={fieldErrors.consent} />
                 </div>
               </StepFrame>
             )}
@@ -264,12 +277,12 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
 
         {step > 0 && (
           <div className="mt-8 flex items-center justify-between gap-4">
-            <button type="button" onClick={() => go(step - 1)} className="btn-ghost inline-flex items-center gap-2">
+            <button type="button" onClick={() => go(step - 1)} className="btn-ghost btn-no-arrow inline-flex items-center gap-2">
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
             {step < STEPS.length - 1 ? (
               <button type="button" disabled={!canContinue} onClick={() => go(step + 1)} className="btn-gold">
-                {step >= 2 && step <= 4 && !(step === 2 ? form.features.length : step === 3 ? form.integrations.length : 1) ? "Skip" : "Continue"} <ArrowRight className="w-3.5 h-3.5" />
+                {step >= 2 && step <= 4 && !(step === 2 ? form.features.length : step === 3 ? form.integrations.length : 1) ? "Skip" : "Continue"}
               </button>
             ) : (
               <button type="button" disabled={pending} onClick={submit} className="btn-solid-gold inline-flex items-center gap-2">
@@ -425,7 +438,7 @@ function EstimatePanel({ estimate, categoryLabel, pages }: { estimate: EstimateR
                       <span className="text-[var(--text)] tabular-nums shrink-0">
                         {line.oneTimeCents ? formatDollars(line.oneTimeCents) : ""}
                         {line.monthlyCents ? `${line.oneTimeCents ? " + " : ""}${formatDollars(line.monthlyCents)}/mo` : ""}
-                        {!line.oneTimeCents && !line.monthlyCents ? "—" : ""}
+                        {!line.oneTimeCents && !line.monthlyCents ? "-" : ""}
                       </span>
                     </motion.li>
                   ))}
@@ -467,7 +480,7 @@ function Submitted({ reference, result, emailed, email }: { reference: string; r
         I&apos;ll reply within 1–2 business days with a firm quote.
       </p>
       <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-        <Link href="/projects" className="btn-gold justify-center">See my work</Link>
+        <Link href="/portfolio" className="btn-gold justify-center">See my work</Link>
         <Link href="/" className="btn-ghost justify-center">Back home</Link>
       </div>
     </motion.div>

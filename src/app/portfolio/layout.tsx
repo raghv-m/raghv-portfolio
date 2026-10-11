@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/config/site";
 
 export const metadata: Metadata = pageMetadata(
-  "/projects",
-  "Projects",
+  "/portfolio",
+  "Portfolio",
   "Websites, web apps and security projects built by Raghav Mahajan, with the stack and results behind each one.",
 );
 

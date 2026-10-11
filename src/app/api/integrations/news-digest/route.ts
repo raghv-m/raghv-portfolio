@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { apiError, withApiErrors, zodMessage } from "@/lib/api";
 
 /**
  * POST /api/integrations/news-digest
@@ -39,17 +40,17 @@ function authorised(request: NextRequest): boolean {
   return timingSafeEqual(a, b);
 }
 
-export async function POST(request: NextRequest) {
-  if (!authorised(request)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+async function handlePOST(request: NextRequest) {
+  if (!authorised(request)) return apiError(401, "Please sign in again.");
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return apiError(400, "The request couldn't be read. Please try again.");
   }
   const parsed = payloadSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid payload" }, { status: 400 });
+  if (!parsed.success) return apiError(400, zodMessage(parsed.error));
 
   const digestDate = parsed.data.date ?? new Intl.DateTimeFormat("en-CA", { timeZone: "America/Edmonton" }).format(new Date());
   const { error } = await getSupabaseAdmin()
@@ -60,8 +61,10 @@ export async function POST(request: NextRequest) {
     );
   if (error) {
     console.error("[news-digest] save failed", error);
-    return NextResponse.json({ error: "Could not save" }, { status: 500 });
+    return apiError(500, "Couldn't save the digest. Please try again.");
   }
   revalidatePath("/news");
   return NextResponse.json({ ok: true, date: digestDate, items: parsed.data.items.length });
 }
+
+export const POST = withApiErrors("POST /api/integrations/news-digest", handlePOST);

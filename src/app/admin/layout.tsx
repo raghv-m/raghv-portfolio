@@ -1,4 +1,5 @@
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import { FeedbackProvider } from "@/components/ui/feedback";
 import { requireAdmin } from "@/lib/session";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -6,10 +7,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   await requireAdmin();
 
   return (
-    <div className="min-h-screen flex">
-      <AdminSidebar />
-      {/* Left margin = sidebar width (w-52 = 208px) */}
-      <main className="flex-1 min-w-0 ml-52">{children}</main>
-    </div>
+    <FeedbackProvider>
+      <div className="min-h-screen flex">
+        <AdminSidebar />
+        {/* Left margin = sidebar width (w-52 = 208px) */}
+        <main className="flex-1 min-w-0 ml-52">{children}</main>
+      </div>
+    </FeedbackProvider>
   );
 }

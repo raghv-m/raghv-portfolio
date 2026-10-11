@@ -2,7 +2,9 @@ import "server-only";
 
 import { invoiceLegalLines, invoicing } from "@/config/invoicing";
 import { logAudit } from "@/lib/audit";
-import { sendInvoiceEmail } from "@/lib/mail";
+import { site } from "@/config/site";
+import { portalAccessFor } from "@/lib/clients";
+import { friendlyMailError, sendInvoiceEmail } from "@/lib/mail";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import type { InvoiceRow, InvoiceStatus } from "@/lib/supabase/database.types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -174,9 +176,11 @@ export async function sendInvoice(actorId: string, invoiceId: string): Promise<R
         amount: formatMoney(invoice.amount_due, invoice.currency),
         dueDate: invoice.due_date,
         pdf,
+        access: portalAccessFor(client.email, "/portal#invoices", site.url),
       });
     } catch (error) {
-      emailError = error instanceof Error ? error.message : "Email failed";
+      console.error("[invoices] invoice email failed", error);
+      emailError = friendlyMailError(error);
     }
   }
   await admin()

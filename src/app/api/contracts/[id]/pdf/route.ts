@@ -3,9 +3,10 @@ import { z } from "zod";
 
 import { getContractPdfUrl } from "@/lib/contracts/service";
 import { hasVerifiedMfa, getSignedIn } from "@/lib/session";
+import { withApiErrors } from "@/lib/api";
 
 /** Signed contract PDF: the client it belongs to, or the admin (with 2FA). 404 otherwise. */
-export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+async function handleGET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) return new NextResponse("Not found", { status: 404 });
   const signedIn = await getSignedIn();
@@ -17,3 +18,5 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   response.headers.set("Cache-Control", "private, no-store");
   return response;
 }
+
+export const GET = withApiErrors("GET /api/contracts/[id]/pdf", handleGET);

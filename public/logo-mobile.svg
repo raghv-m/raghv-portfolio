@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" role="img">
+  <title>RM mobile lockup</title>
+  <polygon points="60,10 103.3,35 103.3,85 60,110 16.7,85 16.7,35" fill="none" stroke="#D4A017" stroke-width="1.5" stroke-linejoin="round"/>
+  <polygon points="60,18 96.4,39 96.4,81 60,102 23.6,81 23.6,39" fill="none" stroke="#D4A017" stroke-width="0.5" opacity="0.45" stroke-linejoin="round"/>
+  <g transform="translate(60 60) scale(0.556) translate(-340 -130)">
+    <path d="M286 165V95H306A17.5 17.5 0 0 1 306 130H286M306 130L320 165" fill="none" stroke="#D4A017" stroke-width="5" stroke-linecap="square"/>
+    <path d="M336 165V95L364 136L392 95V165" fill="none" stroke="#D4A017" stroke-width="5" stroke-linecap="square"/>
+  </g>
+  <circle cx="60" cy="110" r="2" fill="#D4A017"/>
+  <text x="128" y="69" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="3" fill="#D4A017">RAGHV.DEV</text>
+</svg>

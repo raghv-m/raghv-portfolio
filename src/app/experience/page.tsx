@@ -18,12 +18,12 @@ const ROLES = [
     accentHex: "#d4a017",
     type: "SECURITY OPS",
     active: true,
-    summary: "Front-line physical security operations at high-volume commercial and healthcare facilities. Built the operational mindset I bring to cybersecurity — alert monitoring, incident escalation, and documentation under pressure.",
+    summary: "Front-line physical security operations at high-volume commercial and healthcare facilities. Built the operational mindset I bring to cybersecurity: alert monitoring, incident escalation, and documentation under pressure.",
     bullets: [
       "Monitored CCTV systems and restricted zones for unauthorized access across multi-building campuses",
-      "Investigated and escalated security incidents using the 5 W's methodology — same framework used in digital SOC triage",
+      "Investigated and escalated security incidents using the 5 W's methodology, the same framework used in digital SOC triage",
       "Managed access control for 100+ daily entrants, enforcing least-privilege physical access",
-      "Produced audit-ready written incident reports — chain of custody documentation",
+      "Produced audit-ready written incident reports with chain of custody documentation",
       "Coordinated with law enforcement and emergency services on active incidents",
     ],
     transfer: [
@@ -37,7 +37,7 @@ const ROLES = [
   {
     icon: Shield,
     company: "Impact Security",
-    role: "Tactical Security Guard — Surveillance & Incident Response",
+    role: "Tactical Security Guard: Surveillance & Incident Response",
     clients: "Retail Locations",
     location: "Edmonton, AB",
     period: "Apr 2023 – Present",
@@ -45,12 +45,12 @@ const ROLES = [
     accentHex: "#d4a017",
     type: "SECURITY OPS",
     active: true,
-    summary: "Loss prevention and real-time surveillance at retail environments — constant threat assessment, behavioral analysis, and rapid response.",
+    summary: "Loss prevention and real-time surveillance at retail environments: constant threat assessment, behavioral analysis, and rapid response.",
     bullets: [
-      "Performed real-time surveillance using CCTV and physical patrol — active threat hunting mindset",
+      "Performed real-time surveillance using CCTV and physical patrol with an active threat hunting mindset",
       "Identified and responded to shoplifting incidents, disruptive behavior, and safety threats",
       "Completed detailed incident reports for legal and compliance documentation",
-      "Maintained high situational awareness — translated to network anomaly detection thinking",
+      "Maintained high situational awareness, which translated to network anomaly detection thinking",
     ],
     transfer: [
       { from: "Behavioral analysis", to: "Threat actor TTPs" },
@@ -70,14 +70,14 @@ const ROLES = [
     accentHex: "#4488ff",
     type: "SECURE DEV",
     active: true,
-    summary: "Full-stack development with a security-conscious approach — where I learned secure development practices, Linux server administration, and applied OWASP principles to production systems.",
+    summary: "Full-stack development with a security-conscious approach. This is where I learned secure development practices, Linux server administration, and applied OWASP principles to production systems.",
     bullets: [
       "Built full-stack apps with CSRF/XSS mitigation, encrypted authentication, and Zod input validation",
       "Administered Ubuntu Linux servers: UFW firewall, SSL/TLS certs, PM2, cron scheduling",
       "Monitored system logs and configured alerts for server health and security events",
       "Developed Python and Bash automation scripts for deployment, log parsing, and API integrations",
       "Projects: ImmigrateX (Next.js SaaS), Chattr (real-time messaging), 3D Chess (Three.js), RBAC Security App",
-      "Implemented Role-Based Access Control — Principle of Least Privilege in production",
+      "Implemented Role-Based Access Control (Principle of Least Privilege) in production",
     ],
     transfer: [
       { from: "Secure SDLC", to: "Vulnerability management" },
@@ -101,9 +101,9 @@ const ROLES = [
     summary: "High-pressure operational leadership managing a team of 10+ during peak service. Built process compliance, cross-functional coordination, and performance under pressure.",
     bullets: [
       "Led a team of 10+ kitchen staff during high-volume service periods",
-      "Maintained health and safety compliance documentation — audit-ready records",
+      "Maintained health and safety compliance documentation and audit-ready records",
       "Coordinated with front-of-house for cross-functional operational efficiency",
-      "Resolved operational incidents quickly under pressure — core SOC skillset",
+      "Resolved operational incidents quickly under pressure, a core SOC skill",
     ],
     transfer: [
       { from: "Team leadership", to: "SOC team coordination" },
@@ -123,7 +123,7 @@ const ROLES = [
     accentHex: "#555",
     type: "OPERATIONS",
     active: false,
-    summary: "Multi-site kitchen operations — developed operational discipline, process documentation, and systems thinking under service pressure.",
+    summary: "Multi-site kitchen operations. Developed operational discipline, process documentation, and systems thinking under service pressure.",
     bullets: [
       "Maintained consistency and quality standards across high-volume shifts",
       "Supervised station workflow and ensured health code compliance",
@@ -344,7 +344,7 @@ export default function ExperiencePage() {
               Operator <span className="gradient-gold">History</span>
             </h1>
             <p className="text-[var(--text-muted)] max-w-lg text-base leading-relaxed mb-8">
-              Every role has built the mindset of a security professional — from physical access control
+              Every role has built the mindset of a security professional, from physical access control
               to secure software development. Click any card to expand.
             </p>
 

@@ -145,8 +145,8 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.45 }}
               className="flex flex-wrap gap-3"
             >
-              <Link href="/projects" className="btn-gold">
-                View My Work <ArrowRight className="w-3.5 h-3.5" />
+              <Link href="/portfolio" className="btn-gold">
+                View My Work
               </Link>
               <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="btn-ghost">
                 <Download className="w-3.5 h-3.5" /> Resume
@@ -184,7 +184,7 @@ export default function HomePage() {
         </motion.div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 scroll-indicator">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 scroll-indicator">
           <span className="font-mono text-[9px] text-[#333] tracking-widest">SCROLL</span>
           <ChevronDown className="w-4 h-4 text-[#333]" />
         </div>

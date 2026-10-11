@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 
+import { site } from "@/config/site";
+
 function getTransport() {
   if (process.env.MAIL_PROVIDER === "resend") {
     return nodemailer.createTransport({
@@ -21,82 +23,161 @@ const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
-// Only allow https:// links in admin-composed HTML — blocks javascript:/data: URI injection.
+// Only allow https:// links in admin-composed HTML: blocks javascript:/data: URI injection.
 const safeHref = (url: string | undefined | null) =>
   url && /^https:\/\//i.test(url.trim()) ? esc(url.trim()) : undefined;
 
 const FROM = process.env.SMTP_FROM || "Raghav Mahajan <onboarding@resend.dev>";
 const TO = process.env.CONTACT_RECEIVER_EMAIL || "raaghvv0508@gmail.com";
 
-// ─── Shared design tokens ──────────────────────────────────────────────────
-const GOLD = "#d4a017";
-const BG = "#0a0a0a";
-const SURFACE = "#111111";
-const BORDER = "#222222";
-const TEXT = "#e8e8e8";
-const MUTED = "#888888";
+/** The sign-in page, continuing to `next` afterwards. Never expires, unlike one-time links. */
+export function signInUrl(next = "/portal", origin = site.url) {
+  return `${origin}/auth/login?next=${encodeURIComponent(next)}`;
+}
 
-function base(content: string, preview = "") {
+/**
+ * Turns a mail provider error into a sentence the admin can act on. Resend's raw messages are
+ * long and mention settings by their internal names.
+ */
+export function friendlyMailError(error: unknown): string {
+  const raw = error instanceof Error ? error.message : String(error ?? "");
+  if (/testing emails|only send.*own email/i.test(raw)) return "Resend is in test mode and only sends to your own address. Verify your domain at resend.com/domains and send from it (SMTP_FROM).";
+  if (/domain is not verified/i.test(raw)) return `The sending domain isn't verified in the Resend account this API key belongs to. Check SMTP_FROM (${FROM.replace(/.*</, "").replace(/>.*/, "")}) and the key.`;
+  if (/invalid.*(api key|credentials)|authentication failed|EAUTH|535/i.test(raw)) return "Resend rejected the API key. Create a new key in Resend and update RESEND_API_KEY.";
+  if (/rate limit|too many|429/i.test(raw)) return "Resend's sending limit was hit. Wait a minute and try again.";
+  if (/ETIMEDOUT|ECONNREFUSED|ENOTFOUND|ESOCKET|ECONNECTION/i.test(raw)) return "Couldn't reach the mail server. Try again in a moment.";
+  if (/recipient|mailbox|address.*(invalid|rejected)/i.test(raw)) return "The recipient address was rejected. Check the client's email for typos.";
+  return raw || "The email couldn't be sent.";
+}
+
+// ─── Design tokens (dark) ──────────────────────────────────────────────────
+const C = {
+  page: "#070707",
+  card: "#0f0f0f",
+  panel: "#151515",
+  border: "#262626",
+  text: "#f2f2f2",
+  body: "#b4b4b4",
+  muted: "#7c7c7c",
+  faint: "#555555",
+  gold: "#d4a017",
+  goldSoft: "#1d1806",
+  green: "#3ddc97",
+};
+// Always the production URL: an email can be opened years later, from any device.
+const LOGO_URL = "https://www.raghv.dev/logo-email.png";
+const SANS = "'Helvetica Neue',Helvetica,Arial,sans-serif";
+const MONO = "'SFMono-Regular',Menlo,Consolas,'Courier New',monospace";
+
+// Building blocks. Inline styles and tables only: that's what email clients render reliably.
+const eyebrow = (t: string) =>
+  `<p style="margin:0 0 10px;font-family:${MONO};font-size:11px;line-height:1.4;color:${C.gold};letter-spacing:0.14em;text-transform:uppercase;">${t}</p>`;
+const heading = (t: string) =>
+  `<h1 style="margin:0 0 14px;font-family:${SANS};font-size:24px;line-height:1.3;font-weight:700;color:${C.text};">${t}</h1>`;
+const para = (t: string, last = false) =>
+  `<p style="margin:0 0 ${last ? 0 : 18}px;font-family:${SANS};font-size:15px;line-height:1.7;color:${C.body};">${t}</p>`;
+const small = (t: string) =>
+  `<p style="margin:18px 0 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.muted};">${t}</p>`;
+const strong = (t: string) => `<span style="color:${C.text};font-weight:600;">${t}</span>`;
+const link = (url: string, t: string) => `<a href="${url}" style="color:${C.gold};text-decoration:underline;">${t}</a>`;
+
+/** Bulletproof button: a table cell with padding, so it stays clickable even when CSS is stripped. */
+function button(url: string, label: string, variant: "primary" | "secondary" = "primary") {
+  const primary = variant === "primary";
+  return `
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:6px 0 4px;">
+    <tr><td bgcolor="${primary ? C.gold : C.card}" style="border-radius:6px;border:1px solid ${primary ? C.gold : C.border};">
+      <a href="${url}" target="_blank" style="display:inline-block;padding:13px 26px;font-family:${SANS};font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;color:${primary ? "#0a0a0a" : C.text};border-radius:6px;">${label} &rarr;</a>
+    </td></tr>
+  </table>`;
+}
+
+/** Key/value summary, e.g. amount and due date. */
+function facts(rows: [string, string][], accent = C.gold) {
+  return `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:4px 0 22px;background:${C.panel};border:1px solid ${C.border};border-left:3px solid ${accent};border-radius:8px;">
+    ${rows.map(([k, v], i) => `
+    <tr><td style="padding:${i ? 4 : 16}px 18px ${i === rows.length - 1 ? 16 : 4}px;">
+      <p style="margin:0;font-family:${MONO};font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:${C.muted};">${k}</p>
+      <p style="margin:3px 0 0;font-family:${SANS};font-size:${i === 0 ? 20 : 15}px;font-weight:${i === 0 ? 700 : 500};color:${C.text};">${v}</p>
+    </td></tr>`).join("")}
+  </table>`;
+}
+
+/** Panel with a title, for secondary information inside an email. */
+function panel(title: string, inner: string) {
+  return `
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:22px 0 0;background:${C.panel};border:1px solid ${C.border};border-radius:8px;">
+    <tr><td style="padding:18px;">
+      <p style="margin:0 0 8px;font-family:${MONO};font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:${C.gold};">${title}</p>
+      ${inner}
+    </td></tr>
+  </table>`;
+}
+
+/** How the client gets in: the sign-in page, continuing to the right page afterwards. */
+export type PortalAccess = { signInUrl: string; email: string };
+
+const FIRST_TIME = "First time? Set your password with \"Forgot password\" on the sign-in page.";
+
+function portalAccess(access: PortalAccess, label: string) {
+  return `${button(access.signInUrl, label)}
+  <p style="margin:12px 0 0;font-family:${SANS};font-size:13px;line-height:1.6;color:${C.muted};">Sign in with ${strong(esc(access.email))}. ${FIRST_TIME}</p>`;
+}
+
+function layout(content: string, preview: string) {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="color-scheme:dark;supported-color-schemes:dark;">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <meta name="color-scheme" content="dark"/>
-  <title>${preview}</title>
+  <meta name="supported-color-schemes" content="dark"/>
+  <title>${esc(preview)}</title>
+  <style>
+    :root { color-scheme: dark; supported-color-schemes: dark; }
+    @media (max-width:600px) { .px { padding-left:22px !important; padding-right:22px !important; } }
+  </style>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
 </head>
-<body style="margin:0;padding:0;background:${BG};font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
-  ${preview ? `<div style="display:none;max-height:0;overflow:hidden;color:${BG}">${preview}&zwnj;&nbsp;</div>` : ""}
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${BG};padding:32px 16px;">
-    <tr><td align="center">
-      <table role="presentation" width="100%" style="max-width:560px;background:${SURFACE};border-radius:12px;border:1px solid ${BORDER};overflow:hidden;">
-
-        <!-- Header -->
-        <tr>
-          <td style="padding:0;background:${BG};border-bottom:1px solid ${BORDER};">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-              <tr>
-                <td style="padding:20px 28px;">
-                  <table role="presentation" cellpadding="0" cellspacing="0">
-                    <tr>
-                      <td style="width:28px;height:28px;border:1px solid rgba(212,160,23,0.4);border-radius:4px;text-align:center;vertical-align:middle;">
-                        <span style="font-size:14px;color:${GOLD};">⬡</span>
-                      </td>
-                      <td style="padding-left:10px;">
-                        <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:600;color:${GOLD};letter-spacing:0.08em;">raghv.dev</span>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr><td style="height:2px;background:linear-gradient(90deg,transparent,${GOLD},transparent);"></td></tr>
-            </table>
-          </td>
-        </tr>
-
-        <!-- Body -->
-        <tr>
-          <td style="padding:36px 28px 28px;">
-            ${content}
-          </td>
-        </tr>
-
-        <!-- Footer -->
-        <tr>
-          <td style="padding:20px 28px;border-top:1px solid ${BORDER};background:${BG};">
-            <p style="margin:0;font-family:'Courier New',monospace;font-size:10px;color:#444;letter-spacing:0.06em;">
-              Raghav Mahajan &nbsp;·&nbsp; Edmonton, AB, Canada &nbsp;·&nbsp;
-              <a href="https://raghv.dev" style="color:#555;text-decoration:none;">raghv.dev</a>
-            </p>
-          </td>
-        </tr>
-
+<body bgcolor="${C.page}" style="margin:0;padding:0;background:${C.page};-webkit-font-smoothing:antialiased;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${C.page};">${esc(preview)}&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.page}" style="background:${C.page};">
+    <tr><td align="center" style="padding:36px 12px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;">
+        <tr><td style="padding:0 6px 18px;">
+          <!-- PNG, not SVG: most email clients don't render SVG. Gold version, made for dark backgrounds. -->
+          <a href="${site.url}" style="text-decoration:none;"><img src="${LOGO_URL}" width="120" height="48" alt="RAGHV.DEV" style="display:block;width:120px;height:48px;border:0;outline:none;color:${C.gold};font-family:${MONO};font-size:14px;font-weight:700;letter-spacing:0.12em;"/></a>
+        </td></tr>
+        <tr><td bgcolor="${C.card}" style="background:${C.card};border:1px solid ${C.border};border-radius:12px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr><td height="3" style="height:3px;line-height:3px;font-size:0;background:${C.gold};border-radius:12px 12px 0 0;">&nbsp;</td></tr>
+            <tr><td class="px" style="padding:34px 34px 32px;">${content}</td></tr>
+          </table>
+        </td></tr>
+        <tr><td style="padding:20px 6px 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.faint};">
+          Raghav Mahajan &middot; Web design &amp; security &middot; Edmonton, Alberta<br/>
+          Reply to this email and it comes straight to me. &middot; <a href="${site.url}" style="color:${C.muted};text-decoration:none;">raghv.dev</a>
+        </td></tr>
       </table>
     </td></tr>
   </table>
 </body>
 </html>`;
+}
+
+/** Plain-text version of an HTML email. Mail with a text part is less likely to land in spam. */
+function toText(html: string) {
+  return html
+    .replace(/<head[\s\S]*?<\/head>/i, "")
+    .replace(/<div style="display:none[\s\S]*?<\/div>/i, "")
+    .replace(/<a [^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href, label) => `${label.replace(/<[^>]+>/g, "").trim()} (${href.replace(/&amp;/g, "&")})`)
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|h1|tr|div)>/gi, "\n\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&rarr;/g, "->").replace(/&middot;/g, "·").replace(/&nbsp;|&zwnj;/g, " ")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/^[ \t]+|[ \t]+$/gm, "").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 // ─── Generic send ──────────────────────────────────────────────────────────
@@ -105,14 +186,17 @@ export async function sendMail({
   subject,
   html,
   attachments,
+  replyTo = TO,
 }: {
   to: string;
   subject: string;
   html: string;
   attachments?: { filename: string; content: Buffer; contentType: string }[];
+  replyTo?: string;
 }) {
   const transport = getTransport();
-  await transport.sendMail({ from: FROM, to, subject, html, attachments });
+  // The sending address can't receive mail, so replies go to the inbox in CONTACT_RECEIVER_EMAIL.
+  await transport.sendMail({ from: FROM, to, subject, html, text: toText(html), attachments, replyTo });
 }
 
 // ─── Batched send ──────────────────────────────────────────────────────────
@@ -133,7 +217,7 @@ export async function sendMailBatch(
       if (result.status === "fulfilled") {
         sent++;
       } else {
-        errors.push({ to: chunk[idx].to, error: String(result.reason) });
+        errors.push({ to: chunk[idx].to, error: friendlyMailError(result.reason) });
       }
     });
   }
@@ -144,32 +228,22 @@ export async function sendMailBatch(
 // ─── New-post subscriber notification ─────────────────────────────────────
 export async function notifySubscribersAboutPost(post: { title: string; slug: string; excerpt: string }) {
   const { prisma } = await import("@/lib/prisma");
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
   const subscribers = await prisma.subscriber.findMany({
     where: { active: true },
     select: { email: true, unsubscribeToken: true },
   });
   if (subscribers.length === 0) return;
 
-  const title = esc(post.title);
-  const excerpt = esc(post.excerpt);
-
   const items = subscribers.map((sub) => {
-    const unsubLink = `${baseUrl}/unsubscribe?token=${sub.unsubscribeToken}`;
-    const html = `
-      <div style="font-family:sans-serif;max-width:560px;margin:auto;background:#0a0a0a;color:#e8e8e8;border-radius:12px;border:1px solid #222;overflow:hidden;">
-        <div style="padding:28px;border-bottom:1px solid #222;">
-          <p style="margin:0 0 6px;font-family:monospace;font-size:10px;color:#d4a017;letter-spacing:.15em;text-transform:uppercase;">New Post</p>
-          <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;">${title}</h1>
-          <p style="margin:0 0 20px;font-size:14px;color:#888;line-height:1.7;">${excerpt}</p>
-          <a href="${baseUrl}/blog/${post.slug}" style="display:inline-block;padding:10px 22px;border:1px solid #d4a017;border-radius:4px;font-size:12px;color:#d4a017;text-decoration:none;letter-spacing:.08em;text-transform:uppercase;">Read Post →</a>
-        </div>
-        <div style="padding:16px 28px;background:#0a0a0a;">
-          <p style="margin:0;font-size:11px;color:#444;">You&apos;re subscribed to Raghav&apos;s Cyber Daily. <a href="${unsubLink}" style="color:#555;">Unsubscribe</a></p>
-        </div>
-      </div>
-    `;
-    return { to: sub.email, subject: `New Post: ${post.title}`, html };
+    const unsubLink = `${site.url}/unsubscribe?token=${sub.unsubscribeToken}`;
+    const html = layout(`
+      ${eyebrow("New post")}
+      ${heading(esc(post.title))}
+      ${para(esc(post.excerpt))}
+      ${button(`${site.url}/blog/${post.slug}`, "Read the post")}
+      ${small(`You're subscribed to Raghav's Cyber Daily. ${link(unsubLink, "Unsubscribe")}`)}
+    `, post.excerpt || post.title);
+    return { to: sub.email, subject: `New post: ${post.title}`, html };
   });
 
   const { errors } = await sendMailBatch(items);
@@ -180,58 +254,31 @@ export async function notifySubscribersAboutPost(post: { title: string; slug: st
 export async function sendContactNotification(data: {
   name: string; email: string; subject: string; message: string;
 }) {
-  const html = base(`
-    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">New Contact Message</p>
-    <h1 style="margin:0 0 24px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${data.subject}</h1>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-      <tr>
-        <td style="padding:12px 16px;background:#161616;border-radius:8px 8px 0 0;border:1px solid ${BORDER};border-bottom:none;">
-          <p style="margin:0;font-family:'Courier New',monospace;font-size:10px;color:${MUTED};text-transform:uppercase;letter-spacing:0.1em;">From</p>
-          <p style="margin:4px 0 0;font-size:14px;color:${TEXT};">${esc(data.name)} &nbsp;<span style="color:${MUTED};">&lt;${esc(data.email)}&gt;</span></p>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:12px 16px;background:#0f0f0f;border-radius:0 0 8px 8px;border:1px solid ${BORDER};border-top:none;">
-          <p style="margin:0;font-family:'Courier New',monospace;font-size:10px;color:${MUTED};text-transform:uppercase;letter-spacing:0.1em;">Message</p>
-          <p style="margin:8px 0 0;font-size:14px;color:${TEXT};line-height:1.7;white-space:pre-wrap;">${esc(data.message)}</p>
-        </td>
-      </tr>
+  const html = layout(`
+    ${eyebrow("New contact message")}
+    ${heading(esc(data.subject))}
+    ${facts([["From", `${esc(data.name)}`], ["Email", esc(data.email)]])}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px;">
+      <tr><td style="font-family:${SANS};font-size:15px;line-height:1.7;color:${C.text};white-space:pre-wrap;">${esc(data.message)}</td></tr>
     </table>
+    ${button(`mailto:${encodeURIComponent(data.email)}?subject=${encodeURIComponent("Re: " + data.subject)}`, `Reply to ${esc(data.name)}`)}
+    ${small("Hitting Reply in your inbox also goes straight to them.")}
+  `, `New message from ${data.name}`);
 
-    <a href="mailto:${encodeURIComponent(data.email)}?subject=${encodeURIComponent("Re: " + data.subject)}" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">Reply to ${esc(data.name)}</a>
-  `, `New message from ${esc(data.name)}`);
-
-  await sendMail({ to: TO, subject: `[raghv.dev] ${data.subject}`, html });
+  await sendMail({ to: TO, subject: `[raghv.dev] ${data.subject}`, html, replyTo: data.email });
 }
 
 // ─── Contact auto-reply (to sender) ───────────────────────────────────────
 export async function sendAutoReply(to: string, name: string) {
-  const html = base(`
-    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Message Received</p>
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Hey ${esc(name)},</h1>
-    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Your message landed safely. I personally review every inquiry and will get back to you within <span style="color:${TEXT};">24–48 hours</span>.</p>
-
-    <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${GOLD};margin-bottom:28px;">
-      <p style="margin:0;font-size:13px;color:${MUTED};line-height:1.7;">If it's urgent, connect with me directly on
-        <a href="https://linkedin.com/in/raghav-mahajan-17611b24b" style="color:${GOLD};text-decoration:none;">LinkedIn</a> —
-        I check messages there daily.
-      </p>
-    </div>
-
-    <table role="presentation" cellpadding="0" cellspacing="0">
-      <tr>
-        <td style="padding-right:12px;">
-          <a href="https://raghv.dev" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">Visit Portfolio</a>
-        </td>
-        <td>
-          <a href="https://linkedin.com/in/raghav-mahajan-17611b24b" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${BORDER};border-radius:4px;font-size:12px;font-weight:600;color:${MUTED};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">LinkedIn</a>
-        </td>
-      </tr>
-    </table>
+  const html = layout(`
+    ${eyebrow("Message received")}
+    ${heading(`Thanks, ${esc(name)}.`)}
+    ${para(`Your message came through. I read every one myself and will reply within ${strong("1 to 2 business days")}.`)}
+    ${para("If you want to add anything, just reply to this email.")}
+    ${button(site.url, "Visit raghv.dev", "secondary")}
   `, `I got your message, ${name}`);
 
-  await sendMail({ to, subject: "Message received — Raghav Mahajan", html });
+  await sendMail({ to, subject: "Got your message: Raghav Mahajan", html });
 }
 
 // ─── Invoice (to client, PDF attached) ─────────────────────────────────────
@@ -242,6 +289,7 @@ export async function sendInvoiceEmail({
   amount,
   dueDate,
   pdf,
+  access,
 }: {
   to: string;
   clientName: string;
@@ -249,28 +297,22 @@ export async function sendInvoiceEmail({
   amount: string;
   dueDate: string;
   pdf: Buffer;
+  access: PortalAccess;
 }) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
-  const due = new Intl.DateTimeFormat("en-CA", { dateStyle: "long", timeZone: "America/Edmonton" }).format(new Date(dueDate));
-  const html = base(`
-    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Invoice ${esc(invoiceNumber)}</p>
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Hi ${esc(clientName)},</h1>
-    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Your invoice is attached as a PDF.</p>
-
-    <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${GOLD};margin-bottom:28px;">
-      <p style="margin:0 0 6px;font-size:13px;color:${MUTED};">Amount due</p>
-      <p style="margin:0 0 14px;font-size:22px;font-weight:700;color:${TEXT};">${esc(amount)}</p>
-      <p style="margin:0;font-size:13px;color:${MUTED};">Due by <span style="color:${TEXT};">${esc(due)}</span></p>
-    </div>
-
-    <a href="${baseUrl}/portal/invoices" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">View in client portal</a>
-
-    <p style="margin:28px 0 0;font-size:12px;color:#555;">Questions about this invoice? Just reply to this email.</p>
-  `, `Invoice ${invoiceNumber}: ${amount}`);
+  // Due dates are plain dates (2026-10-25): format in UTC so Edmonton time doesn't shift them back a day.
+  const due = new Intl.DateTimeFormat("en-CA", { dateStyle: "long", timeZone: /^\d{4}-\d{2}-\d{2}$/.test(dueDate) ? "UTC" : "America/Edmonton" }).format(new Date(dueDate));
+  const html = layout(`
+    ${eyebrow(`Invoice ${esc(invoiceNumber)}`)}
+    ${heading(`Hi ${esc(clientName)},`)}
+    ${para("Here's your invoice. The PDF is attached, and you can also find it in your client portal.")}
+    ${facts([["Amount due", esc(amount)], ["Due by", esc(due)], ["Invoice", esc(invoiceNumber)]])}
+    ${portalAccess(access, "Sign in to view invoices")}
+    ${small("Questions about this invoice? Just reply to this email.")}
+  `, `Invoice ${invoiceNumber}: ${amount}, due ${due}`);
 
   await sendMail({
     to,
-    subject: `Invoice ${invoiceNumber} from Raghav Mahajan`,
+    subject: `Invoice ${invoiceNumber} from Raghav Mahajan (${amount})`,
     html,
     attachments: [{ filename: `${invoiceNumber}.pdf`, content: pdf, contentType: "application/pdf" }],
   });
@@ -294,8 +336,8 @@ function estimateRows(result: EstimateEmailResult) {
     .map(
       (line) => `
         <tr>
-          <td style="padding:8px 0;border-bottom:1px solid ${BORDER};font-size:13px;color:${TEXT};">${esc(line.label)}${line.detail ? `<br/><span style="font-size:11px;color:${MUTED};">${esc(line.detail)}</span>` : ""}</td>
-          <td style="padding:8px 0;border-bottom:1px solid ${BORDER};font-size:13px;color:${TEXT};text-align:right;white-space:nowrap;">${line.oneTimeCents ? dollars(line.oneTimeCents) : ""}${line.monthlyCents ? `${line.oneTimeCents ? "<br/>" : ""}<span style="color:${MUTED};">${dollars(line.monthlyCents)}/mo</span>` : ""}</td>
+          <td style="padding:10px 0;border-bottom:1px solid ${C.border};font-family:${SANS};font-size:13px;line-height:1.5;color:${C.text};">${esc(line.label)}${line.detail ? `<br/><span style="font-size:12px;color:${C.muted};">${esc(line.detail)}</span>` : ""}</td>
+          <td style="padding:10px 0 10px 12px;border-bottom:1px solid ${C.border};font-family:${SANS};font-size:13px;color:${C.text};text-align:right;white-space:nowrap;vertical-align:top;">${line.oneTimeCents ? dollars(line.oneTimeCents) : ""}${line.monthlyCents ? `${line.oneTimeCents ? "<br/>" : ""}<span style="color:${C.muted};">${dollars(line.monthlyCents)}/mo</span>` : ""}</td>
         </tr>`,
     )
     .join("");
@@ -308,7 +350,7 @@ export async function sendEstimateEmail({
   categoryLabel,
   pages,
   result,
-  portal,
+  access,
 }: {
   to: string;
   name: string;
@@ -316,43 +358,25 @@ export async function sendEstimateEmail({
   categoryLabel: string;
   pages: number;
   result: EstimateEmailResult;
-  portal: { url: string | null; loginUrl: string; newAccount: boolean };
+  access: PortalAccess;
 }) {
-  const portalBlock = portal.url
-    ? `
-    <div style="padding:20px;background:#0d0d0d;border-radius:8px;border:1px solid ${BORDER};margin-bottom:24px;">
-      <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.12em;text-transform:uppercase;">Your client portal</p>
-      <p style="margin:0 0 14px;font-size:13px;color:${MUTED};line-height:1.7;">${portal.newAccount ? "I've set up a portal for you" : "Your portal is ready"} where you can track this request, see progress, message me and view invoices.</p>
-      <p style="margin:0 0 14px;font-size:13px;color:${MUTED};">Sign-in email: <span style="color:${TEXT};">${esc(to)}</span></p>
-      <a href="${portal.url}" style="display:inline-block;padding:11px 22px;background:${GOLD};border-radius:4px;font-size:12px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">Set my password &amp; open portal</a>
-      <p style="margin:12px 0 0;font-size:11px;color:#555;">This button works once, for 24 hours. After that, sign in at <a href="${portal.loginUrl}" style="color:#777;">${esc(portal.loginUrl.replace(/^https?:\/\//, ""))}</a> (use "Forgot?" to get a fresh link any time).</p>
-    </div>`
-    : "";
-
-  const html = base(`
-    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Project estimate · ${esc(reference)}</p>
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Thanks, ${esc(name)}.</h1>
-    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Here's the estimate for your <span style="color:${TEXT};">${esc(categoryLabel)}</span> (${pages} page${pages === 1 ? "" : "s"}).</p>
-
-    <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${BORDER};margin-bottom:12px;">
-      <p style="margin:0 0 6px;font-size:12px;color:${MUTED};">Typical market quote</p>
-      <p style="margin:0;font-size:18px;color:${MUTED};text-decoration:line-through;">${dollars(result.oneTimeLowCents)} – ${dollars(result.oneTimeHighCents)} CAD</p>
-    </div>
-    <div style="padding:20px;background:#0f0f0f;border-radius:8px;border-left:2px solid ${GOLD};margin-bottom:16px;">
-      <p style="margin:0 0 6px;font-size:13px;color:${GOLD};">My price</p>
-      <p style="margin:0;font-size:26px;font-weight:700;color:${TEXT};">${dollars(result.myLowCents)} – ${dollars(result.myHighCents)} <span style="font-size:12px;color:${MUTED};">CAD</span></p>
-      ${result.monthlyCents ? `<p style="margin:10px 0 0;font-size:13px;color:${MUTED};">Ongoing: <span style="color:${TEXT};">${dollars(result.monthlyCents)}/month</span></p>` : ""}
-    </div>
-    <p style="margin:0 0 24px;font-size:13px;color:${MUTED};line-height:1.8;">The market figure is what an agency or a team of specialists would typically quote for this. I'm one person handling design, development, security and launch myself, with no agency overhead, so I'll build it for less than half that, and quickly. I'll review your details and reply within 1–2 business days with a firm quote.</p>
-
-    ${portalBlock}
-
-    <p style="margin:0 0 8px;font-family:'Courier New',monospace;font-size:10px;color:${MUTED};letter-spacing:0.1em;text-transform:uppercase;">What the market estimate covers</p>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">${estimateRows(result)}</table>
-
-    <p style="margin:0 0 20px;font-size:12px;color:${MUTED};line-height:1.7;">This is an estimate, not a quote. The final price depends on content, design detail and anything we learn while scoping. Taxes not included.</p>
-    <p style="margin:0;font-size:13px;color:${MUTED};">Questions? Just reply to this email.</p>
-  `, `Your project estimate ${reference}: ${dollars(result.myLowCents)} – ${dollars(result.myHighCents)}`);
+  const range = `${dollars(result.myLowCents)} to ${dollars(result.myHighCents)}`;
+  const html = layout(`
+    ${eyebrow(`Project estimate &middot; ${esc(reference)}`)}
+    ${heading(`Thanks, ${esc(name)}.`)}
+    ${para(`Here's the estimate for your ${strong(esc(categoryLabel))} (${pages} page${pages === 1 ? "" : "s"}).`)}
+    ${facts([
+      ["My price", `${range} <span style="font-size:13px;font-weight:400;color:${C.muted};">CAD</span>`],
+      ["Typical market quote", `<span style="color:${C.muted};text-decoration:line-through;">${dollars(result.oneTimeLowCents)} to ${dollars(result.oneTimeHighCents)}</span>`],
+      ...(result.monthlyCents ? [["Ongoing", `${dollars(result.monthlyCents)}/month`] as [string, string]] : []),
+    ])}
+    ${para("The market figure is what an agency would typically quote. I handle design, development, security and launch myself, with no agency overhead, so my price is less than half of that. I'll review your details and reply within 1 to 2 business days with a firm quote.")}
+    ${eyebrow("Your client portal")}
+    ${para("Track this request, message me and see invoices and project updates in one place.")}
+    ${portalAccess(access, "Open my portal")}
+    ${panel("What the market estimate covers", `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${estimateRows(result)}</table>`)}
+    ${small("This is an estimate, not a quote. The final price depends on content, design detail and what we learn while scoping. Taxes not included. Questions? Just reply.")}
+  `, `Your estimate ${reference}: ${range} CAD`);
 
   await sendMail({ to, subject: `Your project estimate (${reference})`, html });
 }
@@ -375,47 +399,72 @@ export async function sendEstimateNotification({
   categoryLabel: string;
   result: EstimateEmailResult;
 }) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
-  const html = base(`
-    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">New estimate · ${esc(reference)}</p>
-    <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:${TEXT};">${esc(name)}${company ? ` · ${esc(company)}` : ""}</h1>
-    <p style="margin:0 0 16px;font-size:14px;color:${MUTED};">${esc(email)} · ${esc(categoryLabel)}<br/>Your price shown: <span style="color:${TEXT};">${dollars(result.myLowCents)} – ${dollars(result.myHighCents)}</span> (market ${dollars(result.oneTimeLowCents)} – ${dollars(result.oneTimeHighCents)})${result.monthlyCents ? ` + ${dollars(result.monthlyCents)}/mo` : ""}<br/>A portal account was set up for them automatically.</p>
-    <a href="${baseUrl}/admin/estimates/${id}" style="display:inline-block;padding:11px 24px;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">Open in admin</a>
+  const html = layout(`
+    ${eyebrow(`New estimate &middot; ${esc(reference)}`)}
+    ${heading(`${esc(name)}${company ? ` &middot; ${esc(company)}` : ""}`)}
+    ${facts([
+      ["Price shown", `${dollars(result.myLowCents)} to ${dollars(result.myHighCents)}${result.monthlyCents ? ` + ${dollars(result.monthlyCents)}/mo` : ""}`],
+      ["Project", esc(categoryLabel)],
+      ["Email", esc(email)],
+      ["Market range", `${dollars(result.oneTimeLowCents)} to ${dollars(result.oneTimeHighCents)}`],
+    ])}
+    ${para("A portal account was set up for them automatically.")}
+    ${button(signInUrl(`/admin/estimates/${id}`), "Open in admin")}
+    ${small("Hitting Reply goes straight to the client.")}
   `, `New estimate from ${name}`);
 
-  await sendMail({ to: TO, subject: `[raghv.dev] New estimate ${reference} from ${name}`, html });
+  await sendMail({ to: TO, subject: `[raghv.dev] New estimate ${reference} from ${name}`, html, replyTo: email });
+}
+
+// ─── Client portal invite (to client) ─────────────────────────────────────────
+export async function sendPortalInviteEmail({ to, name, access }: { to: string; name: string | null; access: PortalAccess }) {
+  const html = layout(`
+    ${eyebrow("Client portal")}
+    ${heading(`Your client portal is ready${name ? `, ${esc(name)}` : ""}`)}
+    ${para("It's where you'll find your estimate, agreement, invoices and project updates, and where we can message each other.")}
+    ${portalAccess(access, "Go to sign in")}
+    ${small("Questions? Just reply to this email.")}
+  `, "Your client portal is ready");
+  await sendMail({ to, subject: "Your client portal is ready", html });
 }
 
 // ─── Onboarding questionnaire (to client) ───────────────────────────────────
-export async function sendQuestionnaireEmail({ to, name, url }: { to: string; name: string; url: string }) {
-  const html = base(`
-    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Next step · Onboarding</p>
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Let's get your project started, ${esc(name)}</h1>
-    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Please fill in a short questionnaire about your business and the project. It takes about 10 minutes, and I use your answers to prepare our agreement, so the details (business name, address, payment preferences) need to be accurate.</p>
-    <a href="${url}" style="display:inline-block;padding:12px 24px;background:${GOLD};border-radius:4px;font-size:12px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">Open the questionnaire</a>
-    <p style="margin:20px 0 0;font-size:12px;color:#555;">You'll be asked to sign in to your client portal first. Forgot your password? Use "Forgot?" on the sign-in page.</p>
-  `, "Your onboarding questionnaire");
+export async function sendQuestionnaireEmail({ to, name, access }: { to: string; name: string; access: PortalAccess }) {
+  const html = layout(`
+    ${eyebrow("Next step &middot; Onboarding")}
+    ${heading(`Let's get your project started, ${esc(name)}`)}
+    ${para("Please fill in a short questionnaire about your business and the project. It takes about 10 minutes. I use your answers to prepare our agreement, so the details (business name, address, payment preferences) need to be accurate.")}
+    ${portalAccess(access, "Open the questionnaire")}
+    ${small("Questions? Just reply to this email.")}
+  `, "Your project questionnaire: about 10 minutes");
   await sendMail({ to, subject: "Your project questionnaire (about 10 minutes)", html });
 }
 
 // ─── Contract ready to sign (to client) ─────────────────────────────────────
-export async function sendContractToSignEmail({ to, name, number, title, url }: { to: string; name: string; number: string; title: string; url: string }) {
-  const html = base(`
-    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Agreement ${esc(number)}</p>
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">Your agreement is ready to sign</h1>
-    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">Hi ${esc(name)}, the <span style="color:${TEXT};">${esc(title)}</span> for your project is ready. Please read it through and sign it in your client portal. I've already signed on my side. Once you sign, you'll both get a PDF copy and I'll send the deposit invoice so we can start.</p>
-    <a href="${url}" style="display:inline-block;padding:12px 24px;background:${GOLD};border-radius:4px;font-size:12px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">Review &amp; sign</a>
-    <p style="margin:20px 0 0;font-size:12px;color:#555;">Questions or changes before signing? Just reply to this email.</p>
+export async function sendContractToSignEmail({ to, name, number, title, access }: { to: string; name: string; number: string; title: string; access: PortalAccess }) {
+  const html = layout(`
+    ${eyebrow(`Agreement ${esc(number)}`)}
+    ${heading("Your agreement is ready to sign")}
+    ${para(`Hi ${esc(name)}, the ${strong(esc(title))} for your project is ready. Please read it through and sign it in your client portal. I've already signed on my side.`)}
+    ${para("Once you sign, we both get a PDF copy and I'll send the deposit invoice so we can start.")}
+    ${portalAccess(access, "Review and sign")}
+    ${small("Questions or changes before signing? Just reply to this email.")}
   `, `Agreement ${number} is ready to sign`);
   await sendMail({ to, subject: `Please review and sign: ${title} (${number})`, html });
 }
 
 // ─── Signed contract copy (to both parties) ─────────────────────────────────
-export async function sendContractSignedEmail({ to, name, number, clientName, pdf, forProvider }: { to: string; name: string; number: string; clientName: string; pdf: Buffer; forProvider: boolean }) {
-  const html = base(`
-    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Agreement ${esc(number)} · Signed</p>
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${forProvider ? `${esc(clientName)} signed the agreement` : `Thanks, ${esc(name)}. We're official.`}</h1>
-    <p style="margin:0 0 12px;font-size:15px;color:${MUTED};line-height:1.8;">${forProvider ? "The signed agreement is attached. Next: send the deposit invoice from the admin console." : "Your signed copy is attached for your records. I'll send the deposit invoice next, and work starts once it's paid. You can follow progress in your client portal."}</p>
+export async function sendContractSignedEmail({ to, name, number, clientName, pdf, forProvider, contractId }: { to: string; name: string; number: string; clientName: string; pdf: Buffer; forProvider: boolean; contractId: string }) {
+  const html = layout(forProvider ? `
+    ${eyebrow(`Agreement ${esc(number)} &middot; Signed`)}
+    ${heading(`${esc(clientName)} signed the agreement`)}
+    ${para("The signed agreement is attached. Next: send the deposit invoice from the admin console.")}
+    ${button(signInUrl(`/admin/contracts/${contractId}`), "Open in admin")}
+  ` : `
+    ${eyebrow(`Agreement ${esc(number)} &middot; Signed`)}
+    ${heading(`Thanks, ${esc(name)}. We're official.`)}
+    ${para("Your signed copy is attached for your records. I'll send the deposit invoice next, and work starts once it's paid. You can follow progress in your client portal.")}
+    ${button(signInUrl(`/portal/contracts/${contractId}`), "Open my portal")}
   `, `Agreement ${number} signed`);
   await sendMail({
     to,
@@ -427,40 +476,26 @@ export async function sendContractSignedEmail({ to, name, number, clientName, pd
 
 // ─── Newsletter welcome ────────────────────────────────────────────────────
 export async function sendWelcomeEmail(to: string, name: string | null, unsubscribeToken: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://raghv.dev";
-  const unsubLink = `${baseUrl}/unsubscribe?token=${unsubscribeToken}`;
+  const unsubLink = `${site.url}/unsubscribe?token=${unsubscribeToken}`;
+  const item = (title: string, desc: string) => `
+    <tr><td style="padding:8px 0;border-bottom:1px solid ${C.border};">
+      <p style="margin:0;font-family:${SANS};font-size:14px;font-weight:600;color:${C.text};">${title}</p>
+      <p style="margin:3px 0 0;font-family:${SANS};font-size:13px;line-height:1.5;color:${C.muted};">${desc}</p>
+    </td></tr>`;
 
-  const html = base(`
-    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Raghav's Cyber Daily</p>
-    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">You're in${name ? `, ${esc(name)}` : ""}.</h1>
-    <p style="margin:0 0 24px;font-size:15px;color:${MUTED};line-height:1.8;">
-      Welcome to my newsletter. You'll get <span style="color:${TEXT};">lab writeups, security research, and notes on the path to offensive security</span> — whenever something worth reading is ready. No filler, no spam.
-    </p>
-
-    <div style="padding:20px 24px;background:#0d0d0d;border-radius:8px;border:1px solid ${BORDER};margin-bottom:28px;">
-      <p style="margin:0 0 14px;font-family:'Courier New',monospace;font-size:10px;color:${MUTED};text-transform:uppercase;letter-spacing:0.1em;">What to expect</p>
-      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-        ${[
-          ["🔍", "HTB / THM writeups", "Detailed walkthroughs of machines I've pwned"],
-          ["🔬", "Homelab experiments", "Wazuh detections, SIEM configs, network forensics"],
-          ["🎯", "Pentest prep", "Notes on my OSCP journey and beyond"],
-        ].map(([icon, title, desc]) => `
-        <tr>
-          <td style="padding:6px 0;vertical-align:top;width:28px;font-size:16px;">${icon}</td>
-          <td style="padding:6px 0 6px 8px;">
-            <p style="margin:0;font-size:13px;font-weight:600;color:${TEXT};">${title}</p>
-            <p style="margin:2px 0 0;font-size:12px;color:${MUTED};">${desc}</p>
-          </td>
-        </tr>`).join("")}
-      </table>
-    </div>
-
-    <a href="https://raghv.dev/blog" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">Browse the Blog</a>
-
-    <p style="margin:32px 0 0;font-size:11px;color:#444;">
-      Don't want emails? <a href="${unsubLink}" style="color:#555;text-decoration:underline;">Unsubscribe here</a>.
-    </p>
-  `, `Welcome to Raghav's Cyber Daily`);
+  const html = layout(`
+    ${eyebrow("Raghav's Cyber Daily")}
+    ${heading(`You're in${name ? `, ${esc(name)}` : ""}.`)}
+    ${para("You'll get lab writeups, security research and notes from my home lab whenever something is worth reading. No filler, no spam.")}
+    ${panel("What to expect", `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      ${item("Lab writeups", "Walkthroughs of machines and challenges I've worked through")}
+      ${item("Home lab experiments", "Wazuh detections, SIEM configs and network forensics")}
+      ${item("Study notes", "What I'm learning on the way to my next certifications")}
+    </table>`)}
+    <div style="height:22px;line-height:22px;">&nbsp;</div>
+    ${button(`${site.url}/blog`, "Browse the blog", "secondary")}
+    ${small(`Don't want these emails? ${link(unsubLink, "Unsubscribe")}.`)}
+  `, "Welcome to Raghav's Cyber Daily");
 
   await sendMail({ to, subject: "Welcome to Raghav's Cyber Daily", html });
 }
@@ -481,36 +516,23 @@ export function buildNewsletterHtml({
   ctaUrl?: string;
   ctaText?: string;
 }) {
-  const sectionHtml = sections.map(s => {
-    const link = safeHref(s.link);
+  const sectionHtml = sections.map((s) => {
+    const href = safeHref(s.link);
     return `
-    <tr><td style="padding:20px 0 0;">
-      <p style="margin:0 0 4px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};text-transform:uppercase;letter-spacing:0.12em;">${esc(s.heading)}</p>
-      <p style="margin:0;font-size:14px;color:${MUTED};line-height:1.75;">${esc(s.body)}</p>
-      ${link ? `<a href="${link}" style="display:inline-block;margin-top:10px;font-size:12px;color:${GOLD};text-decoration:none;border-bottom:1px solid rgba(212,160,23,0.3);">Read more →</a>` : ""}
-    </td></tr>
-    <tr><td style="padding:20px 0 0;"><div style="height:1px;background:${BORDER};"></div></td></tr>
-  `;
+    <tr><td style="padding:20px 0;border-bottom:1px solid ${C.border};">
+      <p style="margin:0 0 6px;font-family:${MONO};font-size:10px;color:${C.gold};text-transform:uppercase;letter-spacing:0.12em;">${esc(s.heading)}</p>
+      <p style="margin:0;font-family:${SANS};font-size:15px;color:${C.body};line-height:1.7;">${esc(s.body)}</p>
+      ${href ? `<p style="margin:10px 0 0;font-family:${SANS};font-size:13px;">${link(href, "Read more")}</p>` : ""}
+    </td></tr>`;
   }).join("");
 
   const cta = safeHref(ctaUrl);
 
-  return base(`
-    ${issueNumber ? `<p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Issue #${issueNumber}</p>` : ""}
-    <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${esc(title)}</h1>
-    <p style="margin:0 0 28px;font-size:15px;color:${MUTED};line-height:1.8;">${esc(intro)}</p>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-      ${sectionHtml}
-    </table>
-
-    ${cta ? `
-    <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top:28px;">
-      <tr>
-        <td>
-          <a href="${cta}" style="display:inline-block;padding:11px 24px;background:transparent;border:1px solid ${GOLD};border-radius:4px;font-size:12px;font-weight:600;color:${GOLD};text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;">${esc(ctaText ?? "Read More")}</a>
-        </td>
-      </tr>
-    </table>` : ""}
+  return layout(`
+    ${issueNumber ? eyebrow(`Issue #${issueNumber}`) : ""}
+    ${heading(esc(title))}
+    ${para(esc(intro))}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${sectionHtml}</table>
+    ${cta ? `<div style="height:22px;line-height:22px;">&nbsp;</div>${button(cta, esc(ctaText ?? "Read more"))}` : ""}
   `, title);
 }

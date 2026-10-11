@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 
 import { MFA_COOKIE_NAME, mfaMasterKey, verifyMfaCookie } from "@/lib/mfa";
 import type { ProfileRow } from "@/lib/supabase/database.types";
@@ -60,7 +60,7 @@ export async function hasVerifiedMfa(signedIn: SignedIn): Promise<boolean> {
 export async function requireAdmin(): Promise<SignedIn> {
   const signedIn = await getSignedIn();
   if (!signedIn) redirect("/auth/login?next=/admin");
-  if (signedIn.profile.role !== "admin") redirect("/");
+  if (signedIn.profile.role !== "admin") forbidden();
   if (!(await hasVerifiedMfa(signedIn))) redirect("/auth/mfa?next=/admin");
   return signedIn;
 }

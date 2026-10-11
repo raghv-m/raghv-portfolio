@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata, site } from "@/config/site";
 import type { NewsItem } from "@/lib/supabase/database.types";
+import { ServiceNotice } from "@/components/layout/ServiceNotice";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -18,10 +19,21 @@ export const revalidate = 3600;
 const day = (iso: string) => new Intl.DateTimeFormat("en-CA", { dateStyle: "full", timeZone: "UTC" }).format(new Date(`${iso}T12:00:00Z`));
 
 export default async function NewsPage() {
-  const digests =
-    isSupabaseConfigured() && process.env.SUPABASE_SERVICE_ROLE_KEY
-      ? ((await getSupabaseAdmin().from("news_digests").select("digest_date, items, linkedin_url").order("digest_date", { ascending: false }).limit(30)).data ?? [])
-      : [];
+  let digests: { digest_date: string; items: unknown; linkedin_url: string | null }[] = [];
+  let unavailable = false;
+  if (isSupabaseConfigured() && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    const { data, error } = await getSupabaseAdmin()
+      .from("news_digests")
+      .select("digest_date, items, linkedin_url")
+      .order("digest_date", { ascending: false })
+      .limit(30)
+      .then((r) => r, (error: unknown) => ({ data: null, error }));
+    if (error) {
+      console.error("[news] digests failed to load", error);
+      unavailable = true;
+    }
+    digests = data ?? [];
+  }
 
   return (
     <div className="min-h-screen pt-28 pb-24">
@@ -43,7 +55,8 @@ export default async function NewsPage() {
         </p>
 
         <div className="mt-12 space-y-10">
-          {digests.length === 0 && <p className="text-[var(--text-muted)]">The first briefing lands soon.</p>}
+          {unavailable && <ServiceNotice what="The news briefing" />}
+          {!unavailable && digests.length === 0 && <p className="text-[var(--text-muted)]">The first briefing lands soon.</p>}
           {digests.map((d) => (
             <section key={d.digest_date} aria-labelledby={`d-${d.digest_date}`}>
               <div className="flex items-baseline justify-between gap-3 border-b border-[var(--border)] pb-2">

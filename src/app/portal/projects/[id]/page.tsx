@@ -12,7 +12,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export const metadata: Metadata = { title: "Project", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
-const date = (iso: string) => new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: "America/Edmonton" }).format(new Date(iso));
+// Plain dates (due dates) are formatted in UTC so Edmonton time doesn't shift them back a day.
+const date = (iso: string) => new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: /^\d{4}-\d{2}-\d{2}$/.test(iso) ? "UTC" : "America/Edmonton" }).format(new Date(iso));
 
 /** The client's view of one project: progress, milestones, and the message thread with Raghav. RLS-scoped. */
 export default async function PortalProjectPage({ params }: { params: Promise<{ id: string }> }) {

@@ -89,5 +89,6 @@ export function money(cents: number, currency = "cad") {
 }
 
 export function when(iso: string) {
-  return new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: "America/Edmonton" }).format(new Date(iso));
+  // Plain dates (due dates) are formatted in UTC so Edmonton time doesn't shift them back a day.
+  return new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: /^\d{4}-\d{2}-\d{2}$/.test(iso) ? "UTC" : "America/Edmonton" }).format(new Date(iso));
 }

@@ -4,6 +4,7 @@ import { rateLimit, getClientIp, hashIp } from "@/lib/rateLimit";
 import { verifyCsrfToken } from "@/lib/csrf";
 import { sendContactNotification, sendAutoReply } from "@/lib/mail";
 import { prisma } from "@/lib/prisma";
+import { apiError, withApiErrors } from "@/lib/api";
 
 const contactSchema = z.object({
   name: z.string().min(1).max(100),
@@ -14,24 +15,21 @@ const contactSchema = z.object({
   _csrf: z.string().min(1),
 });
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
 
     const limit = await rateLimit(ip, "contact");
     if (!limit.success) {
       const retryAfter = Math.ceil((limit.msBeforeNext ?? 3600000) / 1000);
-      return NextResponse.json(
-        { error: "Too many requests. Please try again later." },
-        { status: 429, headers: { "Retry-After": String(retryAfter) } }
-      );
+      return apiError(429, "Too many requests. Please wait a bit and try again.", { "Retry-After": String(retryAfter) });
     }
 
     const body = await req.json();
     const parsed = contactSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid submission." }, { status: 400 });
+      return apiError(400, "Please check the form and try again.");
     }
 
     const { name, email, subject, message, website, _csrf } = parsed.data;
@@ -39,7 +37,7 @@ export async function POST(req: NextRequest) {
     // Double-submit cookie check: body token must match the cookie value
     const cookieCsrf = req.cookies.get("csrf")?.value;
     if (!cookieCsrf || cookieCsrf !== _csrf || !verifyCsrfToken(_csrf)) {
-      return NextResponse.json({ error: "Invalid request." }, { status: 403 });
+      return apiError(403, "Your session expired. Refresh the page and try again.");
     }
 
     // Honeypot — silently accept but don't process
@@ -61,9 +59,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[contact]", err);
-    return NextResponse.json(
-      { error: "An error occurred. Please email directly at raaghvv0508@gmail.com" },
-      { status: 500 }
-    );
+    return apiError(500, "An error occurred. Please email directly at raaghvv0508@gmail.com");
   }
 }
+
+export const POST = withApiErrors("POST /api/contact", handlePOST);

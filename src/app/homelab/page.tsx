@@ -19,7 +19,7 @@ const NODES = [
       "Domain: HOMELAB.CORP",
       "Forest/Domain functional level: Windows Server 2019",
       "GPO: CIS Benchmark L1 applied",
-      "Wazuh agent installed — all events forwarded",
+      "Wazuh agent installed, all events forwarded",
       "PowerShell ScriptBlock logging enabled",
       "Windows Event Forwarding → WAZUH01",
     ],
@@ -57,7 +57,7 @@ const NODES = [
     services: ["Nmap", "Hydra", "Metasploit", "Gobuster", "Burp Suite"],
     specs: "Core i5 · 8GB RAM · 256GB SSD",
     details: [
-      "Isolated segment — attack traffic controlled",
+      "Isolated segment, attack traffic controlled",
       "All attack sessions logged for Wazuh testing",
       "Runs scans against DC-01, WEB01 to test detection",
       "SSH brute force exercises against WEB01",
@@ -77,7 +77,7 @@ const NODES = [
     services: ["Wazuh Manager", "Wazuh Dashboard", "Elasticsearch", "Filebeat", "Active Response"],
     specs: "Core i7 · 32GB RAM · 1TB SSD",
     details: [
-      "Wazuh 4.x — ingesting agents from all 3 hosts",
+      "Wazuh 4.x ingesting agents from all 3 hosts",
       "Custom detection rules: SSH brute force, port scan, sudo abuse",
       "Active response: IP block on SSH brute force trigger",
       "Dashboards: authentication events, file integrity, alerts",
@@ -254,7 +254,7 @@ export default function HomelabPage() {
             </h1>
             <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
               4-node enterprise security simulation. Real hardware. Real domain. Real attacks.
-              Monitored by Wazuh SIEM — generating authentic blue team experience.
+              Monitored by Wazuh SIEM, generating authentic blue team experience.
             </p>
             <div className="glow-line mt-6 max-w-24" />
           </motion.div>
@@ -294,7 +294,7 @@ export default function HomelabPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="font-mono text-[9px] tracking-wider text-[var(--gold-muted)] mb-0.5">NETWORK TOPOLOGY</p>
-                <h2 className="font-display text-sm font-bold text-[var(--text)]">HOMELAB.CORP — 192.168.10.0/24</h2>
+                <h2 className="font-display text-sm font-bold text-[var(--text)]">HOMELAB.CORP · 192.168.10.0/24</h2>
               </div>
               <div className="flex items-center gap-1.5">
                 <Activity className="w-3.5 h-3.5 text-[var(--green)]" />
@@ -370,7 +370,7 @@ export default function HomelabPage() {
         >
           <div className="flex items-center gap-3 px-6 py-4 border-b border-[var(--border)] bg-[var(--card)]">
             <AlertTriangle className="w-4 h-4 text-[var(--gold)]" />
-            <p className="font-mono text-[10px] tracking-wider text-[var(--gold)]">WAZUH SIEM — RECENT ALERTS</p>
+            <p className="font-mono text-[10px] tracking-wider text-[var(--gold)]">WAZUH SIEM · RECENT ALERTS</p>
             <span className="ml-auto font-mono text-[9px] text-[var(--text-muted)]">Lab exercise session · 12:43 UTC</span>
           </div>
           <div className="divide-y divide-[var(--border)]">

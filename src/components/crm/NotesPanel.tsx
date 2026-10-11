@@ -6,6 +6,7 @@ import { Pin, PinOff, Trash2 } from "lucide-react";
 
 import { addNoteAction, deleteNoteAction, toggleNotePinAction } from "@/app/admin/crm/actions";
 import { adminInput } from "@/components/admin/ui";
+import { useConfirm, useToast } from "@/components/ui/feedback";
 
 type Note = { id: string; body: string; pinned: boolean; created_at: string };
 const when = (iso: string) => new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Edmonton" }).format(new Date(iso));
@@ -15,6 +16,8 @@ export function NotesPanel({ email, notes }: { email: string; notes: Note[] }) {
   const router = useRouter();
   const [draft, setDraft] = useState("");
   const [pending, start] = useTransition();
+  const confirm = useConfirm();
+  const toast = useToast();
   const sorted = [...notes].sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.created_at.localeCompare(a.created_at));
   const run = (fn: () => Promise<unknown>) => start(async () => { await fn(); router.refresh(); });
 
@@ -34,7 +37,10 @@ export function NotesPanel({ email, notes }: { email: string; notes: Note[] }) {
                 <button type="button" aria-label={n.pinned ? "Unpin note" : "Pin note"} onClick={() => run(() => toggleNotePinAction(n.id, !n.pinned, email))} className="text-[var(--text-muted)] hover:text-[var(--gold)]">
                   {n.pinned ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
                 </button>
-                <button type="button" aria-label="Delete note" onClick={() => window.confirm("Delete this note?") && run(() => deleteNoteAction(n.id, email))} className="text-[var(--text-muted)] hover:text-[var(--red)]">
+                <button type="button" aria-label="Delete note" onClick={async () => {
+                    const ok = await confirm({ title: "Delete this note?", body: "It's removed permanently.", confirmLabel: "Delete note", cancelLabel: "Keep note", destructive: true });
+                    if (ok) run(async () => { await deleteNoteAction(n.id, email); toast("Note deleted"); });
+                  }} className="text-[var(--text-muted)] hover:text-[var(--red)]">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </span>

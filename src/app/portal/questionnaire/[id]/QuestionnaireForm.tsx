@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Send } from "lucide-react";
 
 import { submitQuestionnaireAction } from "@/app/portal/actions";
-import { BUSINESS_TYPES, PAYMENT_METHODS, PAYMENT_SCHEDULES } from "@/lib/contracts/questionnaire";
+import { FieldError, focusFirstInvalid, invalidProps } from "@/components/ui/FieldError";
+import { BUSINESS_TYPES, PAYMENT_METHODS, PAYMENT_SCHEDULES, questionnaireSchema } from "@/lib/contracts/questionnaire";
 
 const input =
-  "w-full bg-[var(--card)] border border-[var(--border)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)]";
+  "w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)]";
 
 type Values = Record<string, string | boolean>;
 
@@ -25,31 +26,48 @@ export function QuestionnaireForm({ id, defaults }: { id: string; defaults: Reco
     ...defaults,
   });
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const formRef = useRef<HTMLFormElement>(null);
   const [pending, start] = useTransition();
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setValues((v) => ({ ...v, [key]: e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value }));
 
   const field = (key: string, label: string, props: { required?: boolean; type?: string; textarea?: boolean; placeholder?: string; full?: boolean } = {}) => (
-    <label className={`block ${props.full ? "sm:col-span-2" : ""}`}>
-      <span className="block font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-1.5">{label}{props.required ? " *" : ""}</span>
+    <div className={props.full ? "sm:col-span-2" : ""}>
+      <label htmlFor={`q-${key}`} className="block font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-1.5">{label}{props.required ? " *" : ""}</label>
       {props.textarea ? (
-        <textarea rows={4} value={String(values[key] ?? "")} onChange={set(key)} placeholder={props.placeholder} className={input} />
+        <textarea id={`q-${key}`} name={key} rows={4} value={String(values[key] ?? "")} onChange={set(key)} placeholder={props.placeholder} {...invalidProps(key, fieldErrors[key])} className={input} />
       ) : (
-        <input type={props.type ?? "text"} value={String(values[key] ?? "")} onChange={set(key)} placeholder={props.placeholder} className={input} />
+        <input id={`q-${key}`} name={key} type={props.type ?? "text"} value={String(values[key] ?? "")} onChange={set(key)} placeholder={props.placeholder} {...invalidProps(key, fieldErrors[key])} className={input} />
       )}
-    </label>
+      <FieldError name={key} message={fieldErrors[key]} />
+    </div>
   );
   const select = (key: string, label: string, options: Record<string, string> | readonly string[]) => (
-    <label className="block">
-      <span className="block font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-1.5">{label} *</span>
-      <select value={String(values[key])} onChange={set(key)} className={input}>
+    <div>
+      <label htmlFor={`q-${key}`} className="block font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-1.5">{label} *</label>
+      <select id={`q-${key}`} name={key} value={String(values[key])} onChange={set(key)} {...invalidProps(key, fieldErrors[key])} className={input}>
         {(Array.isArray(options) ? options.map((o) => [o, o]) : Object.entries(options)).map(([value, text]) => <option key={value} value={value}>{text}</option>)}
       </select>
-    </label>
+      <FieldError name={key} message={fieldErrors[key]} />
+    </div>
   );
 
   function submit() {
     setError(null);
+    // Same schema as the server: show every problem next to its field before sending.
+    const check = questionnaireSchema.safeParse(values);
+    if (!check.success) {
+      const errors: Record<string, string> = {};
+      for (const issue of check.error.issues) {
+        const key = String(issue.path[0] ?? "");
+        if (key && !errors[key]) errors[key] = issue.message;
+      }
+      setFieldErrors(errors);
+      focusFirstInvalid(formRef.current);
+      return;
+    }
+    setFieldErrors({});
     start(async () => {
       const result = await submitQuestionnaireAction(id, values);
       if (!result.ok) {
@@ -63,7 +81,7 @@ export function QuestionnaireForm({ id, defaults }: { id: string; defaults: Reco
   const heading = "text-lg font-semibold text-[var(--text)]";
 
   return (
-    <form className="mt-8 space-y-6" onSubmit={(e) => { e.preventDefault(); submit(); }}>
+    <form ref={formRef} noValidate className="mt-8 space-y-6" onSubmit={(e) => { e.preventDefault(); submit(); }}>
       {error && <p role="alert" className="font-mono text-xs text-[var(--red)] bg-[rgba(255,68,68,0.08)] px-3 py-2 rounded border border-[rgba(255,68,68,0.15)]">{error}</p>}
 
       <section className={section}>
@@ -121,9 +139,10 @@ export function QuestionnaireForm({ id, defaults }: { id: string; defaults: Reco
         <h2 className={heading}>Anything else</h2>
         {field("notes", "Notes", { textarea: true, full: true })}
         <label className="flex items-start gap-3 text-sm text-[var(--text-muted)] cursor-pointer">
-          <input type="checkbox" checked={Boolean(values.consentElectronic)} onChange={set("consentElectronic")} className="mt-1 accent-[#d4a017]" />
+          <input id="q-consentElectronic" name="consentElectronic" type="checkbox" checked={Boolean(values.consentElectronic)} onChange={set("consentElectronic")} {...invalidProps("consentElectronic", fieldErrors.consentElectronic)} className="mt-1 accent-[#d4a017]" />
           <span>I agree to receive and sign the agreement and other project documents electronically, and confirm the details above are accurate.</span>
         </label>
+        <FieldError name="consentElectronic" message={fieldErrors.consentElectronic} />
       </section>
 
       <button type="submit" disabled={pending} className="btn-solid-gold inline-flex items-center gap-2">

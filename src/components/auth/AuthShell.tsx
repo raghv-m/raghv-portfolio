@@ -23,7 +23,7 @@ export function AuthShell({ label, title, children, footer }: { label: string; t
 }
 
 export const authInputClass =
-  "w-full bg-[var(--card)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors";
+  "w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors";
 
 export const authLabelClass = "font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5";
 

@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/requireAdmin";
 import { prisma } from "@/lib/prisma";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 import { z } from "zod";
+import { apiError, withApiErrors, zodMessage } from "@/lib/api";
 
 const postSchema = z.object({
   title: z.string().min(1).max(200),
@@ -18,9 +19,9 @@ const postSchema = z.object({
   notifySubscribers: z.boolean().default(false),
 });
 
-export async function GET(req: NextRequest) {
+async function handleGET(req: NextRequest) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return apiError(401, "Please sign in again.");
 
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
@@ -42,29 +43,26 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ posts, total, page, limit });
 }
 
-export async function POST(req: NextRequest) {
+async function handlePOST(req: NextRequest) {
   const session = await requireAdmin();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session) return apiError(401, "Please sign in again.");
 
   const ip = getClientIp(req);
   const limit = await rateLimit(ip, "admin");
   if (!limit.success) {
-    return NextResponse.json(
-      { error: "Rate limit exceeded" },
-      { status: 429, headers: { "Retry-After": String(Math.ceil((limit.msBeforeNext ?? 60000) / 1000)) } }
-    );
+    return apiError(429, "Too many requests. Please wait a bit and try again.", { "Retry-After": String(Math.ceil((limit.msBeforeNext ?? 60000) / 1000)) });
   }
 
   let body: unknown;
-  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  try { body = await req.json(); } catch { return apiError(400, "The request couldn't be read. Please try again."); }
 
   const parsed = postSchema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 });
+  if (!parsed.success) return apiError(422, zodMessage(parsed.error));
 
   const { tags, notifySubscribers, ...rest } = parsed.data;
 
   const existing = await prisma.post.findUnique({ where: { slug: rest.slug } });
-  if (existing) return NextResponse.json({ error: "Slug already taken" }, { status: 409 });
+  if (existing) return apiError(409, "That URL slug is already used by another post.");
 
   const post = await prisma.post.create({
     data: { ...rest, tags: JSON.stringify(tags), coverImage: rest.coverImage ?? null, readTime: rest.readTime ?? null, notifySubscribers },
@@ -78,3 +76,7 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json(post, { status: 201 });
 }
+
+export const GET = withApiErrors("GET /api/admin/posts", handleGET);
+
+export const POST = withApiErrors("POST /api/admin/posts", handlePOST);

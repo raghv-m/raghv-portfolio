@@ -92,7 +92,7 @@ export function MessageThread({
           placeholder="Write a message… (Enter to send, Shift+Enter for a new line)"
           className="flex-1 bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)] resize-none"
         />
-        <button type="submit" disabled={pending || !draft.trim()} className="btn-solid-gold self-end inline-flex items-center gap-2" aria-label="Send message">
+        <button type="submit" disabled={pending || !draft.trim()} className="btn-solid-gold btn-no-arrow self-end inline-flex items-center gap-2" aria-label="Send message">
           {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
         </button>
       </form>

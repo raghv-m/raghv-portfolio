@@ -3,6 +3,7 @@ import "server-only";
 import { randomBytes } from "node:crypto";
 
 import { logAudit } from "@/lib/audit";
+import { sendPortalInviteEmail, signInUrl, type PortalAccess } from "@/lib/mail";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
@@ -135,28 +136,15 @@ export async function ensureClient(actorId: string | null, input: { email: strin
   return { id: created.user.id, created: true };
 }
 
-/** Emails a client a link to set their password and open the portal (Supabase recovery email). */
-export async function sendPortalInvite(actorId: string, email: string, origin: string) {
-  // The email template links to /auth/confirm with a token hash, so it works on the client's own device.
-  const { error } = await getSupabaseAdmin().auth.resetPasswordForEmail(email.toLowerCase(), {
-    redirectTo: `${origin}/auth/confirm?next=/auth/reset-password`,
-  });
-  if (error) throw error;
-  await logAudit({ actorId, action: "client.portal_invite", resourceType: "profile", changes: { email } });
+/** Links for a client email: the sign-in page, continuing to `path` afterwards. */
+export function portalAccessFor(email: string, path: string, origin: string): PortalAccess {
+  return { signInUrl: signInUrl(path, origin), email: email.toLowerCase() };
 }
 
-/**
- * A one-time link that signs the person in and lets them set a password, for our own emails
- * (sent through Resend, not Supabase's rate-limited mailer). Valid for 24 hours, single use.
- */
-export async function createPortalAccessLink(email: string, origin: string): Promise<string | null> {
-  // Never mint a sign-in link for the admin account from a public form.
-  const { data: profile } = await getSupabaseAdmin().from("profiles").select("role").eq("email", email.toLowerCase()).maybeSingle();
-  if (profile?.role === "admin") return null;
-  const { data, error } = await getSupabaseAdmin().auth.admin.generateLink({ type: "recovery", email: email.toLowerCase() });
-  if (error || !data.properties?.hashed_token) {
-    console.error("[clients] portal link failed", error);
-    return null;
-  }
-  return `${origin}/auth/confirm?token_hash=${encodeURIComponent(data.properties.hashed_token)}&type=recovery&next=/auth/reset-password`;
+/** Emails a client that their portal is ready, with the sign-in link. */
+export async function sendPortalInvite(actorId: string, email: string, origin: string) {
+  const address = email.toLowerCase();
+  const { data: profile } = await getSupabaseAdmin().from("profiles").select("full_name").eq("email", address).maybeSingle();
+  await sendPortalInviteEmail({ to: address, name: profile?.full_name ?? null, access: portalAccessFor(address, "/portal", origin) });
+  await logAudit({ actorId, action: "client.portal_invite", resourceType: "profile", changes: { email: address } });
 }

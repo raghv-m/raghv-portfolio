@@ -3,7 +3,7 @@ import { CyberSphere, SparklesCore } from "@/components/effects/deferred";
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
-import { Shield, Eye, Zap, Lock, ChevronRight } from "lucide-react";
+import { Shield, Eye, Zap, Lock } from "lucide-react";
 
 // MITRE ATT&CK techniques simplified — 12 tactics, select techniques per tactic
 const ATTACK_MATRIX = [
@@ -30,7 +30,7 @@ const TOOL_GROUPS = [
     color: "var(--gold)",
     tools: [
       { name: "Wazuh", desc: "Open-source SIEM/XDR. Running agents on DC-01, WEB01, KALI01. Custom detection rules for SSH brute force, port scans, file integrity." },
-      { name: "Elastic SIEM", desc: "ELK stack experience — log ingestion, KQL queries, detection rules, and dashboard building for security events." },
+      { name: "Elastic SIEM", desc: "ELK stack experience: log ingestion, KQL queries, detection rules, and dashboard building for security events." },
       { name: "Splunk", desc: "SPL query fundamentals via TryHackMe SOC L1 training. Alert creation, saved searches, and incident investigation workflows." },
     ],
   },
@@ -38,7 +38,7 @@ const TOOL_GROUPS = [
     group: "Network Analysis",
     color: "var(--blue)",
     tools: [
-      { name: "Wireshark", desc: "Packet capture analysis — identifying C2 traffic patterns, credential harvesting in plaintext, DNS tunneling indicators." },
+      { name: "Wireshark", desc: "Packet capture analysis: identifying C2 traffic patterns, credential harvesting in plaintext, DNS tunneling indicators." },
       { name: "Nmap", desc: "Network discovery and port scanning. Running scans against lab network from KALI01 to verify Wazuh detection rules trigger correctly." },
       { name: "tcpdump", desc: "CLI packet capture on Linux endpoints. Used for real-time traffic analysis during active lab exercises." },
     ],
@@ -47,9 +47,9 @@ const TOOL_GROUPS = [
     group: "Offensive / Red Team",
     color: "var(--red)",
     tools: [
-      { name: "Hydra", desc: "Password brute force tool — used offensively in lab to test SSH and RDP rate limiting, and defensively to tune Wazuh rules." },
-      { name: "Gobuster", desc: "Web directory enumeration — used to understand what attackers see, and to test web server security configurations on WEB01." },
-      { name: "Metasploit", desc: "Exploitation framework — TryHackMe labs and controlled home lab usage. Generates real attack telemetry for SIEM testing." },
+      { name: "Hydra", desc: "Password brute force tool. Used offensively in lab to test SSH and RDP rate limiting, and defensively to tune Wazuh rules." },
+      { name: "Gobuster", desc: "Web directory enumeration. Used to understand what attackers see, and to test web server security configurations on WEB01." },
+      { name: "Metasploit", desc: "Exploitation framework for TryHackMe labs and controlled home lab usage. Generates real attack telemetry for SIEM testing." },
     ],
   },
   {
@@ -308,7 +308,7 @@ export default function CybersecurityPage() {
             <p className="text-[var(--text)] text-sm">ISC2 CC · Google Cyber · Security+ in progress · THM SOC L1 (65%)</p>
           </div>
           <a href="/certifications" className="btn-ghost text-sm gap-1.5">
-            Full cert stack <ChevronRight className="w-3.5 h-3.5" />
+            Full cert stack
           </a>
         </motion.div>
       </div>

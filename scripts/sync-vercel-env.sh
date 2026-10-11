@@ -18,7 +18,7 @@ REMOVE=(NEXTAUTH_SECRET NEXTAUTH_URL ADMIN_EMAIL ADMIN_PASSWORD_HASH)
 SET=(
   NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY MFA_ENCRYPTION_KEY
   CSRF_SECRET IP_HASH_SALT RESEND_API_KEY TURSO_AUTH_TOKEN SMTP_FROM
-  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY INTEGRATION_API_KEY
+  NEXT_PUBLIC_GOOGLE_MAPS_API_KEY INTEGRATION_API_KEY CONTACT_RECEIVER_EMAIL MAIL_PROVIDER NEXT_PUBLIC_SITE_URL NEXT_PUBLIC_BASE_URL
 )
 
 for name in "${REMOVE[@]}"; do
@@ -30,11 +30,21 @@ done
 for name in "${SET[@]}"; do
   value="${!name:-}"
   if [ -z "$value" ]; then echo "skipped  $name (no value in .env.local)"; continue; fi
+  # NEXT_PUBLIC_ values ship to the browser by design; Vercel refuses key-like ones without --type config.
+  type=(); [[ $name == NEXT_PUBLIC_* ]] && type=(--type config)
+  # Remove once from every environment, then add to each. Removing per environment inside the
+  # loop deletes the copies just added: Vercel keeps one record per variable across environments.
   for env in "${ENVS[@]}"; do
     $VERCEL env rm "$name" "$env" --yes >/dev/null 2>&1 || true
-    printf '%s' "$value" | $VERCEL env add "$name" "$env" >/dev/null 2>&1 && echo "set      $name ($env)" || echo "FAILED   $name ($env)"
+  done
+  for env in "${ENVS[@]}"; do
+    printf '%s' "$value" | $VERCEL env add "$name" "$env" ${type[@]+"${type[@]}"} --yes >/dev/null 2>&1 && echo "set      $name ($env)" || echo "FAILED   $name ($env)"
   done
 done
 
+echo
+echo "Production now has:"
+$VERCEL env ls production 2>/dev/null | grep -oE "^ +[A-Z_]+" | tr -d ' ' | sort | tr '
+' ' '
 echo
 echo "Done. Redeploy for the changes to take effect (Vercel -> Deployments -> Redeploy)."

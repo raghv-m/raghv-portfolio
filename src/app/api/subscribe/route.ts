@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { sendWelcomeEmail } from "@/lib/mail";
@@ -40,7 +40,9 @@ async function handlePOST(req: NextRequest) {
 
   const subscriber = await prisma.subscriber.create({ data: { email, name } });
 
-  sendWelcomeEmail(email, name ?? null, subscriber.unsubscribeToken).catch(() => {});
+  // after(): runs once the response is sent, and Vercel keeps the function alive until it
+  // finishes. A bare un-awaited promise can be frozen mid-send, so emails silently never go out.
+  after(() => sendWelcomeEmail(email, name ?? null, subscriber.unsubscribeToken).catch((error) => console.error("[subscribe] welcome email failed", error)));
 
   return NextResponse.json({ ok: true });
 }

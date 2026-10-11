@@ -61,11 +61,11 @@ export default function ContactPage() {
         setState("done");
       } else {
         const d = await res.json();
-        setError(typeof d.error === "string" ? d.error : "Your message couldn't be sent. Please try again, or email raaghvv0508@gmail.com.");
+        setError(typeof d.error === "string" ? d.error : "Your message couldn't be sent. Please try again, or email hello@raghv.dev.");
         setState("error");
       }
     } catch {
-      setError("Couldn't reach the server. Check your connection and try again, or email raaghvv0508@gmail.com.");
+      setError("Couldn't reach the server. Check your connection and try again, or email hello@raghv.dev.");
       setState("error");
     }
   };
@@ -114,7 +114,7 @@ export default function ContactPage() {
               <p className="font-mono text-[9px] tracking-wider text-[var(--gold)] mb-5">CONTACT ENDPOINTS</p>
               <div className="space-y-4">
                 {[
-                  { icon: Mail, label: "Email", value: "raaghvv0508@gmail.com", href: "mailto:raaghvv0508@gmail.com", color: "var(--gold)" },
+                  { icon: Mail, label: "Email", value: "hello@raghv.dev", href: "mailto:hello@raghv.dev", color: "var(--gold)" },
                   { icon: MapPin, label: "Location", value: "Edmonton, AB, Canada", color: "var(--blue)" },
                   { icon: Globe, label: "Portfolio", value: "raghv.dev", href: "https://www.raghv.dev", color: "var(--gold)" },
                 ].map((item) => (

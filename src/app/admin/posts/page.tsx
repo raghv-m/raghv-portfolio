@@ -46,7 +46,7 @@ export default async function AdminPostsPage() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <Link href={`/admin/posts/${p.id}`} className="btn-ghost text-xs px-3 py-1.5">Edit</Link>
-                  <DeletePostButton id={p.id} />
+                  <DeletePostButton id={p.id} title={p.title} />
                 </div>
               </div>
             ))}

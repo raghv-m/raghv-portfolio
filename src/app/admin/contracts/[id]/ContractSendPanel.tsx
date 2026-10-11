@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Download, Loader2, PenLine, XCircle } from "lucide-react";
 
 import { adminInput, Panel } from "@/components/admin/ui";
+import { useConfirm } from "@/components/ui/feedback";
 
 import { sendContractAction, voidContractAction } from "../actions";
 
@@ -14,6 +15,7 @@ export function ContractSendPanel({ id, status, defaultSigner, hasPdf }: { id: s
   const [confirmed, setConfirmed] = useState(false);
   const [message, setMessage] = useState<{ text: string; error?: boolean } | null>(null);
   const [pending, start] = useTransition();
+  const confirm = useConfirm();
 
   const run = (fn: () => Promise<{ ok: boolean; error?: string }>, success: string) =>
     start(async () => {
@@ -51,7 +53,15 @@ export function ContractSendPanel({ id, status, defaultSigner, hasPdf }: { id: s
           </a>
         )}
         {status !== "void" && (
-          <button type="button" disabled={pending} onClick={() => window.confirm("Void this contract? It stays on record but is no longer in effect.") && run(() => voidContractAction(id), "Voided")} className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs text-[var(--text-muted)] hover:text-[var(--red)]">
+          <button type="button" disabled={pending} onClick={async () => {
+              const ok = await confirm({
+                title: "Void this contract?",
+                body: "It stays on record, but it's no longer in effect and the client can't sign it. To change the terms, draft a new contract afterwards.",
+                confirmLabel: "Void contract",
+                destructive: true,
+              });
+              if (ok) run(() => voidContractAction(id), "Contract voided");
+            }} className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs text-[var(--text-muted)] hover:text-[var(--red)]">
             <XCircle className="w-3.5 h-3.5" /> Void contract
           </button>
         )}

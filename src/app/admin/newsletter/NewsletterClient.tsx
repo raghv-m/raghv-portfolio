@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { Send, Users, UserCheck } from "lucide-react";
 
+import { useConfirm } from "@/components/ui/feedback";
+
 interface Subscriber { id: string; email: string; name: string | null; active: boolean; subscribedAt: Date }
 
 interface Props { subscribers: Subscriber[]; total: number; active: number }
@@ -12,10 +14,16 @@ export default function NewsletterClient({ subscribers, total, active }: Props) 
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState<{ sent: number; total: number } | null>(null);
   const [error, setError] = useState("");
+  const confirm = useConfirm();
 
   const send = async () => {
     if (!subject.trim() || !html.trim()) { setError("Subject and body are required"); return; }
-    if (!confirm(`Send to ${active} active subscribers?`)) return;
+    const ok = await confirm({
+      title: `Send "${subject.trim()}"?`,
+      body: `It goes out right away to ${active} active subscriber${active === 1 ? "" : "s"}. Sent emails can't be recalled.`,
+      confirmLabel: `Send to ${active} subscriber${active === 1 ? "" : "s"}`,
+    });
+    if (!ok) return;
     setError(""); setSending(true);
     try {
       const res = await fetch("/api/admin/newsletter/send", {
@@ -24,7 +32,7 @@ export default function NewsletterClient({ subscribers, total, active }: Props) 
         body: JSON.stringify({ subject, html }),
       });
       const json = await res.json();
-      if (!res.ok) { setError(json.error ?? "Send failed"); return; }
+      if (!res.ok) { setError(typeof json.error === "string" ? json.error : "The newsletter couldn't be sent. Please try again."); return; }
       setResult({ sent: json.sent, total: json.total });
       setSubject(""); setHtml("");
     } finally {

@@ -282,6 +282,29 @@ body {
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .btn-no-arrow::after { content: none !important; }
+/* Destructive actions (delete, void, cancel): same shape, red, no arrow. */
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  /* #c62828 keeps white text above 4.5:1 contrast; the brighter --red doesn't. */
+  border: 1px solid #c62828;
+  color: #fff;
+  background: #c62828;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-danger:hover { background: #b71c1c; border-color: #b71c1c; }
+.btn-danger:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+.btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-gold:hover,
 .btn-ghost:hover,
 .btn-solid-gold:hover,

@@ -30,9 +30,11 @@ done
 for name in "${SET[@]}"; do
   value="${!name:-}"
   if [ -z "$value" ]; then echo "skipped  $name (no value in .env.local)"; continue; fi
+  # NEXT_PUBLIC_ values ship to the browser by design; Vercel refuses key-like ones without --type config.
+  type=(); [[ $name == NEXT_PUBLIC_* ]] && type=(--type config)
   for env in "${ENVS[@]}"; do
     $VERCEL env rm "$name" "$env" --yes >/dev/null 2>&1 || true
-    printf '%s' "$value" | $VERCEL env add "$name" "$env" >/dev/null 2>&1 && echo "set      $name ($env)" || echo "FAILED   $name ($env)"
+    printf '%s' "$value" | $VERCEL env add "$name" "$env" "${type[@]}" --yes >/dev/null 2>&1 && echo "set      $name ($env)" || echo "FAILED   $name ($env)"
   done
 done
 

@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { logAudit } from "@/lib/audit";
+import { createSetPasswordLink } from "@/lib/clients";
+import { sendPortalLinkEmail } from "@/lib/mail";
 import {
   confirmEnrollment,
   isMfaEnabled,
@@ -95,10 +97,13 @@ export async function requestPasswordResetAction(_prev: FormState, formData: For
 
   const limit = await rateLimit(`reset:${email.data.toLowerCase()}`, "login");
   if (limit.success) {
-    const supabase = await createSupabaseServerClient();
-    await supabase.auth.resetPasswordForEmail(email.data.toLowerCase(), {
-      redirectTo: `${await siteOrigin()}/auth/confirm?next=/auth/reset-password`,
-    });
+    // Our own email (Resend) with a one-time link; Supabase's built-in mailer barely delivers.
+    const url = await createSetPasswordLink(email.data, await siteOrigin());
+    if (url) {
+      await sendPortalLinkEmail({ to: email.data.toLowerCase(), name: null, url, kind: "reset" }).catch((error) =>
+        console.error("[auth] reset email failed", error),
+      );
+    }
   }
   // Always the same answer, whether or not the account exists.
   return { message: "If that email has an account, a reset link is on its way. It expires in an hour." };

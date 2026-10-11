@@ -93,6 +93,11 @@ export async function sendPortalInviteAction(email: string) {
     await sendPortalInvite(userId, parsed.data, await origin());
     return { ok: true as const };
   } catch (error) {
-    return { ok: false as const, error: error instanceof Error ? error.message : "Couldn't send the invite" };
+    console.error("[estimates] portal invite failed", error);
+    const message = error instanceof Error ? error.message : "";
+    if (/testing emails|verify a domain/i.test(message)) {
+      return { ok: false as const, error: "Email is still in Resend test mode: it only sends to your own address. Verify raghv.dev at resend.com/domains and set SMTP_FROM to an address on it." };
+    }
+    return { ok: false as const, error: message || "Couldn't send the invite" };
   }
 }

@@ -386,6 +386,21 @@ export async function sendEstimateNotification({
   await sendMail({ to: TO, subject: `[raghv.dev] New estimate ${reference} from ${name}`, html });
 }
 
+// ─── Client portal invite and password reset (to client) ────────────────────
+export async function sendPortalLinkEmail({ to, name, url, kind }: { to: string; name: string | null; url: string; kind: "invite" | "reset" }) {
+  const invite = kind === "invite";
+  const html = base(`
+    <p style="margin:0 0 6px;font-family:'Courier New',monospace;font-size:10px;color:${GOLD};letter-spacing:0.15em;text-transform:uppercase;">Client portal</p>
+    <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:${TEXT};line-height:1.3;">${invite ? `Your client portal is ready${name ? `, ${esc(name)}` : ""}` : "Reset your password"}</h1>
+    <p style="margin:0 0 20px;font-size:15px;color:${MUTED};line-height:1.8;">${invite
+      ? "Set a password to open your portal. That's where you'll find your estimate, agreement, invoices and project updates, and where we can message each other."
+      : "Someone asked to reset the password for this email. If it was you, choose a new password below. If not, you can ignore this email."}</p>
+    <a href="${url}" style="display:inline-block;padding:12px 24px;background:${GOLD};border-radius:4px;font-size:12px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;">${invite ? "Set my password" : "Choose a new password"}</a>
+    <p style="margin:20px 0 0;font-size:12px;color:#555;">The link works once and expires in 24 hours. After that, use "Forgot?" on the sign-in page to get a new one.</p>
+  `, invite ? "Your client portal is ready" : "Reset your password");
+  await sendMail({ to, subject: invite ? "Your client portal: set your password" : "Reset your raghv.dev password", html });
+}
+
 // ─── Onboarding questionnaire (to client) ───────────────────────────────────
 export async function sendQuestionnaireEmail({ to, name, url }: { to: string; name: string; url: string }) {
   const html = base(`

@@ -10,7 +10,8 @@ export const dynamic = "force-dynamic";
 
 const fmt = (cents: number) =>
   new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD", currencyDisplay: "narrowSymbol", maximumFractionDigits: 0 }).format(cents / 100);
-const date = (iso: string) => new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: "America/Edmonton" }).format(new Date(iso));
+// Plain dates (due dates) are formatted in UTC so Edmonton time doesn't shift them back a day.
+const date = (iso: string) => new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: /^\d{4}-\d{2}-\d{2}$/.test(iso) ? "UTC" : "America/Edmonton" }).format(new Date(iso));
 
 const STAGE: Record<string, { label: string; step: number }> = {
   new: { label: "Received", step: 1 },
@@ -149,7 +150,7 @@ export default async function PortalHome() {
           </section>
         )}
 
-        <section className="mt-10">
+        <section id="invoices" className="mt-10 scroll-mt-24">
           <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-3">Invoices</h2>
           {invoices?.length ? (
             <ul className="divide-y divide-[var(--border)] rounded-xl border border-[var(--border)] bg-[var(--card)]">

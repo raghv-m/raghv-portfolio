@@ -3,11 +3,11 @@
 import { headers } from "next/headers";
 
 import { estimatorConfig } from "@/config/estimator";
-import { createPortalAccessLink, ensureClient } from "@/lib/clients";
+import { ensureClient, portalAccessFor } from "@/lib/clients";
 import { getActiveCatalog } from "@/lib/estimator/catalog";
 import { priceEstimate, type EstimateResult } from "@/lib/estimator/engine";
 import { estimateSubmissionSchema } from "@/lib/estimator/schema";
-import { sendEstimateEmail, sendEstimateNotification } from "@/lib/mail";
+import { sendEstimateEmail, sendEstimateNotification, signInUrl, type PortalAccess } from "@/lib/mail";
 import { getClientIp, hashIp, rateLimit } from "@/lib/rateLimit";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
@@ -77,13 +77,11 @@ export async function submitEstimateAction(input: unknown): Promise<SubmitEstima
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "raghv.dev";
   const origin = `${h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https")}://${host}`;
-  let portalUrl: string | null = null;
-  let newAccount = false;
+  let access: PortalAccess = { signInUrl: signInUrl("/portal", origin), setPasswordUrl: null, email: data.email.toLowerCase() };
   try {
     const client = await ensureClient(null, { email: data.email, name: data.name, company: data.company });
-    newAccount = client.created;
     await admin.from("estimates").update({ client_id: client.id }).eq("id", saved.id);
-    portalUrl = await createPortalAccessLink(data.email, origin);
+    access = await portalAccessFor(data.email, "/portal", origin);
   } catch (err) {
     console.error("[estimate] client account setup failed", err);
   }
@@ -97,7 +95,7 @@ export async function submitEstimateAction(input: unknown): Promise<SubmitEstima
       categoryLabel,
       pages: data.pages,
       result,
-      portal: { url: portalUrl, loginUrl: `${origin}/auth/login`, newAccount },
+      access,
     });
   } catch (err) {
     emailed = false;

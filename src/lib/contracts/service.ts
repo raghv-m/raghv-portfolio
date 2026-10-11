@@ -4,7 +4,8 @@ import { createHash } from "node:crypto";
 
 import { invoicing } from "@/config/invoicing";
 import { logAudit } from "@/lib/audit";
-import { sendContractSignedEmail, sendContractToSignEmail, sendQuestionnaireEmail } from "@/lib/mail";
+import { portalAccessFor } from "@/lib/clients";
+import { friendlyMailError, sendContractSignedEmail, sendContractToSignEmail, sendQuestionnaireEmail, signInUrl } from "@/lib/mail";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 import { renderContractPdf } from "./pdf";
@@ -58,13 +59,17 @@ export async function sendQuestionnaire(actorId: string, clientId: string, origi
 
   let error: string | null = null;
   try {
-    await sendQuestionnaireEmail({ to: client.email, name: client.full_name || "there", url: `${origin}/portal/questionnaire/${questionnaire.id}` });
+    const access = await portalAccessFor(client.email, `/portal/questionnaire/${questionnaire.id}`, origin);
+    await sendQuestionnaireEmail({ to: client.email, name: client.full_name || "there", access });
   } catch (e) {
-    error = e instanceof Error ? e.message : "Email failed";
+    console.error("[contracts] questionnaire email failed", e);
+    error = friendlyMailError(e);
   }
   await logEmail({ type: "questionnaire_sent", to: client.email, error });
   await logAudit({ actorId, action: "questionnaire.send", resourceType: "questionnaire", resourceId: questionnaire.id, changes: { client: client.email } });
-  return error ? { ok: false, error: `Questionnaire created, but the email failed (${error}). Share the portal link instead.` } : { ok: true, data: { id: questionnaire.id } };
+  return error
+    ? { ok: false, error: `Questionnaire created, but the email didn't send: ${error} You can send the client this link instead: ${signInUrl(`/portal/questionnaire/${questionnaire.id}`, origin)}` }
+    : { ok: true, data: { id: questionnaire.id } };
 }
 
 export async function submitQuestionnaire(userId: string, questionnaireId: string, answers: QuestionnaireAnswers): Promise<Result> {
@@ -223,13 +228,17 @@ export async function sendContract(actorId: string, id: string, providerSignatur
   let emailError: string | null = null;
   try {
     if (!to) throw new Error("No client email");
-    await sendContractToSignEmail({ to, name: vars.client.signerName, number: contract.number, title: contract.title, url: `${origin}/portal/contracts/${id}` });
+    const access = await portalAccessFor(to, `/portal/contracts/${id}`, origin);
+    await sendContractToSignEmail({ to, name: vars.client.signerName, number: contract.number, title: contract.title, access });
   } catch (e) {
-    emailError = e instanceof Error ? e.message : "Email failed";
+    console.error("[contracts] contract email failed", e);
+    emailError = friendlyMailError(e);
   }
   await logEmail({ type: "contract_sent", to: to ?? "(none)", contractId: id, error: emailError });
   await logAudit({ actorId, action: "contract.send", resourceType: "contract", resourceId: id, changes: { number: contract.number } });
-  return emailError ? { ok: false, error: `Sent, but the email failed (${emailError}). Share the portal link instead.` } : { ok: true, data: undefined };
+  return emailError
+    ? { ok: false, error: `The contract is ready to sign, but the email didn't send: ${emailError} You can send the client this link instead: ${signInUrl(`/portal/contracts/${id}`, origin)}` }
+    : { ok: true, data: undefined };
 }
 
 /**
@@ -285,7 +294,7 @@ export async function signContract(
   for (const to of [vars.client.email, invoicing.email]) {
     let emailError: string | null = null;
     try {
-      await sendContractSignedEmail({ to, name: to === invoicing.email ? invoicing.businessName : vars.client.signerName, number: contract.number, clientName: vars.client.legalName, pdf, forProvider: to === invoicing.email });
+      await sendContractSignedEmail({ to, name: to === invoicing.email ? invoicing.businessName : vars.client.signerName, number: contract.number, clientName: vars.client.legalName, pdf, forProvider: to === invoicing.email, contractId: id });
     } catch (e) {
       emailError = e instanceof Error ? e.message : "Email failed";
     }

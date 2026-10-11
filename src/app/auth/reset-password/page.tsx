@@ -1,17 +1,29 @@
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { AuthShell, authInputClass, authLabelClass, FormAlert } from "@/components/auth/AuthShell";
 
 import { updatePasswordAction } from "../actions";
 
+// useSearchParams needs a Suspense boundary so the rest of the page can still prerender.
 export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
+
+function ResetPasswordForm() {
   const [state, action, pending] = useActionState(updatePasswordAction, undefined);
+  const next = useSearchParams().get("next");
 
   return (
     <AuthShell label="NEW PASSWORD" title="Choose a new password">
       <form action={action} className="space-y-4">
+        {next && <input type="hidden" name="next" value={next} />}
         <p className="text-sm text-[var(--text-muted)]">At least 12 characters. A passphrase of a few random words works well.</p>
         <div>
           <label htmlFor="password" className={authLabelClass}>NEW PASSWORD</label>

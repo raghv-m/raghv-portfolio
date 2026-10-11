@@ -3,7 +3,7 @@ import "server-only";
 import { randomBytes } from "node:crypto";
 
 import { logAudit } from "@/lib/audit";
-import { sendPortalLinkEmail } from "@/lib/mail";
+import { sendPortalLinkEmail, signInUrl, type PortalAccess } from "@/lib/mail";
 import { prisma, isDatabaseConfigured } from "@/lib/prisma";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
@@ -141,13 +141,34 @@ export async function ensureClient(actorId: string | null, input: { email: strin
  * single use. Sent through our own mailer (Resend), not Supabase's built-in one, which only
  * delivers a couple of emails an hour and only to Supabase team members.
  */
-export async function createSetPasswordLink(email: string, origin: string): Promise<string | null> {
+export async function createSetPasswordLink(email: string, origin: string, then?: string): Promise<string | null> {
   const { data, error } = await getSupabaseAdmin().auth.admin.generateLink({ type: "recovery", email: email.toLowerCase() });
   if (error || !data.properties?.hashed_token) {
     if (error?.status !== 404) console.error("[clients] set-password link failed", error);
     return null;
   }
-  return `${origin}/auth/confirm?token_hash=${encodeURIComponent(data.properties.hashed_token)}&type=recovery&next=/auth/reset-password`;
+  const next = then ? `/auth/reset-password?next=${encodeURIComponent(then)}` : "/auth/reset-password";
+  return `${origin}/auth/confirm?token_hash=${encodeURIComponent(data.properties.hashed_token)}&type=recovery&next=${encodeURIComponent(next)}`;
+}
+
+/**
+ * Links for a client email: the sign-in page (continuing to `path`), plus a one-time
+ * set-password link if they haven't chosen a password yet. Never mints a link for an admin.
+ */
+export async function portalAccessFor(email: string, path: string, origin: string): Promise<PortalAccess> {
+  const address = email.toLowerCase();
+  const access: PortalAccess = { signInUrl: signInUrl(path, origin), setPasswordUrl: null, email: address };
+  try {
+    const { data: profile } = await getSupabaseAdmin().from("profiles").select("id, role").eq("email", address).maybeSingle();
+    if (!profile || profile.role === "admin") return access;
+    const { data } = await getSupabaseAdmin().auth.admin.getUserById(profile.id);
+    if (data.user?.user_metadata?.password_set) return access;
+    access.setPasswordUrl = await createSetPasswordLink(address, origin, path);
+  } catch (error) {
+    // The sign-in link still works; the client can use "Forgot?" to set a password.
+    console.error("[clients] portal access link failed", error);
+  }
+  return access;
 }
 
 /** Emails a client a link to set their password and open the portal. */
@@ -158,11 +179,4 @@ export async function sendPortalInvite(actorId: string, email: string, origin: s
   if (!url) throw new Error("Couldn't create the portal link. Check that the client's account exists.");
   await sendPortalLinkEmail({ to: address, name: profile?.full_name ?? null, url, kind: "invite" });
   await logAudit({ actorId, action: "client.portal_invite", resourceType: "profile", changes: { email: address } });
-}
-
-/** Portal link for the estimate form's confirmation email. Never for the admin account from a public form. */
-export async function createPortalAccessLink(email: string, origin: string): Promise<string | null> {
-  const { data: profile } = await getSupabaseAdmin().from("profiles").select("role").eq("email", email.toLowerCase()).maybeSingle();
-  if (profile?.role === "admin") return null;
-  return createSetPasswordLink(email, origin);
 }

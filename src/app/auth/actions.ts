@@ -124,11 +124,13 @@ export async function updatePasswordAction(_prev: FormState, formData: FormData)
   if (!signedIn) return { error: "Your reset link has expired. Request a new one." };
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.updateUser({ password: password.data });
+  // password_set tells client emails to stop including a "set your password" link.
+  const { error } = await supabase.auth.updateUser({ password: password.data, data: { password_set: true } });
   if (error) return { error: error.message };
 
   await logAudit({ actorId: signedIn.userId, action: "auth.password_changed", resourceType: "user", resourceId: signedIn.userId });
-  redirect(signedIn.profile.role === "admin" ? "/auth/mfa?next=/admin" : "/portal");
+  if (signedIn.profile.role === "admin") redirect("/auth/mfa?next=/admin");
+  redirect(safeNext(formData.get("next"), "/portal"));
 }
 
 // ---------------------------------------------------------------------------------------------

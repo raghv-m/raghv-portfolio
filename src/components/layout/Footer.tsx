@@ -17,7 +17,7 @@ const LINKS = [
   [
     { label: "About", href: "/about" },
     { label: "Cybersecurity", href: "/cybersecurity" },
-    { label: "Projects", href: "/projects" },
+    { label: "Portfolio", href: "/portfolio" },
     { label: "Home Lab", href: "/homelab" },
   ],
   [

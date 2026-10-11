@@ -339,7 +339,7 @@ export default function AboutPage() {
               The story is the context. The lab, the certs, and the projects are the evidence.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/projects" className="btn-gold">
+              <Link href="/portfolio" className="btn-gold">
                 View Projects <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="btn-ghost">

@@ -12,7 +12,7 @@ const LINKS = [
 { href: "/certifications", label: "Certs" },
 { href: "/cybersecurity", label: "Cybersecurity" },
 { href: "/homelab", label: "Home Lab" },
-{ href: "/projects", label: "Projects" },
+{ href: "/portfolio", label: "Portfolio" },
 { href: "/blog", label: "Blog" },
 { href: "/estimate", label: "Estimate" },
 { href: "/contact", label: "Contact" },

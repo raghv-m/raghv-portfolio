@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "avatars.githubusercontent.com" },
     ],
   },
+  async redirects() {
+    return [{ source: "/projects", destination: "/portfolio", statusCode: 301 }];
+  },
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion"],
   },

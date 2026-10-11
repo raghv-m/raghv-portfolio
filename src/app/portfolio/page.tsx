@@ -29,27 +29,6 @@ const PROJECTS: {
   icon: typeof Shield;
 }[] = [
   {
-    id: 0,
-    featured: true,
-    title: "Vic Cameleers",
-    subtitle: "Removalist Website & Operations Platform (client work)",
-    category: "Development" as Category,
-    status: "LIVE",
-    statusColor: "var(--green)",
-    stack: ["Next.js 16", "TypeScript", "PostgreSQL (Neon)", "Prisma", "Better Auth", "Resend", "Vercel"],
-    color: "var(--gold)",
-    description: "A complete website and back office for a Melbourne removalist, built end to end. Customers get an instant moving estimate from a priced quote engine; the business gets an admin console for leads, bookings, crew, trucks, invoicing-ready jobs and automated emails. Suburb-by-suburb local SEO pages, structured data and a fast mobile-first build bring in the leads; role-based staff access with mandatory two-factor login keeps the data safe.",
-    impact: [
-      "Instant quote estimator with a configurable pricing engine",
-      "Admin CRM: leads, bookings, calendar, crew and truck scheduling, audit log",
-      "Staff roles (RBAC) with mandatory 2FA and an obscured admin path",
-      "Automated emails: quotes, booking confirmations, 7-day and 24-hour reminders, review requests",
-      "Local SEO: suburb landing pages, JSON-LD, sitemap, Google Search Console",
-    ],
-    live: "https://viccameleers.com",
-    icon: Code2,
-  },
-  {
     id: 1,
     featured: true,
     title: "HomeLab Corp",

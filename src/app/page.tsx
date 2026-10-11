@@ -145,7 +145,7 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.45 }}
               className="flex flex-wrap gap-3"
             >
-              <Link href="/projects" className="btn-gold">
+              <Link href="/portfolio" className="btn-gold">
                 View My Work <ArrowRight className="w-3.5 h-3.5" />
               </Link>
               <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="btn-ghost">

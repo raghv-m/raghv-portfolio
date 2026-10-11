@@ -467,7 +467,7 @@ function Submitted({ reference, result, emailed, email }: { reference: string; r
         I&apos;ll reply within 1–2 business days with a firm quote.
       </p>
       <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-        <Link href="/projects" className="btn-gold justify-center">See my work</Link>
+        <Link href="/portfolio" className="btn-gold justify-center">See my work</Link>
         <Link href="/" className="btn-ghost justify-center">Back home</Link>
       </div>
     </motion.div>

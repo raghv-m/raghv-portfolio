@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 import { invoicing } from "@/config/invoicing";
 import { logAudit } from "@/lib/audit";
 import { portalAccessFor } from "@/lib/clients";
-import { friendlyMailError, sendContractSignedEmail, sendContractToSignEmail, sendQuestionnaireEmail, signInUrl } from "@/lib/mail";
+import { friendlyMailError, OWNER_INBOX, sendContractSignedEmail, sendContractToSignEmail, sendQuestionnaireEmail, signInUrl } from "@/lib/mail";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 import { renderContractPdf } from "./pdf";
@@ -304,10 +304,11 @@ export async function signContract(
 
   await logAudit({ actorId: userId, action: "contract.sign", resourceType: "contract", resourceId: id, changes: { number: contract.number, sha256: contract.body_sha256 } });
 
-  for (const to of [vars.client.email, invoicing.email]) {
+  for (const to of [vars.client.email, OWNER_INBOX]) {
     let emailError: string | null = null;
     try {
-      await sendContractSignedEmail({ to, name: to === invoicing.email ? invoicing.businessName : vars.client.signerName, number: contract.number, clientName: vars.client.legalName, pdf, forProvider: to === invoicing.email, contractId: id });
+      const forProvider = to === OWNER_INBOX;
+      await sendContractSignedEmail({ to, name: forProvider ? invoicing.businessName : vars.client.signerName, number: contract.number, clientName: vars.client.legalName, pdf, forProvider, contractId: id });
     } catch (e) {
       emailError = e instanceof Error ? e.message : "Email failed";
     }

@@ -23,12 +23,15 @@ export const invoicing = {
   tagline: "Web Development & Cybersecurity",
   addressLines: ["Unit 303, 107 Watt Common SW", "Edmonton, AB T6X 3C6", "Canada"],
   phone: "825-343-1168",
-  email: "raaghvv0508@gmail.com",
+  /** Contact address printed on invoices and contracts (forwarded to the owner's inbox). */
+  email: "billing@raghv.dev",
+  /** Interac e-Transfers must go to the email registered with the bank, not the domain address. */
+  etransferEmail: "raaghvv0508@gmail.com",
   website: "raghv.dev",
   gstNumber: null as string | null,
   defaultCurrency: "cad",
   /** Shown under the totals. */
-  paymentInstructions: "Payment by Interac e-Transfer to the email above. Please include the invoice number.",
+  paymentInstructions: "Payment by Interac e-Transfer to raaghvv0508@gmail.com. Please include the invoice number.",
   /** Ways clients can pay; offered in the questionnaire and written into contracts. */
   paymentMethods: ["Interac e-Transfer", "Bank transfer (EFT)", "Credit card (via secure payment link)", "Cheque"],
   /** Days to pay after an invoice is issued. */

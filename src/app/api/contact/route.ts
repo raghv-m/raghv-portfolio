@@ -59,7 +59,7 @@ async function handlePOST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[contact]", err);
-    return apiError(500, "An error occurred. Please email directly at raaghvv0508@gmail.com");
+    return apiError(500, "Your message couldn't be sent. Please try again, or email hello@raghv.dev.");
   }
 }
 

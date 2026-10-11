@@ -46,7 +46,9 @@ const fromFor = (sender: Sender) => {
   const address = senderAddress(sender);
   return address ? `${SENDER_NAME} <${address}>` : FROM;
 };
-const TO = process.env.CONTACT_RECEIVER_EMAIL || "raaghvv0508@gmail.com";
+const TO = process.env.CONTACT_RECEIVER_EMAIL || "devrvm@gmail.com";
+/** Where notifications for the site owner go (new messages, estimates, signed contracts). */
+export const OWNER_INBOX = TO;
 
 /** The sign-in page, continuing to `next` afterwards. Never expires, unlike one-time links. */
 export function signInUrl(next = "/portal", origin = site.url) {

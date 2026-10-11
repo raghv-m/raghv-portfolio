@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Check } from "lucide-react";
 
 import { signOutAction } from "@/app/auth/actions";
 import { requirePortalUser } from "@/lib/session";
@@ -44,6 +45,25 @@ export default async function PortalHome() {
     ...(contracts ?? []).filter((c) => c.status === "sent").map((c) => ({ href: `/portal/contracts/${c.id}`, title: `Review and sign ${c.title}`, detail: `${c.number} is ready for your signature.` })),
   ];
 
+  // Where the whole engagement stands, from first request to launch. Shown even before a
+  // project exists, so the client always sees what's done and what's next.
+  const project = projects?.[0];
+  const signed = (contracts ?? []).find((c) => c.status === "signed");
+  const pendingContract = (contracts ?? []).find((c) => c.status === "sent");
+  const openQuestionnaire = (questionnaires ?? []).find((q) => q.status === "sent");
+  const paidInvoice = (invoices ?? []).some((i) => i.status === "paid");
+  const openInvoice = (invoices ?? []).some((i) => i.status === "sent" || i.status === "overdue");
+  const launched = project?.status === "completed";
+  const journey: { title: string; detail: string; done: boolean; href?: string }[] = [
+    { title: "Request sent", detail: estimates?.length ? `Received ${date(estimates[estimates.length - 1].created_at)}` : "Start with an estimate", done: Boolean(estimates?.length), href: estimates?.length ? undefined : "/estimate" },
+    { title: "Questionnaire", detail: (questionnaires ?? []).some((q) => q.status === "submitted") ? "Submitted, thank you" : openQuestionnaire ? "Waiting for your answers" : "Sent after your request is reviewed", done: (questionnaires ?? []).some((q) => q.status === "submitted"), href: openQuestionnaire ? `/portal/questionnaire/${openQuestionnaire.id}` : undefined },
+    { title: "Agreement", detail: signed ? `Signed${signed.client_signed_at ? ` ${date(signed.client_signed_at)}` : ""}` : pendingContract ? "Ready for your signature" : "Prepared from your questionnaire", done: Boolean(signed), href: signed ? `/portal/contracts/${signed.id}` : pendingContract ? `/portal/contracts/${pendingContract.id}` : undefined },
+    { title: "Deposit", detail: paidInvoice ? "Paid, thank you" : openInvoice ? "Invoice sent, see below" : "Invoiced once the agreement is signed", done: paidInvoice, href: openInvoice ? "#invoices" : undefined },
+    { title: "Build", detail: project ? `${project.progress}% complete${latestUpdate.has(project.id) ? `: ${latestUpdate.get(project.id)!.title}` : ""}` : "Starts after the deposit", done: Boolean(project && (project.progress >= 100 || launched)), href: project ? `/portal/projects/${project.id}` : undefined },
+    { title: "Launch", detail: launched ? "Your site is live" : project?.end_date ? `Target ${date(project.end_date)}` : "Date set in your agreement", done: launched, href: project ? `/portal/projects/${project.id}` : undefined },
+  ];
+  const current = journey.findIndex((s) => !s.done);
+
   return (
     <div className="min-h-screen px-6 py-12">
       <div className="max-w-4xl mx-auto">
@@ -58,6 +78,44 @@ export default async function PortalHome() {
             <form action={signOutAction}><button type="submit" className="btn-ghost">Sign out</button></form>
           </div>
         </header>
+
+        <section className="mt-10 rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 sm:p-6" aria-labelledby="journey-title">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 id="journey-title" className="font-mono text-[10px] tracking-wider text-[var(--gold)] uppercase">Your project</h2>
+            {project && <Link href={`/portal/projects/${project.id}`} className="text-xs text-[var(--gold)] hover:underline">Full progress and timeline →</Link>}
+          </div>
+          <ol className="mt-5 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            {journey.map((step, i) => {
+              const state = step.done ? "done" : i === current ? "current" : "upcoming";
+              const body = (
+                <>
+                  <span className={`size-7 shrink-0 rounded-full grid place-items-center border text-xs font-semibold ${state === "done" ? "bg-[var(--gold)] border-[var(--gold)] text-black" : state === "current" ? "border-[var(--gold)] text-[var(--gold)]" : "border-[var(--border)] text-[var(--text-muted)]"}`}>
+                    {state === "done" ? <Check className="w-3.5 h-3.5" aria-hidden="true" /> : i + 1}
+                  </span>
+                  <span className="min-w-0">
+                    <span className={`block text-sm font-medium ${state === "upcoming" ? "text-[var(--text-muted)]" : "text-[var(--text)]"}`}>{step.title}</span>
+                    <span className="block text-xs text-[var(--text-muted)] leading-snug">{step.detail}</span>
+                  </span>
+                </>
+              );
+              return (
+                <li key={step.title} aria-current={state === "current" ? "step" : undefined}>
+                  {step.href ? (
+                    <Link href={step.href} className="flex lg:flex-col gap-3 rounded-lg p-1 -m-1 hover:bg-[rgba(212,160,23,0.06)] transition-colors">{body}</Link>
+                  ) : (
+                    <div className="flex lg:flex-col gap-3">{body}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+          {project && (
+            <div className="mt-5">
+              <div className="h-1.5 rounded-full bg-[var(--border)] overflow-hidden"><div className="h-full bg-[var(--gold)]" style={{ width: `${project.progress}%` }} /></div>
+              <p className="mt-1.5 text-xs text-[var(--text-muted)]">{project.title}: {project.progress}% complete</p>
+            </div>
+          )}
+        </section>
 
         {todo.length > 0 && (
           <section className="mt-10">

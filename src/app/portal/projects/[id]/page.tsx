@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { postClientMessageAction } from "@/app/portal/actions";
 import { MessageThread } from "@/components/crm/MessageThread";
+import { ProjectTimeline } from "@/components/crm/ProjectTimeline";
 import { requirePortalUser } from "@/lib/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
 // Plain dates (due dates) are formatted in UTC so Edmonton time doesn't shift them back a day.
 const date = (iso: string) => new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: /^\d{4}-\d{2}-\d{2}$/.test(iso) ? "UTC" : "America/Edmonton" }).format(new Date(iso));
 
-/** The client's view of one project: progress, milestones, and the message thread with Raghav. RLS-scoped. */
+/** The client's view of one project: progress, milestones, the progress timeline and messages. RLS-scoped. */
 export default async function PortalProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
@@ -23,9 +24,10 @@ export default async function PortalProjectPage({ params }: { params: Promise<{ 
   const supabase = await createSupabaseServerClient();
   const { data: project } = await supabase.from("projects").select("*").eq("id", id).maybeSingle();
   if (!project) notFound();
-  const [{ data: milestones }, { data: messages }] = await Promise.all([
+  const [{ data: milestones }, { data: messages }, { data: updates }] = await Promise.all([
     supabase.from("milestones").select("*").eq("project_id", id).order("sort_order"),
     supabase.from("messages").select("id, sender_id, body, created_at").eq("project_id", id).order("created_at"),
+    supabase.from("project_updates").select("id, kind, title, body, link_url, created_at").eq("project_id", id).order("created_at", { ascending: false }),
   ]);
   // Anyone who isn't the client in this thread is Raghav.
   const names = Object.fromEntries((messages ?? []).filter((m) => m.sender_id !== userId).map((m) => [m.sender_id, "Raghav"]));
@@ -51,6 +53,7 @@ export default async function PortalProjectPage({ params }: { params: Promise<{ 
                 <li key={m.id} className="flex items-center gap-3">
                   <span className={`size-5 shrink-0 rounded-full grid place-items-center border ${m.completed ? "bg-[var(--gold)] border-[var(--gold)] text-black" : "border-[var(--border)]"}`}>{m.completed && <Check className="w-3 h-3" />}</span>
                   <span className={`text-sm ${m.completed ? "text-[var(--text-muted)]" : "text-[var(--text)]"}`}>{m.title}</span>
+                  {m.completed && m.completed_at && <span className="ml-auto font-mono text-[10px] text-[var(--text-muted)]">{date(m.completed_at)}</span>}
                 </li>
               ))}
             </ol>
@@ -60,6 +63,11 @@ export default async function PortalProjectPage({ params }: { params: Promise<{ 
             <MessageThread projectId={project.id} meId={userId} names={names} initial={messages ?? []} send={postClientMessageAction} />
           </section>
         </div>
+
+        <section className="mt-6 rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 sm:p-6">
+          <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-5">Progress timeline</h2>
+          <ProjectTimeline entries={updates ?? []} />
+        </section>
       </div>
     </div>
   );

@@ -70,6 +70,19 @@ export type MilestoneRow = {
   completed: boolean;
   due_date: Timestamp | null;
   sort_order: number;
+  completed_at: Timestamp | null;
+  created_at: Timestamp;
+};
+
+export type ProjectUpdateRow = {
+  id: string;
+  project_id: string;
+  author_id: string | null;
+  kind: "update" | "milestone" | "status";
+  milestone_id: string | null;
+  title: string;
+  body: string | null;
+  link_url: string | null;
   created_at: Timestamp;
 };
 
@@ -348,6 +361,7 @@ export type Database = {
       profiles: Table<ProfileRow, "id" | "email" | "tenant_id">;
       projects: Table<ProjectRow, "tenant_id" | "client_id" | "title">;
       milestones: Table<MilestoneRow, "project_id" | "title">;
+      project_updates: Table<ProjectUpdateRow, "project_id" | "title">;
       project_files: Table<ProjectFileRow, "project_id" | "uploaded_by" | "file_name" | "file_path">;
       messages: Table<MessageRow, "project_id" | "sender_id" | "body">;
       invoices: Table<InvoiceRow, "tenant_id" | "client_id" | "due_date">;

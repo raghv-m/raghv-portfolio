@@ -64,6 +64,7 @@ await db.exec(`
   insert into public.projects (id,tenant_id,client_id,title) values ('${PA}','${T_A}','${CA}','A site'),('${PB}','${T_B}','${CB}','B app');
   insert into public.milestones (project_id,title) values ('${PA}','m1'),('${PB}','m2');
   insert into public.messages (project_id,sender_id,body) values ('${PA}','${CA}','hi'),('${PB}','${CB}','yo');
+  insert into public.project_updates (project_id,title) values ('${PA}','Homepage design ready'),('${PB}','API done');
   insert into public.invoices (id,tenant_id,client_id,due_date,status) values
     ('${INV1}','${T_A}','${CA}',now(),'sent'),
     ('30000000-0000-0000-0000-000000000002','${T_A}','${CA}',now(),'draft'),
@@ -151,6 +152,8 @@ await as("authenticated", CA, async () => {
   ok("client sees only own tenant's projects", (await count(`select * from public.projects`)) === 1);
   ok("client sees own milestones only", (await count(`select * from public.milestones`)) === 1);
   ok("client sees own messages only", (await count(`select * from public.messages`)) === 1);
+  ok("client sees own project updates only", (await count(`select * from public.project_updates`)) === 1);
+  ok("client can't post project updates", await fails(`insert into public.project_updates (project_id,title) values ('${PA}','fake')`));
   ok("client sees own non-draft invoices only", (await count(`select * from public.invoices`)) === 1);
   ok("client sees line items of visible invoice", (await count(`select * from public.invoice_line_items`)) === 1);
   ok("client cannot read draft posts", (await count(`select * from public.blog_posts`)) === 1);
@@ -201,8 +204,8 @@ await as("service_role", null, async () => {
 
 const pub = await db.query(`select tablename from pg_publication_tables where pubname='supabase_realtime' order by 1`);
 ok(
-  "realtime publishes projects, milestones, messages, invoices",
-  pub.rows.map((r) => r.tablename).join(",") === "invoices,messages,milestones,projects",
+  "realtime publishes projects, milestones, messages, invoices, project updates",
+  pub.rows.map((r) => r.tablename).join(",") === "invoices,messages,milestones,project_updates,projects",
 );
 
 console.log(failures ? `\n${failures} FAILED` : "\nALL PASSED");

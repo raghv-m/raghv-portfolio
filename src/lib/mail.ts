@@ -428,6 +428,29 @@ export async function sendPortalInviteEmail({ to, name, access }: { to: string; 
   await sendMail({ to, subject: "Your client portal is ready", html });
 }
 
+// ─── Project progress update (to client) ────────────────────────────────────
+export async function sendProjectUpdateEmail({ to, name, projectTitle, title, body, link: preview, access }: {
+  to: string;
+  name: string;
+  projectTitle: string;
+  title: string;
+  body: string | null;
+  link: string | null;
+  access: PortalAccess;
+}) {
+  const href = safeHref(preview);
+  const html = layout(`
+    ${eyebrow(`Project update &middot; ${esc(projectTitle)}`)}
+    ${heading(esc(title))}
+    ${para(`Hi ${esc(name)}, here's the latest on your project.`)}
+    ${body ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px;"><tr><td style="font-family:${SANS};font-size:15px;line-height:1.7;color:${C.text};white-space:pre-wrap;">${esc(body)}</td></tr></table>` : ""}
+    ${href ? para(`Preview: ${link(href, esc(href.replace(/^https:\/\//, "")))}`) : ""}
+    ${portalAccess(access, "See full progress")}
+    ${small("Your portal has the whole timeline, milestones and our messages. Questions? Just reply to this email.")}
+  `, `${projectTitle}: ${title}`);
+  await sendMail({ to, subject: `Update on ${projectTitle}: ${title}`, html });
+}
+
 // ─── Onboarding questionnaire (to client) ───────────────────────────────────
 export async function sendQuestionnaireEmail({ to, name, access }: { to: string; name: string; access: PortalAccess }) {
   const html = layout(`

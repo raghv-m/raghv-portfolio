@@ -7,10 +7,12 @@ import { z } from "zod";
 import {
   addMilestone,
   addNote,
+  addProjectUpdate,
   addTask,
   createProject,
   deleteMilestone,
   deleteNote,
+  deleteProjectUpdate,
   deleteTask,
   postAdminMessage,
   setMilestoneDone,
@@ -18,6 +20,7 @@ import {
   setTaskDone,
   updateProject,
 } from "@/lib/crm";
+import { requestOrigin } from "@/lib/origin";
 import { requireAdmin } from "@/lib/session";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
@@ -178,5 +181,38 @@ export async function postProjectMessageAction(projectId: string, body: string):
   const text = z.string().trim().min(1).max(10000).safeParse(body);
   if (!uuid.safeParse(projectId).success || !text.success) return fail("Write a message");
   await postAdminMessage(userId, projectId, text.data);
+  return { ok: true };
+}
+
+// Progress updates (the client's timeline) ------------------------------------------------------
+
+const projectUpdateInput = z.object({
+  title: z.string().trim().min(1, "Give the update a title").max(200),
+  body: z.string().trim().max(10000).optional(),
+  link: z.union([z.literal(""), z.url({ protocol: /^https$/, error: "Preview links must start with https://" })]).optional(),
+  notify: z.boolean(),
+});
+
+export async function postProjectUpdateAction(projectId: string, input: unknown): Promise<ActionResult & { warning?: string }> {
+  const { userId } = await requireAdmin();
+  if (!uuid.safeParse(projectId).success) return fail("Invalid project");
+  const parsed = projectUpdateInput.safeParse(input);
+  if (!parsed.success) return fail(parsed.error.issues[0].message);
+  const { emailError } = await addProjectUpdate(userId, projectId, parsed.data, await requestOrigin());
+  revalidatePath(`/admin/projects/${projectId}`);
+  revalidatePath(`/portal/projects/${projectId}`);
+  revalidatePath("/portal");
+  return emailError ? { ok: true, warning: `Update posted, but the email didn't send: ${emailError}` } : { ok: true };
+}
+
+export async function deleteProjectUpdateAction(id: string): Promise<ActionResult> {
+  await requireAdmin();
+  if (!uuid.safeParse(id).success) return fail("Invalid update");
+  const projectId = await deleteProjectUpdate(id);
+  if (projectId) {
+    revalidatePath(`/admin/projects/${projectId}`);
+    revalidatePath(`/portal/projects/${projectId}`);
+  }
+  revalidatePath("/portal");
   return { ok: true };
 }

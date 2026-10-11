@@ -28,13 +28,17 @@ const STAGE: Record<string, { label: string; step: number }> = {
 export default async function PortalHome() {
   const { profile, email } = await requirePortalUser();
   const supabase = await createSupabaseServerClient();
-  const [{ data: estimates }, { data: projects }, { data: invoices }, { data: questionnaires }, { data: contracts }] = await Promise.all([
+  const [{ data: estimates }, { data: projects }, { data: invoices }, { data: questionnaires }, { data: contracts }, { data: updates }] = await Promise.all([
     supabase.from("estimates").select("id, reference, status, category_slug, pages, my_low_cents, my_high_cents, monthly_cents, created_at").order("created_at", { ascending: false }),
     supabase.from("projects").select("id, title, status, progress, end_date").order("created_at", { ascending: false }),
     supabase.from("invoices").select("id, invoice_number, status, amount_due, amount_paid, currency, due_date, pdf_path").order("created_at", { ascending: false }),
     supabase.from("questionnaires").select("id, status, sent_at").order("sent_at", { ascending: false }),
     supabase.from("contracts").select("id, number, title, status, sent_at, client_signed_at").neq("status", "void").order("created_at", { ascending: false }),
+    // RLS limits this to the client's own projects; newest first, so the first per project is the latest.
+    supabase.from("project_updates").select("project_id, title, created_at").order("created_at", { ascending: false }).limit(50),
   ]);
+  const latestUpdate = new Map<string, { title: string; created_at: string }>();
+  for (const u of updates ?? []) if (!latestUpdate.has(u.project_id)) latestUpdate.set(u.project_id, u);
   const todo = [
     ...(questionnaires ?? []).filter((q) => q.status === "sent").map((q) => ({ href: `/portal/questionnaire/${q.id}`, title: "Fill in your project questionnaire", detail: "About 10 minutes. I use it to prepare our agreement." })),
     ...(contracts ?? []).filter((c) => c.status === "sent").map((c) => ({ href: `/portal/contracts/${c.id}`, title: `Review and sign ${c.title}`, detail: `${c.number} is ready for your signature.` })),
@@ -127,6 +131,12 @@ export default async function PortalHome() {
                     <div className="h-full bg-[var(--gold)]" style={{ width: `${p.progress}%` }} />
                   </div>
                   <p className="mt-1 text-xs text-[var(--text-muted)]">{p.progress}% complete{p.end_date ? ` · target ${date(p.end_date)}` : ""}</p>
+                  {latestUpdate.has(p.id) && (
+                    <p className="mt-3 text-sm text-[var(--text-muted)]">
+                      <span className="font-mono text-[10px] tracking-wider text-[var(--gold)] uppercase mr-2">Latest</span>
+                      {latestUpdate.get(p.id)!.title} <span className="text-xs">· {date(latestUpdate.get(p.id)!.created_at)}</span>
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>

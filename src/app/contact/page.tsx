@@ -96,7 +96,7 @@ export default function ContactPage() {
                 {[
                   { icon: Mail, label: "Email", value: "raaghvv0508@gmail.com", href: "mailto:raaghvv0508@gmail.com", color: "var(--gold)" },
                   { icon: MapPin, label: "Location", value: "Edmonton, AB, Canada", color: "var(--blue)" },
-                  { icon: Globe, label: "Portfolio", value: "raghv.dev", href: "https://raghv.dev", color: "var(--gold)" },
+                  { icon: Globe, label: "Portfolio", value: "raghv.dev", href: "https://www.raghv.dev", color: "var(--gold)" },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"

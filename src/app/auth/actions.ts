@@ -42,7 +42,7 @@ async function siteOrigin(): Promise<string> {
     const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
     return `${proto}://${host}`;
   }
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://raghv.dev").replace(/\/$/, "");
+  return (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.raghv.dev").replace(/\/$/, "");
 }
 
 const credentials = z.object({

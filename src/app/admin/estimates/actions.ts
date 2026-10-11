@@ -17,7 +17,7 @@ const STATUSES = ["new", "reviewed", "quoted", "converted", "declined"] as const
 async function origin() {
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host");
-  return host ? `${h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https")}://${host}` : "https://raghv.dev";
+  return host ? `${h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https")}://${host}` : "https://www.raghv.dev";
 }
 
 export async function updateEstimateAction(input: unknown) {

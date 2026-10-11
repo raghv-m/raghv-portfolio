@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 /** One place for the facts search engines and social cards use. */
 export const site = {
-  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://raghv.dev").replace(/\/$/, ""),
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://www.raghv.dev").replace(/\/$/, ""),
   name: "raghv.dev",
   person: "Raghav Mahajan",
   title: "Raghav Mahajan: Web Developer & Cybersecurity Analyst in Edmonton",

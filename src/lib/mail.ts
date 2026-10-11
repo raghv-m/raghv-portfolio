@@ -113,20 +113,14 @@ function panel(title: string, inner: string) {
   </table>`;
 }
 
-/**
- * How the client gets in. The main button always goes to the sign-in page (and on to the right
- * page). Clients who haven't set a password yet also get a one-time link to set one.
- */
-export type PortalAccess = { signInUrl: string; setPasswordUrl: string | null; email: string };
+/** How the client gets in: the sign-in page, continuing to the right page afterwards. */
+export type PortalAccess = { signInUrl: string; email: string };
+
+const FIRST_TIME = "First time? Set your password with \"Forgot password\" on the sign-in page.";
 
 function portalAccess(access: PortalAccess, label: string) {
-  const firstTime = access.setPasswordUrl
-    ? panel("First time here?", `
-        <p style="margin:0 0 12px;font-family:${SANS};font-size:14px;line-height:1.6;color:${C.body};">Your portal account uses ${strong(esc(access.email))}. Set a password first, and you'll go straight to the right page.</p>
-        ${button(access.setPasswordUrl, "Set my password", "secondary")}
-        <p style="margin:10px 0 0;font-family:${SANS};font-size:12px;line-height:1.5;color:${C.muted};">This link works once, for 24 hours. After that, use "Forgot?" on the sign-in page to get a new one.</p>`)
-    : "";
-  return `${button(access.signInUrl, label)}${firstTime}`;
+  return `${button(access.signInUrl, label)}
+  <p style="margin:12px 0 0;font-family:${SANS};font-size:13px;line-height:1.6;color:${C.muted};">Sign in with ${strong(esc(access.email))}. ${FIRST_TIME}</p>`;
 }
 
 function layout(content: string, preview: string) {
@@ -422,25 +416,16 @@ export async function sendEstimateNotification({
   await sendMail({ to: TO, subject: `[raghv.dev] New estimate ${reference} from ${name}`, html, replyTo: email });
 }
 
-// ─── Client portal invite and password reset (to client) ────────────────────
-export async function sendPortalLinkEmail({ to, name, url, kind }: { to: string; name: string | null; url: string; kind: "invite" | "reset" }) {
-  const invite = kind === "invite";
-  const html = layout(invite ? `
+// ─── Client portal invite (to client) ─────────────────────────────────────────
+export async function sendPortalInviteEmail({ to, name, access }: { to: string; name: string | null; access: PortalAccess }) {
+  const html = layout(`
     ${eyebrow("Client portal")}
     ${heading(`Your client portal is ready${name ? `, ${esc(name)}` : ""}`)}
     ${para("It's where you'll find your estimate, agreement, invoices and project updates, and where we can message each other.")}
-    ${facts([["Sign-in email", esc(to)]])}
-    ${para("Choose a password to get in:")}
-    ${button(url, "Set my password")}
-    ${small(`This link works once, for 24 hours. After that, go to ${link(signInUrl(), "the sign-in page")} and use "Forgot?" to get a new one.`)}
-  ` : `
-    ${eyebrow("Password reset")}
-    ${heading("Reset your password")}
-    ${para("Someone asked to reset the password for this email address. If it was you, choose a new one below. If not, you can ignore this email and nothing changes.")}
-    ${button(url, "Choose a new password")}
-    ${small("This link works once, for 24 hours.")}
-  `, invite ? "Your client portal is ready: set your password" : "Reset your raghv.dev password");
-  await sendMail({ to, subject: invite ? "Your client portal: set your password" : "Reset your raghv.dev password", html });
+    ${portalAccess(access, "Go to sign in")}
+    ${small("Questions? Just reply to this email.")}
+  `, "Your client portal is ready");
+  await sendMail({ to, subject: "Your client portal is ready", html });
 }
 
 // ─── Onboarding questionnaire (to client) ───────────────────────────────────

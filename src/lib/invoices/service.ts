@@ -176,7 +176,7 @@ export async function sendInvoice(actorId: string, invoiceId: string): Promise<R
         amount: formatMoney(invoice.amount_due, invoice.currency),
         dueDate: invoice.due_date,
         pdf,
-        access: await portalAccessFor(client.email, "/portal#invoices", site.url),
+        access: portalAccessFor(client.email, "/portal#invoices", site.url),
       });
     } catch (error) {
       console.error("[invoices] invoice email failed", error);

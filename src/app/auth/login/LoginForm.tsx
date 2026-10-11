@@ -23,7 +23,7 @@ export function LoginForm({ next }: { next?: string }) {
         <div className="flex items-center justify-between">
           <label htmlFor="password" className={authLabelClass}>PASSWORD</label>
           <Link href="/auth/forgot-password" className="font-mono text-[9px] text-[var(--gold)] hover:underline mb-1.5">
-            Forgot?
+            Forgot password?
           </Link>
         </div>
         <div className="relative">

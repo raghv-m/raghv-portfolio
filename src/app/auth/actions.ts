@@ -5,8 +5,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { logAudit } from "@/lib/audit";
-import { createSetPasswordLink } from "@/lib/clients";
-import { sendPortalLinkEmail } from "@/lib/mail";
 import {
   confirmEnrollment,
   isMfaEnabled,
@@ -97,13 +95,12 @@ export async function requestPasswordResetAction(_prev: FormState, formData: For
 
   const limit = await rateLimit(`reset:${email.data.toLowerCase()}`, "login");
   if (limit.success) {
-    // Our own email (Resend) with a one-time link; Supabase's built-in mailer barely delivers.
-    const url = await createSetPasswordLink(email.data, await siteOrigin());
-    if (url) {
-      await sendPortalLinkEmail({ to: email.data.toLowerCase(), name: null, url, kind: "reset" }).catch((error) =>
-        console.error("[auth] reset email failed", error),
-      );
-    }
+    const supabase = await createSupabaseServerClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(email.data.toLowerCase(), {
+      redirectTo: `${await siteOrigin()}/auth/confirm?next=/auth/reset-password`,
+    });
+    // Logged, never shown: the answer below is the same whether or not the account exists.
+    if (error) console.error("[auth] password reset email failed", error.message);
   }
   // Always the same answer, whether or not the account exists.
   return { message: "If that email has an account, a reset link is on its way. It expires in an hour." };
@@ -124,8 +121,7 @@ export async function updatePasswordAction(_prev: FormState, formData: FormData)
   if (!signedIn) return { error: "Your reset link has expired. Request a new one." };
 
   const supabase = await createSupabaseServerClient();
-  // password_set tells client emails to stop including a "set your password" link.
-  const { error } = await supabase.auth.updateUser({ password: password.data, data: { password_set: true } });
+  const { error } = await supabase.auth.updateUser({ password: password.data });
   if (error) return { error: error.message };
 
   await logAudit({ actorId: signedIn.userId, action: "auth.password_changed", resourceType: "user", resourceId: signedIn.userId });

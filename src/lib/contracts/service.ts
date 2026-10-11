@@ -59,7 +59,7 @@ export async function sendQuestionnaire(actorId: string, clientId: string, origi
 
   let error: string | null = null;
   try {
-    const access = await portalAccessFor(client.email, `/portal/questionnaire/${questionnaire.id}`, origin);
+    const access = portalAccessFor(client.email, `/portal/questionnaire/${questionnaire.id}`, origin);
     await sendQuestionnaireEmail({ to: client.email, name: client.full_name || "there", access });
   } catch (e) {
     console.error("[contracts] questionnaire email failed", e);
@@ -228,7 +228,7 @@ export async function sendContract(actorId: string, id: string, providerSignatur
   let emailError: string | null = null;
   try {
     if (!to) throw new Error("No client email");
-    const access = await portalAccessFor(to, `/portal/contracts/${id}`, origin);
+    const access = portalAccessFor(to, `/portal/contracts/${id}`, origin);
     await sendContractToSignEmail({ to, name: vars.client.signerName, number: contract.number, title: contract.title, access });
   } catch (e) {
     console.error("[contracts] contract email failed", e);

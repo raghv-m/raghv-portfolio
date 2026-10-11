@@ -30,8 +30,9 @@ export async function proxy(request: NextRequest) {
       isDev
         ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com"
         : "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://maps.googleapis.com https://maps.gstatic.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
+      // Fonts are self-hosted by next/font, so no Google Fonts hosts are needed.
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self'",
       // Allow external image hosts used by blog posts and the Next.js image optimizer
       "img-src 'self' data: blob: https://images.unsplash.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://avatars.githubusercontent.com https://*.google-analytics.com https://*.googletagmanager.com https://maps.gstatic.com https://*.googleapis.com",
       // Google Tag Manager / GA4 beacons.

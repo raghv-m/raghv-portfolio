@@ -10,7 +10,19 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 import { renderContractPdf } from "./pdf";
 import type { QuestionnaireAnswers } from "./questionnaire";
-import { buildContractBody, DEFAULT_EXCLUSIONS, SCHEDULE_PRESETS, type ContractVariables } from "./template";
+import { buildContractBody, DEFAULT_EXCLUSIONS, money, SCHEDULE_PRESETS, scheduleAmounts, type ContractVariables } from "./template";
+
+/** Key terms for the summary card on the first page of the signed PDF. */
+function contractSummary(v: ContractVariables) {
+  return {
+    projectTitle: v.projectTitle,
+    effectiveDate: v.effectiveDate,
+    targetLaunch: v.targetLaunch,
+    fee: money(v.feeCents, v.currency),
+    schedule: scheduleAmounts(v.feeCents, v.schedule).map((p) => `${p.label}: ${money(p.cents, v.currency)} (${p.pct}%)`),
+    monthly: v.monthly && v.monthly.cents > 0 ? `${money(v.monthly.cents, v.currency)}/month` : null,
+  };
+}
 
 /**
  * Onboarding questionnaire and services agreements.
@@ -266,7 +278,8 @@ export async function signContract(
     body: contract.body,
     bodySha256: contract.body_sha256,
     provider: { name: vars.provider.legalName, signatureName: contract.provider_signature_name ?? vars.provider.name, signedAt: contract.provider_signed_at ?? contract.sent_at ?? signedAt },
-    client: { name: vars.client.legalName, signatureName: signature.name, title: signature.title, signedAt, ipHash: signature.ipHash, userAgent: signature.userAgent },
+    client: { name: vars.client.legalName, signatureName: signature.name, title: signature.title, signedAt },
+    summary: contractSummary(vars),
   });
   const path = `${contract.id}.pdf`;
   const { error: uploadError } = await admin().storage.from("contracts").upload(path, pdf, { contentType: "application/pdf", upsert: true });

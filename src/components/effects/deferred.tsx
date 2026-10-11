@@ -7,7 +7,8 @@ import dynamic from "next/dynamic";
  * The decorative WebGL / canvas effects (3D hero, particles, smoke) are the heaviest JavaScript on
  * the site. They used to load and start during page load, delaying everything else (Lighthouse:
  * ~5s of main-thread work on mobile). Now they:
- *  - load only after the page is idle (or 2.5s, whichever comes first), so content shows first;
+ *  - load 3s after the page has loaded, when the browser is idle, so the page is usable first
+ *    (starting right at load cost ~1s of blocked main thread on desktop);
  *  - are skipped entirely on small screens, low-power devices, data-saver, and for anyone who
  *    prefers reduced motion. The page looks the same without them, just calmer.
  */
@@ -28,13 +29,17 @@ export function useHeavyEffects(): boolean {
     const idle = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 1200));
     const cancelIdle = window.cancelIdleCallback ?? window.clearTimeout;
     let handle: number | undefined;
+    let delay: number | undefined;
     const schedule = () => {
-      handle = idle(start, { timeout: 2500 });
+      delay = window.setTimeout(() => {
+        handle = idle(start, { timeout: 2000 });
+      }, 3000);
     };
     if (document.readyState === "complete") schedule();
     else window.addEventListener("load", schedule, { once: true });
     return () => {
       window.removeEventListener("load", schedule);
+      if (delay !== undefined) window.clearTimeout(delay);
       if (handle !== undefined) cancelIdle(handle);
     };
   }, []);

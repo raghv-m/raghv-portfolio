@@ -28,6 +28,24 @@ const safeHref = (url: string | undefined | null) =>
   url && /^https:\/\//i.test(url.trim()) ? esc(url.trim()) : undefined;
 
 const FROM = process.env.SMTP_FROM || "Raghav Mahajan <onboarding@resend.dev>";
+
+/**
+ * Each kind of email comes from its own address on the sending domain (taken from SMTP_FROM):
+ *  - hello@   enquiries, estimates, questionnaires, portal invites, project updates, newsletter
+ *  - billing@ contracts and invoices
+ *  - support@ account emails (password resets are sent by Supabase, also as support@)
+ * Replies go to the same address; the domain forwards all of them to the owner's inbox.
+ */
+export type Sender = "hello" | "billing" | "support";
+const SENDER_NAME = FROM.match(/^\s*"?([^"<]+?)"?\s*</)?.[1] ?? "Raghav Mahajan";
+const SENDER_DOMAIN = FROM.match(/@([^>\s]+)/)?.[1] ?? "";
+// Resend's shared test domain can only send from its own address, so keep FROM as is there.
+const OWN_DOMAIN = SENDER_DOMAIN && !/(^|\.)resend\.dev$/i.test(SENDER_DOMAIN);
+const senderAddress = (sender: Sender) => (OWN_DOMAIN ? `${sender}@${SENDER_DOMAIN}` : null);
+const fromFor = (sender: Sender) => {
+  const address = senderAddress(sender);
+  return address ? `${SENDER_NAME} <${address}>` : FROM;
+};
 const TO = process.env.CONTACT_RECEIVER_EMAIL || "raaghvv0508@gmail.com";
 
 /** The sign-in page, continuing to `next` afterwards. Never expires, unlike one-time links. */
@@ -186,17 +204,21 @@ export async function sendMail({
   subject,
   html,
   attachments,
-  replyTo = TO,
+  from = "hello",
+  replyTo,
 }: {
   to: string;
   subject: string;
   html: string;
   attachments?: { filename: string; content: Buffer; contentType: string }[];
+  from?: Sender;
   replyTo?: string;
 }) {
   const transport = getTransport();
-  // The sending address can't receive mail, so replies go to the inbox in CONTACT_RECEIVER_EMAIL.
-  await transport.sendMail({ from: FROM, to, subject, html, text: toText(html), attachments, replyTo });
+  // Replies go to the sending address (forwarded to the owner), or the owner's inbox if the
+  // site is still on Resend's test domain.
+  const reply = replyTo ?? senderAddress(from) ?? TO;
+  await transport.sendMail({ from: fromFor(from), to, subject, html, text: toText(html), attachments, replyTo: reply });
 }
 
 // ─── Batched send ──────────────────────────────────────────────────────────
@@ -313,6 +335,7 @@ export async function sendInvoiceEmail({
   await sendMail({
     to,
     subject: `Invoice ${invoiceNumber} from Raghav Mahajan (${amount})`,
+    from: "billing",
     html,
     attachments: [{ filename: `${invoiceNumber}.pdf`, content: pdf, contentType: "application/pdf" }],
   });
@@ -428,6 +451,29 @@ export async function sendPortalInviteEmail({ to, name, access }: { to: string; 
   await sendMail({ to, subject: "Your client portal is ready", html });
 }
 
+// ─── Project progress update (to client) ────────────────────────────────────
+export async function sendProjectUpdateEmail({ to, name, projectTitle, title, body, link: preview, access }: {
+  to: string;
+  name: string;
+  projectTitle: string;
+  title: string;
+  body: string | null;
+  link: string | null;
+  access: PortalAccess;
+}) {
+  const href = safeHref(preview);
+  const html = layout(`
+    ${eyebrow(`Project update &middot; ${esc(projectTitle)}`)}
+    ${heading(esc(title))}
+    ${para(`Hi ${esc(name)}, here's the latest on your project.`)}
+    ${body ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 22px;"><tr><td style="font-family:${SANS};font-size:15px;line-height:1.7;color:${C.text};white-space:pre-wrap;">${esc(body)}</td></tr></table>` : ""}
+    ${href ? para(`Preview: ${link(href, esc(href.replace(/^https:\/\//, "")))}`) : ""}
+    ${portalAccess(access, "See full progress")}
+    ${small("Your portal has the whole timeline, milestones and our messages. Questions? Just reply to this email.")}
+  `, `${projectTitle}: ${title}`);
+  await sendMail({ to, subject: `Update on ${projectTitle}: ${title}`, html });
+}
+
 // ─── Onboarding questionnaire (to client) ───────────────────────────────────
 export async function sendQuestionnaireEmail({ to, name, access }: { to: string; name: string; access: PortalAccess }) {
   const html = layout(`
@@ -450,7 +496,7 @@ export async function sendContractToSignEmail({ to, name, number, title, access 
     ${portalAccess(access, "Review and sign")}
     ${small("Questions or changes before signing? Just reply to this email.")}
   `, `Agreement ${number} is ready to sign`);
-  await sendMail({ to, subject: `Please review and sign: ${title} (${number})`, html });
+  await sendMail({ to, subject: `Please review and sign: ${title} (${number})`, html, from: "billing" });
 }
 
 // ─── Signed contract copy (to both parties) ─────────────────────────────────
@@ -469,6 +515,7 @@ export async function sendContractSignedEmail({ to, name, number, clientName, pd
   await sendMail({
     to,
     subject: forProvider ? `[raghv.dev] ${clientName} signed ${number}` : `Your signed agreement (${number})`,
+    from: "billing",
     html,
     attachments: [{ filename: `${number}-signed.pdf`, content: pdf, contentType: "application/pdf" }],
   });
@@ -536,3 +583,9 @@ export function buildNewsletterHtml({
     ${cta ? `<div style="height:22px;line-height:22px;">&nbsp;</div>${button(cta, esc(ctaText ?? "Read more"))}` : ""}
   `, title);
 }
+
+/**
+ * The layout and building blocks, for emails rendered elsewhere: scripts/sync-supabase-email-
+ * templates.mts uses them so Supabase's own account emails (password reset etc.) match ours.
+ */
+export const emailDesign = { layout, eyebrow, heading, para, small, button, facts, strong };

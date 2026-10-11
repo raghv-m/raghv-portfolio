@@ -87,10 +87,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       data-scroll-behavior="smooth"
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="grain bg-[#0a0a0a] text-[#f5f5f5] antialiased overflow-x-hidden">
-        {/* Google Tag Manager. beforeInteractive puts it in <head> of the server HTML, where GTM
-            asks for it and where Google's tag checker looks. */}
-        <Script id="gtm" strategy="beforeInteractive">
+      <body className="bg-[#0a0a0a] text-[#f5f5f5] antialiased">
+        {/* Google Tag Manager, loaded once the page has finished loading (lazyOnload) so its
+            117 KB never competes with the page's own code. GTM's "tag checker" may say the
+            snippet isn't in <head>; tags still fire normally. */}
+        <Script id="gtm" strategy="lazyOnload">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=

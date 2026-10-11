@@ -148,7 +148,7 @@ export default function CybersecurityPage() {
         </div>
         <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.92) 100%)" }} />
         <div className="relative z-10 max-w-6xl mx-auto px-6 w-full">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }}>
             <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CYBERSECURITY</p>
             <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
               Threat <span className="gradient-gold">Operations</span>

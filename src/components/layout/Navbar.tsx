@@ -21,17 +21,9 @@ const LINKS = [
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 30);
-    fn();
-    window.addEventListener("scroll", fn, { passive: true });
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
 
   // While the mobile menu is open: Escape closes it and the page behind doesn't scroll.
   useEffect(() => {
@@ -57,13 +49,13 @@ export default function Navbar() {
         initial={reduceMotion ? false : { y: -16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-300 ${
-          scrolled || open ? "bg-[rgba(10,10,10,0.92)] backdrop-blur-xl border-[#222]" : "bg-transparent border-transparent"
-        }`}
+        // Solid at every scroll position, so page content never shows through or under it.
+        className="fixed top-0 left-0 right-0 z-50 border-b border-[#222] bg-[#0a0a0a]"
       >
-        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="relative max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" aria-label="RAGHV.DEV home" className="flex items-center opacity-95 hover:opacity-100 transition-opacity">
+          {/* Centred on phones and tablets (menu button on the right), left-aligned on desktop. */}
+          <Link href="/" aria-label="RAGHV.DEV home" className="absolute left-1/2 -translate-x-1/2 xl:static xl:translate-x-0 flex items-center opacity-95 hover:opacity-100 transition-opacity">
             {/* The logo is above the fold on every page: load it right away, never lazily. */}
             <Image src="/logo-mobile.svg" alt="RAGHV.DEV" width={110} height={44} priority unoptimized className="h-10 w-auto" />
           </Link>
@@ -95,7 +87,7 @@ export default function Navbar() {
           </nav>
 
           {/* Status + resume + mobile toggle */}
-          <div className="flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-4">
             <div className="hidden xl:flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] pulse-green" />
               <span className="font-mono text-[10px] text-[var(--green)] tracking-wider">AVAILABLE</span>

@@ -282,7 +282,7 @@ export default function AboutPage() {
             style={{ background: "radial-gradient(circle, rgba(212,160,23,0.06) 0%, transparent 70%)" }} />
         </motion.div>
         <div className="max-w-3xl mx-auto relative z-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }}>
             <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-4">ABOUT</p>
             <h1 className="font-display text-5xl sm:text-6xl font-bold mb-6 leading-[1.05]">
               The Story Behind<br />

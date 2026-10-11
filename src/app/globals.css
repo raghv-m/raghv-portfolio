@@ -95,32 +95,6 @@ body {
   background-clip: text;
 }
 
-/* ── Noise grain overlay ─────────────────────────────────────── */
-.grain::before {
-  content: '';
-  position: fixed;
-  inset: -200%;
-  width: 400%;
-  height: 400%;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.03;
-  animation: grain 0.4s steps(1) infinite;
-}
-@keyframes grain {
-  0%, 100% { transform: translate(0, 0); }
-  10% { transform: translate(-2%, -3%); }
-  20% { transform: translate(3%, 1%); }
-  30% { transform: translate(-1%, 4%); }
-  40% { transform: translate(2%, -2%); }
-  50% { transform: translate(-3%, 2%); }
-  60% { transform: translate(1%, -4%); }
-  70% { transform: translate(-2%, 3%); }
-  80% { transform: translate(3%, -1%); }
-  90% { transform: translate(-1%, 2%); }
-}
-
 /* ── Animated underline ──────────────────────────────────────── */
 .underline-gold {
   position: relative;
@@ -346,14 +320,18 @@ body {
   right: 0;
   z-index: 40;
   border-top: 1px solid var(--border);
-  background: rgba(10,10,10,0.95);
-  backdrop-filter: blur(8px);
+  /* Solid, so page content never shows through while scrolling. */
+  background: #0a0a0a;
   overflow: hidden;
   white-space: nowrap;
   height: 24px;
   display: flex;
   align-items: center;
 }
+
+/* The ticker is fixed to the bottom: leave room for it so the end of the page (the footer)
+   is never hidden underneath. */
+body:has(.alert-feed) { padding-bottom: 24px; }
 
 /* ── Glow line ───────────────────────────────────────────────── */
 .glow-line {

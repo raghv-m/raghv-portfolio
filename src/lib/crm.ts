@@ -1,6 +1,8 @@
 import "server-only";
 
 import { logAudit } from "@/lib/audit";
+import { portalAccessFor } from "@/lib/clients";
+import { friendlyMailError, sendProjectUpdateEmail } from "@/lib/mail";
 import { isDatabaseConfigured, prisma } from "@/lib/prisma";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import type { ProjectRow } from "@/lib/supabase/database.types";
@@ -116,9 +118,65 @@ async function syncProgress(projectId: string) {
   await admin().from("projects").update({ progress }).eq("id", projectId);
 }
 
+const STATUS_LABEL: Record<string, string> = {
+  planning: "Planning",
+  in_progress: "In progress",
+  review: "Ready for your review",
+  completed: "Completed",
+  on_hold: "On hold",
+  cancelled: "Cancelled",
+};
+
 export async function updateProject(actorId: string, id: string, update: Partial<Pick<ProjectRow, "title" | "description" | "status" | "end_date" | "value_cents">>) {
+  const { data: before } = await admin().from("projects").select("status").eq("id", id).maybeSingle();
   await admin().from("projects").update(update).eq("id", id);
+  // A status change shows on the client's progress timeline.
+  if (update.status && before && update.status !== before.status) {
+    await admin().from("project_updates").insert({ project_id: id, author_id: actorId, kind: "status", title: `Status: ${STATUS_LABEL[update.status] ?? update.status}` });
+  }
   await logAudit({ actorId, action: "project.update", resourceType: "project", resourceId: id, changes: update as Record<string, unknown> });
+}
+
+/**
+ * Posts a progress update to the client's timeline, and optionally emails them about it.
+ * Returns an email error message (the update itself is saved either way).
+ */
+export async function addProjectUpdate(
+  actorId: string,
+  projectId: string,
+  input: { title: string; body?: string | null; link?: string | null; notify: boolean },
+  origin: string,
+): Promise<{ emailError: string | null }> {
+  const { error } = await admin()
+    .from("project_updates")
+    .insert({ project_id: projectId, author_id: actorId, kind: "update", title: input.title, body: input.body || null, link_url: input.link || null });
+  if (error) throw error;
+  await logAudit({ actorId, action: "project.update_posted", resourceType: "project", resourceId: projectId, changes: { title: input.title, notified: input.notify } });
+  if (!input.notify) return { emailError: null };
+
+  const { data: project } = await admin().from("projects").select("title, client_id").eq("id", projectId).maybeSingle();
+  const { data: client } = project ? await admin().from("profiles").select("email, full_name").eq("id", project.client_id).maybeSingle() : { data: null };
+  if (!project || !client?.email) return { emailError: "The client has no email address." };
+  try {
+    await sendProjectUpdateEmail({
+      to: client.email,
+      name: client.full_name || "there",
+      projectTitle: project.title,
+      title: input.title,
+      body: input.body || null,
+      link: input.link || null,
+      access: portalAccessFor(client.email, `/portal/projects/${projectId}`, origin),
+    });
+    return { emailError: null };
+  } catch (e) {
+    console.error("[crm] project update email failed", e);
+    return { emailError: friendlyMailError(e) };
+  }
+}
+
+export async function deleteProjectUpdate(id: string) {
+  const { data } = await admin().from("project_updates").delete().eq("id", id).select("project_id").maybeSingle();
+  return data?.project_id ?? null;
 }
 
 export async function addMilestone(projectId: string, title: string, dueDate?: string | null) {
@@ -128,8 +186,19 @@ export async function addMilestone(projectId: string, title: string, dueDate?: s
 }
 
 export async function setMilestoneDone(id: string, completed: boolean) {
-  const { data } = await admin().from("milestones").update({ completed }).eq("id", id).select("project_id").single();
-  if (data) await syncProgress(data.project_id);
+  const { data } = await admin()
+    .from("milestones")
+    .update({ completed, completed_at: completed ? new Date().toISOString() : null })
+    .eq("id", id)
+    .select("project_id, title")
+    .single();
+  if (!data) return;
+  // Completing a milestone adds it to the client's timeline; un-ticking removes that entry.
+  await admin().from("project_updates").delete().eq("milestone_id", id);
+  if (completed) {
+    await admin().from("project_updates").insert({ project_id: data.project_id, milestone_id: id, kind: "milestone", title: `Milestone completed: ${data.title}` });
+  }
+  await syncProgress(data.project_id);
 }
 
 export async function deleteMilestone(id: string) {

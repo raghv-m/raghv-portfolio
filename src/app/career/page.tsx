@@ -383,7 +383,7 @@ export default function CareerPage() {
         </div>
         <FloatingParticles />
         <div className="max-w-3xl mx-auto text-center relative z-10">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+          <motion.div initial={{ y: 24 }} animate={{ y: 0 }} transition={{ duration: 0.7 }}>
             <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-4">CAREER PATH</p>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] mb-6">
               The Path to Becoming a<br />

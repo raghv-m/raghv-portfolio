@@ -338,7 +338,7 @@ export default function ExperiencePage() {
         />
 
         <div className="max-w-4xl mx-auto px-6 relative z-10 pt-28 pb-10 w-full">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+          <motion.div initial={{ y: 24 }} animate={{ y: 0 }} transition={{ duration: 0.7 }}>
             <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-3">EXPERIENCE</p>
             <h1 className="font-display text-5xl sm:text-6xl font-bold mb-4 leading-[1.05]">
               Operator <span className="gradient-gold">History</span>

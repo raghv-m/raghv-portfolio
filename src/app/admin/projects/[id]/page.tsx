@@ -9,6 +9,7 @@ import { requireAdmin } from "@/lib/session";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 import { ProjectControls } from "./ProjectControls";
+import { ProjectUpdates } from "./ProjectUpdates";
 
 export const dynamic = "force-dynamic";
 
@@ -19,10 +20,11 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
   const admin = getSupabaseAdmin();
   const { data: project } = await admin.from("projects").select("*").eq("id", id).maybeSingle();
   if (!project) notFound();
-  const [{ data: milestones }, { data: messages }, { data: client }] = await Promise.all([
+  const [{ data: milestones }, { data: messages }, { data: client }, { data: updates }] = await Promise.all([
     admin.from("milestones").select("*").eq("project_id", id).order("sort_order"),
     admin.from("messages").select("id, sender_id, body, created_at").eq("project_id", id).order("created_at"),
     admin.from("profiles").select("id, email, full_name").eq("id", project.client_id).maybeSingle(),
+    admin.from("project_updates").select("id, kind, title, body, link_url, created_at").eq("project_id", id).order("created_at", { ascending: false }),
   ]);
 
   return (
@@ -39,10 +41,13 @@ export default async function ProjectDetail({ params }: { params: Promise<{ id: 
       }
     >
       <div className="grid xl:grid-cols-[1fr_400px] gap-6 items-start">
-        <ProjectControls
-          project={{ id: project.id, title: project.title, description: project.description, status: project.status, endDate: project.end_date?.slice(0, 10) ?? "", valueCents: project.value_cents, progress: project.progress }}
-          milestones={(milestones ?? []).map((m) => ({ id: m.id, title: m.title, completed: m.completed, dueDate: m.due_date }))}
-        />
+        <div className="space-y-6 min-w-0">
+          <ProjectControls
+            project={{ id: project.id, title: project.title, description: project.description, status: project.status, endDate: project.end_date?.slice(0, 10) ?? "", valueCents: project.value_cents, progress: project.progress }}
+            milestones={(milestones ?? []).map((m) => ({ id: m.id, title: m.title, completed: m.completed, dueDate: m.due_date }))}
+          />
+          <ProjectUpdates projectId={project.id} entries={updates ?? []} />
+        </div>
         <Panel title="Messages with the client">
           <MessageThread
             projectId={project.id}

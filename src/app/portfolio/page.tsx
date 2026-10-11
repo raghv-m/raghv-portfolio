@@ -152,7 +152,7 @@ const PROJECTS: {
     statusColor: "var(--green)",
     stack: ["Next.js 15", "React Three Fiber", "Framer Motion", "Prisma", "NextAuth"],
     color: "var(--gold)",
-    description: "This portfolio, built with security and premium UX as primary requirements. Full security hardening: CSP headers, CSRF protection on forms, rate limiting (3 contacts/hour), IP hashing before storage, honeypot field, no raw IPs ever stored. R3F 3D particle field, custom gold cursor, grain overlay, and animated terminal.",
+    description: "This portfolio, built with security and premium UX as primary requirements. Full security hardening: CSP headers, CSRF protection on forms, rate limiting (3 contacts/hour), IP hashing before storage, honeypot field, no raw IPs ever stored. R3F 3D particle field, custom gold cursor and animated terminal.",
     impact: ["CSP + HSTS + X-Frame-Options security headers", "CSRF tokens + Zod validation on all API routes", "Rate limiting with RateLimiterMemory (3/hour contact)", "IP hashing via salted hash, never raw IPs in DB"],
     github: "https://github.com/HomeLab-Raghav",
     icon: Shield,
@@ -300,7 +300,7 @@ export default function ProjectsPage() {
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.95) 100%)" }} />
         <div className="max-w-6xl mx-auto px-6 relative z-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-2">
+          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }} className="mb-2">
             <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">PROJECTS</p>
             <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
               Operational <span className="gradient-gold">Evidence</span>

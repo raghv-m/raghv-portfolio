@@ -123,7 +123,7 @@ export default function CertificationsPage() {
           style={{ background: "radial-gradient(ellipse 70% 80% at 50% 0%, transparent 0%, rgba(10,10,10,0.85) 100%)" }} />
 
         <div className="max-w-5xl mx-auto px-6 relative z-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mb-6">
+          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }} className="mb-6">
             <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CERTIFICATIONS</p>
             <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
               Credential <span className="gradient-gold">Arsenal</span>

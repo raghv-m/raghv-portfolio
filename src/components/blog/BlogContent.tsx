@@ -1,9 +1,9 @@
 "use client";
-import { SmokeBackground } from "@/components/effects/deferred";
 import { useState } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { Tag, Clock, ArrowRight, Star } from "lucide-react";
+import { PageHead } from "@/components/casefile/PageHead";
+import { Reveal } from "@/components/casefile/Reveal";
+import { Stamp } from "@/components/casefile/Stamp";
 
 type Post = {
   id: string;
@@ -24,124 +24,86 @@ export default function BlogContent({ posts }: { posts: Post[] }) {
   const filtered = filter === "All" ? posts : posts.filter((p) => p.category === filter);
 
   return (
-    <div className="min-h-screen pb-32">
-      {/* Smoke hero */}
-      <div className="relative pt-24 pb-16 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none opacity-35">
-          <SmokeBackground smokeColor="#d4a017" />
-        </div>
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.96) 100%)" }} />
-        <div className="max-w-4xl mx-auto px-6 relative z-10">
-          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }} className="mb-2">
-            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">BLOG</p>
-            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-              Field <span className="gradient-gold">Notes</span>
-            </h1>
-            <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-              Technical writeups from the home lab: detection engineering, cert study notes,
-              tool deep dives, and the non-traditional path into cybersecurity.
-            </p>
-            <div className="glow-line mt-6 max-w-24" />
-          </motion.div>
-        </div>
-      </div>
+    <div className="cf-wrap pb-24">
+      <div className="max-w-4xl mx-auto">
+        <PageHead
+          kicker="Blog, field notes"
+          title="Field Notes"
+          lede="Technical writeups from the home lab: detection engineering, cert study notes, tool deep dives, and the non-traditional path into cybersecurity."
+        />
 
-      <div className="max-w-4xl mx-auto px-6">
         {/* Category filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex gap-2 mb-10 flex-wrap"
-        >
+        <div className="flex gap-2 mt-10 mb-10 flex-wrap">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`font-mono text-[10px] px-4 py-2 rounded-lg transition-all ${
-                filter === cat
-                  ? "bg-[var(--gold)] text-[var(--bg)]"
-                  : "glass text-[var(--text-muted)] hover:text-[var(--text)]"
-              }`}
+              aria-pressed={filter === cat}
+              className="cf-chip cf-mono"
             >
               {cat}
             </button>
           ))}
-        </motion.div>
+        </div>
 
         {filtered.length === 0 ? (
-          <p className="text-[var(--text-muted)] text-sm">No posts yet in this category.</p>
+          <p className="cf-body">No posts yet in this category.</p>
         ) : (
-          <div className="space-y-4">
-            {filtered.map((post, i) => (
-              <motion.article
-                key={post.id}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-              >
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="glass rounded-xl p-6 card-lift group block relative overflow-hidden"
-                >
-                  {post.featured && (
-                    <div className="absolute top-3 right-4 flex items-center gap-1">
-                      <Star className="w-3 h-3 text-[var(--gold)]" fill="currentColor" />
-                      <span className="font-mono text-[8px] text-[var(--gold)] tracking-widest">FEATURED</span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="tag tag-gold">{post.category}</span>
-                    <div className="flex items-center gap-1 text-[var(--text-muted)]">
-                      <Clock className="w-3 h-3" />
-                      <span className="font-mono text-[9px]">{post.readTime} min read</span>
-                    </div>
-                    <span className="font-mono text-[9px] text-[#444] ml-auto">
-                      {new Date(post.createdAt).toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric" })}
+          <Reveal>
+            <div style={{ borderTop: "2px solid var(--cf-ink)" }}>
+              {filtered.map((post, i) => (
+                <Link key={post.id} href={`/blog/${post.slug}`} className="cf-arch-row group">
+                  <span className="cf-arch-no">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="cf-arch-date">
+                    {new Date(post.createdAt).toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric" })}
+                  </span>
+                  <span>
+                    <span className="cf-arch-title" style={{ fontSize: "21px", lineHeight: 1.25 }}>
+                      {post.title}
                     </span>
-                  </div>
-
-                  <h2 className="font-display text-base font-bold text-[var(--text)] mb-2 group-hover:text-[var(--gold)] transition-colors">
-                    {post.title}
-                  </h2>
-                  {post.excerpt && (
-                    <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-4">{post.excerpt}</p>
-                  )}
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Tag className="w-3 h-3 text-[var(--text-muted)]" />
-                      <div className="flex flex-wrap gap-1">
-                        {post.tags.slice(0, 4).map((t) => <span key={t} className="tag">{t}</span>)}
-                      </div>
-                    </div>
-                    <span className="font-mono text-[10px] text-[var(--gold)] flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      Read <ArrowRight className="w-3 h-3" />
+                    {post.excerpt && (
+                      <span className="block mt-1" style={{ fontSize: "14px", lineHeight: 1.6, color: "var(--cf-muted)", fontWeight: 400 }}>
+                        {post.excerpt}
+                      </span>
+                    )}
+                    <span className="cf-mono block mt-2" style={{ fontSize: "11px", letterSpacing: "0.08em" }}>
+                      <span style={{ color: "var(--cf-red)", fontWeight: 700, textTransform: "uppercase" }}>{post.category}</span>
+                      {post.tags.slice(0, 4).map((t) => (
+                        <span key={t} style={{ color: "var(--cf-muted)" }}>
+                          {"  /  "}
+                          {t}
+                        </span>
+                      ))}
                     </span>
-                  </div>
+                  </span>
+                  <span className="flex flex-col items-end gap-2">
+                    <span className="cf-mono" style={{ fontSize: "11px", color: "var(--cf-muted)", whiteSpace: "nowrap" }}>
+                      {post.readTime} min read{" "}
+                      <span aria-hidden="true" style={{ color: "var(--cf-red)" }}>
+                        →
+                      </span>
+                    </span>
+                    {post.featured && (
+                      <Stamp tone="gold" r={-6 + (i % 8)} s={0.93 + (i % 3) * 0.05} o={0.84 + (i % 3) * 0.05} bw={2.3 + (i % 3) * 0.5} delay={120 + i * 40}>
+                        Featured
+                      </Stamp>
+                    )}
+                  </span>
                 </Link>
-              </motion.article>
-            ))}
-          </div>
+              ))}
+            </div>
+          </Reveal>
         )}
 
         {/* Newsletter CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16 text-center"
-        >
-          <p className="text-[var(--text-muted)] text-sm mb-4">
-            Get notified when new posts drop.
-          </p>
-          <Link href="/contact" className="btn-gold">
-            Stay in the loop
-          </Link>
-        </motion.div>
+        <Reveal className="mt-16">
+          <div className="text-center" style={{ borderTop: "2px solid var(--cf-ink)", paddingTop: "32px" }}>
+            <p className="cf-body mb-5">Get notified when new posts drop.</p>
+            <Link href="/contact" className="cf-btn">
+              Stay in the loop
+            </Link>
+          </div>
+        </Reveal>
       </div>
     </div>
   );

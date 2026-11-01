@@ -218,7 +218,7 @@ export default function PostEditor({ initial }: Props) {
         </div>
 
         {error && (
-          <div className="mb-3 px-4 py-2.5 rounded-xl text-xs text-[var(--red)] bg-[rgba(255,68,68,0.06)]" style={{ border: "1px solid rgba(255,68,68,0.2)" }}>
+          <div className="mb-3 px-4 py-2.5 rounded-none text-xs text-[var(--red)] bg-[rgba(255,68,68,0.06)]" style={{ border: "1px solid rgba(255,68,68,0.2)" }}>
             {error}
           </div>
         )}
@@ -239,7 +239,7 @@ export default function PostEditor({ initial }: Props) {
           {/* ── Editor / Preview ── */}
           <div>
             {/* Toolbar */}
-            <div className="flex flex-wrap gap-0.5 mb-2 p-2 glass rounded-xl">
+            <div className="flex flex-wrap gap-0.5 mb-2 p-2 glass rounded-none">
               {/* eslint-disable-next-line react-hooks/refs -- action() only runs from the button's onClick; the ref read in insert()/insertCodeBlock() never happens during render, the compiler just can't trace it through the TOOLBAR data array */}
               {TOOLBAR.map(({ icon: Icon, label, action }) => (
                 <button
@@ -257,7 +257,7 @@ export default function PostEditor({ initial }: Props) {
             </div>
 
             {preview ? (
-              <div className="glass rounded-xl p-6 min-h-[640px]" style={{ border: "1px solid var(--border)" }}>
+              <div className="glass rounded-none p-6 min-h-[640px]" style={{ border: "1px solid var(--border)" }}>
                 <div className="font-mono text-[9px] text-[var(--text-muted)] mb-5 tracking-[0.2em]">RENDERED PREVIEW</div>
                 {previewLoading && (
                   <div className="font-mono text-xs text-[var(--text-muted)] animate-pulse">Rendering…</div>
@@ -274,7 +274,7 @@ export default function PostEditor({ initial }: Props) {
             ) : (
               <textarea
                 ref={textareaRef}
-                className="w-full glass rounded-xl p-4 font-mono text-sm text-[var(--text-muted)] resize-none outline-none focus:border-[var(--gold)] min-h-[640px] leading-relaxed"
+                className="w-full glass rounded-none p-4 font-mono text-sm text-[var(--text-muted)] resize-none outline-none focus:border-[var(--gold)] min-h-[640px] leading-relaxed"
                 style={{ border: "1px solid var(--border)", background: "var(--surface)", tabSize: 2 }}
                 placeholder={`Write your post in MDX…\n\nTips:\n- Use ## for headings\n- \`\`\`bash for code blocks\n- <Callout type="info"> for callouts\n- Tab key inserts 2 spaces`}
                 value={data.content}
@@ -290,7 +290,7 @@ export default function PostEditor({ initial }: Props) {
           <aside className="space-y-4 mt-5 xl:mt-0">
 
             {/* Status */}
-            <div className="glass rounded-xl p-4 space-y-2.5">
+            <div className="glass rounded-none p-4 space-y-2.5">
               <p className="font-mono text-[9px] text-[var(--text-muted)] tracking-[0.2em]">STATUS</p>
               {(["published", "featured", "notifySubscribers"] as const).map(key => (
                 <label key={key} className="flex items-center justify-between cursor-pointer">
@@ -306,13 +306,13 @@ export default function PostEditor({ initial }: Props) {
             </div>
 
             {/* Meta */}
-            <div className="glass rounded-xl p-4 space-y-3">
+            <div className="glass rounded-none p-4 space-y-3">
               <p className="font-mono text-[9px] text-[var(--text-muted)] tracking-[0.2em]">META</p>
 
               <div>
                 <label className="font-mono text-[9px] text-[var(--text-muted)] block mb-1">SLUG</label>
                 <input
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 font-mono text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
+                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-none px-3 py-1.5 font-mono text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
                   value={data.slug}
                   onChange={e => set("slug", e.target.value)}
                   placeholder="my-post-slug"
@@ -322,7 +322,7 @@ export default function PostEditor({ initial }: Props) {
               <div>
                 <label className="font-mono text-[9px] text-[var(--text-muted)] block mb-1">EXCERPT</label>
                 <textarea
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)] resize-none"
+                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-none px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)] resize-none"
                   rows={3}
                   value={data.excerpt}
                   onChange={e => set("excerpt", e.target.value)}
@@ -333,7 +333,7 @@ export default function PostEditor({ initial }: Props) {
               <div>
                 <label className="font-mono text-[9px] text-[var(--text-muted)] block mb-1">CATEGORY</label>
                 <select
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
+                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-none px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
                   value={data.category}
                   onChange={e => set("category", e.target.value)}
                 >
@@ -348,7 +348,7 @@ export default function PostEditor({ initial }: Props) {
                 <input
                   type="number"
                   min={1}
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
+                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-none px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
                   value={data.readTime}
                   onChange={e => set("readTime", e.target.value as unknown as PostData["readTime"])}
                   placeholder={String(estimatedRead)}
@@ -357,11 +357,11 @@ export default function PostEditor({ initial }: Props) {
             </div>
 
             {/* Tags */}
-            <div className="glass rounded-xl p-4 space-y-2.5">
+            <div className="glass rounded-none p-4 space-y-2.5">
               <p className="font-mono text-[9px] text-[var(--text-muted)] tracking-[0.2em]">TAGS</p>
               <div className="flex gap-2">
                 <input
-                  className="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
+                  className="flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-none px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
                   placeholder="wazuh, siem, linux…"
                   value={tagInput}
                   onChange={e => setTagInput(e.target.value)}
@@ -384,10 +384,10 @@ export default function PostEditor({ initial }: Props) {
             </div>
 
             {/* Cover image */}
-            <div className="glass rounded-xl p-4 space-y-2.5">
+            <div className="glass rounded-none p-4 space-y-2.5">
               <p className="font-mono text-[9px] text-[var(--text-muted)] tracking-[0.2em]">COVER IMAGE</p>
               <input
-                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-none px-3 py-1.5 text-xs text-[var(--text-muted)] outline-none focus:border-[var(--gold)]"
                 placeholder="https://..."
                 value={data.coverImage}
                 onChange={e => set("coverImage", e.target.value)}
@@ -397,14 +397,14 @@ export default function PostEditor({ initial }: Props) {
                 <img
                   src={data.coverImage}
                   alt="cover preview"
-                  className="w-full rounded-lg aspect-video object-cover"
+                  className="w-full rounded-none aspect-video object-cover"
                   style={{ border: "1px solid var(--border)" }}
                 />
               )}
             </div>
 
             {/* MDX cheat sheet */}
-            <details className="glass rounded-xl overflow-hidden">
+            <details className="glass rounded-none overflow-hidden">
               <summary className="px-4 py-3 font-mono text-[9px] text-[var(--text-muted)] tracking-[0.2em] cursor-pointer hover:text-[var(--gold)] transition-colors">
                 MDX CHEAT SHEET
               </summary>

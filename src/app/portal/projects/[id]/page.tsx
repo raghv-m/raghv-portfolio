@@ -41,7 +41,7 @@ export default async function PortalProjectPage({ params }: { params: Promise<{ 
         {project.description && <p className="mt-2 text-[var(--text-muted)] max-w-2xl">{project.description}</p>}
 
         <div className="mt-8 grid lg:grid-cols-[1fr_1.2fr] gap-6 items-start">
-          <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
+          <section className="rounded-none border border-[var(--border)] bg-[var(--card)] p-5">
             <div className="flex items-baseline justify-between">
               <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase">Progress</h2>
               <span className="text-2xl font-semibold tabular-nums text-[var(--text)]">{project.progress}%</span>
@@ -58,13 +58,13 @@ export default async function PortalProjectPage({ params }: { params: Promise<{ 
               ))}
             </ol>
           </section>
-          <section className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
+          <section className="rounded-none border border-[var(--border)] bg-[var(--card)] p-5">
             <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-4">Messages</h2>
             <MessageThread projectId={project.id} meId={userId} names={names} initial={messages ?? []} send={postClientMessageAction} />
           </section>
         </div>
 
-        <section className="mt-6 rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 sm:p-6">
+        <section className="mt-6 rounded-none border border-[var(--border)] bg-[var(--card)] p-5 sm:p-6">
           <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-5">Progress timeline</h2>
           <ProjectTimeline entries={updates ?? []} />
         </section>

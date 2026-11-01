@@ -19,7 +19,7 @@ export default async function ContractsPage() {
         Draft a contract from a client&apos;s page (Clients &amp; leads → a client → Draft contract). It fills in from their
         questionnaire and estimate. You sign when you send it; they sign in their portal.
       </p>
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
+      <div className="rounded-none border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
         {contracts?.length ? (
           <table className={tableClass}>
             <thead>

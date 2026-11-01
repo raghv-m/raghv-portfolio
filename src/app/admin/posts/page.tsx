@@ -23,14 +23,14 @@ export default async function AdminPostsPage() {
         </div>
 
         {posts.length === 0 ? (
-          <div className="glass rounded-2xl p-12 text-center">
+          <div className="glass rounded-none p-12 text-center">
             <p className="text-[var(--text-muted)] mb-4">No posts yet.</p>
             <Link href="/admin/posts/new" className="btn-gold">Write your first post</Link>
           </div>
         ) : (
           <div className="space-y-2">
             {posts.map(p => (
-              <div key={p.id} className="glass rounded-xl px-5 py-4 flex items-center gap-4">
+              <div key={p.id} className="glass rounded-none px-5 py-4 flex items-center gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="tag">{p.category}</span>

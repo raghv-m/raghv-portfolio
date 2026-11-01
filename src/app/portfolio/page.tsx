@@ -1,8 +1,12 @@
 "use client";
-import { SmokeBackground, SparklesCore } from "@/components/effects/deferred";
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Shield, Code2, Server, Brain } from "lucide-react";
+import { PageHead } from "@/components/casefile/PageHead";
+import { Reveal } from "@/components/casefile/Reveal";
+import { Stamp } from "@/components/casefile/Stamp";
+import { Tape } from "@/components/casefile/Tape";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
@@ -189,54 +193,90 @@ const PROJECTS: {
 
 const CATEGORIES: Category[] = ["All", "Security", "Development", "Infrastructure"];
 
+const STATUS_TONE: Record<string, "red" | "gold" | "green" | "ink"> = {
+  ACTIVE: "green",
+  "IN PROGRESS": "gold",
+  SHIPPED: "ink",
+};
+
+const STAMP_R = [-4.5, -1.6, 2.3, -5.8, 0.7, -3.2, 1.8, -6, -2.7, 2.9, -0.9];
+const STAMP_S = [0.97, 1.05, 0.93, 1.02, 0.95, 1.08, 0.94, 1.0, 1.04, 0.92, 1.06];
+const STAMP_O = [0.9, 0.85, 0.94, 0.83, 0.92, 0.88, 0.96, 0.84, 0.91, 0.87, 0.93];
+const STAMP_BW = [2.5, 3.1, 2.1, 3.4, 2.3, 2.8, 3.3, 2.0, 2.7, 3.0, 2.4];
+
 function ProjectCard({ project, index }: { project: typeof PROJECTS[0]; index: number }) {
+  const tilt = index % 2 === 1 ? 0.7 : -0.5;
   return (
     <motion.article
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 20, rotate: tilt }}
+      whileInView={{ opacity: 1, y: 0, rotate: tilt }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: (index % 3) * 0.08 }}
-      className={`glass rounded-xl overflow-hidden card-lift group ${project.featured ? "ring-1 ring-[rgba(212,160,23,0.15)]" : ""}`}
+      transition={{ duration: 0.5, delay: (index % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      className="card-lift group relative"
+      style={{
+        background: "var(--cf-paper-2)",
+        border: project.featured ? "2px solid var(--cf-ink)" : "1px solid var(--cf-ink)",
+      }}
     >
+      {project.featured && (
+        <Tape
+          width={92 + index * 9}
+          height={26}
+          top={-13}
+          left={26 + index * 31}
+          rotate={-7 + index * 3.5}
+          opacity={0.78 + index * 0.05}
+        />
+      )}
+
       {/* Card header stripe */}
-      <div className="h-1 w-full" style={{ background: project.color }} />
+      <div style={{ height: 4, background: project.color }} />
 
       <div className="p-6">
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               {project.featured && (
-                <span className="font-mono text-[8px] tracking-widest text-[var(--gold)] bg-[rgba(212,160,23,0.1)] border border-[rgba(212,160,23,0.2)] px-1.5 py-0.5 rounded">
+                <span className="cf-mono text-[8px] tracking-widest px-1.5 py-0.5"
+                  style={{ color: "var(--cf-gold)", border: "1px solid var(--cf-gold)" }}>
                   FEATURED
                 </span>
               )}
-              <span
-                className="font-mono text-[8px] tracking-widest px-1.5 py-0.5 rounded"
-                style={{ color: project.statusColor, background: `${project.statusColor}10`, border: `1px solid ${project.statusColor}25` }}
+              <Stamp
+                tone={STATUS_TONE[project.status] ?? "ink"}
+                r={STAMP_R[index % STAMP_R.length]}
+                s={STAMP_S[index % STAMP_S.length]}
+                o={STAMP_O[index % STAMP_O.length]}
+                bw={STAMP_BW[index % STAMP_BW.length]}
+                delay={index * 60}
+                className="text-[8px]"
               >
                 {project.status}
-              </span>
+              </Stamp>
             </div>
-            <h3 className="font-display text-base font-bold text-[var(--text)] group-hover:text-[var(--gold)] transition-colors">
+            <h3 className="cf-display text-lg text-[var(--cf-ink)] group-hover:text-[var(--cf-red)] transition-colors">
               {project.title}
             </h3>
-            <p className="font-mono text-[10px] text-[var(--text-muted)]">{project.subtitle}</p>
+            <p className="cf-mono text-[10px] text-[var(--cf-muted)]">{project.subtitle}</p>
+            <p className="cf-mono text-[9px] text-[var(--cf-muted)] mt-1">
+              CASE {String(project.id).padStart(2, "0")} · {project.category.toUpperCase()}
+            </p>
           </div>
           <div
-            className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: `${project.color}10`, border: `1px solid ${project.color}20` }}
+            className="w-9 h-9 flex items-center justify-center shrink-0"
+            style={{ background: "var(--cf-paper)", border: "1px solid var(--cf-ink)" }}
           >
             <project.icon className="w-4 h-4" style={{ color: project.color }} />
           </div>
         </div>
 
-        <p className="text-[var(--text-muted)] text-xs leading-relaxed mb-4">{project.description}</p>
+        <p className="text-[var(--cf-ink-soft)] text-xs leading-relaxed mb-4">{project.description}</p>
 
         <div className="space-y-2 mb-4">
           {project.impact.slice(0, 3).map((i) => (
             <div key={i} className="flex items-start gap-2">
-              <span className="w-1 h-1 rounded-full mt-1.5 shrink-0" style={{ background: project.color }} />
-              <p className="font-mono text-[9px] text-[var(--text-muted)]">{i}</p>
+              <span className="w-1.5 h-1.5 mt-1.5 shrink-0" style={{ background: "var(--cf-red)" }} />
+              <p className="cf-mono text-[9px] text-[var(--cf-ink-soft)]">{i}</p>
             </div>
           ))}
         </div>
@@ -245,21 +285,21 @@ function ProjectCard({ project, index }: { project: typeof PROJECTS[0]; index: n
           {project.stack.map((s) => <span key={s} className="tag">{s}</span>)}
         </div>
 
-        <div className="flex items-center gap-3 pt-3 border-t border-[var(--border)]">
+        <div className="flex items-center gap-3 pt-3" style={{ borderTop: "1px solid var(--cf-faint)" }}>
           {project.live && (
             <a href={project.live} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-[var(--gold)] hover:underline transition-colors font-mono text-[9px]">
+              className="cf-ulink cf-mono text-[9px]">
               ↗ Live site
             </a>
           )}
           {project.github && (
             <a href={project.github} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors font-mono text-[9px]">
+              className="cf-ulink flex items-center gap-1.5 cf-mono text-[9px]">
               <GithubIcon /> GitHub
             </a>
           )}
           <div className="flex-1" />
-          <span className="font-mono text-[9px] text-[#333]"># {String(project.id).padStart(2, "0")}</span>
+          <span className="cf-mono text-[9px]" style={{ color: "var(--cf-red)" }}># {String(project.id).padStart(2, "0")}</span>
         </div>
       </div>
     </motion.article>
@@ -272,81 +312,59 @@ export default function ProjectsPage() {
   const filtered = filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.category === filter);
 
   return (
-    <div className="min-h-screen pb-32">
-      {/* Smoke + stars hero with bottom fade */}
-      <div className="relative pt-24 pb-16 overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            maskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 58%, transparent 100%)",
-          }}
+    <div className="pb-32">
+      <div className="cf-wrap">
+        <PageHead
+          kicker="Projects"
+          title={<>Operational <span className="cf-u-red">Evidence</span></>}
+          lede="11 projects spanning security engineering, full-stack development, and infrastructure operations. Built in the home lab, shipped to production, and documented in detail."
         >
-          <div className="absolute inset-0 opacity-40">
-            <SmokeBackground smokeColor="#d4a017" />
+          <div style={{ marginTop: 26 }}>
+            <Stamp tone="red" r={-4.8} s={1.03} o={0.9} bw={2.9} delay={250}>
+              11 cases filed
+            </Stamp>
           </div>
-          <div className="absolute inset-0">
-            <SparklesCore
-              background="transparent"
-              minSize={0.3}
-              maxSize={1.2}
-              particleDensity={45}
-              particleColor="#d4a017"
-              speed={0.4}
-              className="w-full h-full"
-            />
-          </div>
-        </div>
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.95) 100%)" }} />
-        <div className="max-w-6xl mx-auto px-6 relative z-10">
-          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }} className="mb-2">
-            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">PROJECTS</p>
-            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-              Operational <span className="gradient-gold">Evidence</span>
-            </h1>
-            <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-              11 projects spanning security engineering, full-stack development, and infrastructure operations.
-              Built in the home lab, shipped to production, and documented in detail.
-            </p>
-            <div className="glow-line mt-6 max-w-24" />
-          </motion.div>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-6">
+        </PageHead>
 
         {/* Category filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex gap-2 mb-10 flex-wrap"
-        >
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setFilter(cat)}
-              className={`font-mono text-[10px] px-4 py-2 rounded-lg transition-all ${
-                filter === cat
-                  ? "bg-[var(--gold)] text-[var(--bg)]"
-                  : "glass text-[var(--text-muted)] hover:text-[var(--text)]"
-              }`}
-            >
-              {cat}
-              <span className="ml-2 opacity-50">
-                {cat === "All" ? PROJECTS.length : PROJECTS.filter((p) => p.category === cat).length}
-              </span>
-            </button>
-          ))}
-        </motion.div>
+        <Reveal delay={0.05}>
+          <div className="flex gap-2 mb-10 flex-wrap" style={{ marginTop: 36 }}>
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                aria-pressed={filter === cat}
+                className="cf-chip cf-mono text-[10px]"
+                style={filter === cat
+                  ? { background: "var(--cf-ink)", color: "var(--cf-paper)", borderColor: "var(--cf-ink)" }
+                  : undefined}
+              >
+                {cat}
+                <span className="ml-2 opacity-50">
+                  {cat === "All" ? PROJECTS.length : PROJECTS.filter((p) => p.category === cat).length}
+                </span>
+              </button>
+            ))}
+          </div>
+        </Reveal>
 
         {/* Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
-          ))}
-        </div>
+        <Reveal delay={0.1}>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filtered.map((project, i) => (
+              <ProjectCard key={project.id} project={project} index={i} />
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal className="mt-14">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-6" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
+            <p className="cf-body" style={{ maxWidth: "52ch" }}>
+              Want a site like one of these? The estimate takes two minutes and shows my price next to the market rate.
+            </p>
+            <Link href="/estimate" className="cf-btn">Start an estimate</Link>
+          </div>
+        </Reveal>
       </div>
     </div>
   );

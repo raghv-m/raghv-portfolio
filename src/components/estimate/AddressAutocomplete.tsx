@@ -62,8 +62,7 @@ function toAddress(place: Place): Address {
   return address;
 }
 
-const inputClass =
-  "w-full bg-[var(--card)] border border-[var(--border)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text)] placeholder:text-[#555] focus:outline-none focus:border-[rgba(212,160,23,0.5)] transition-colors";
+const inputClass = "cf-input";
 
 /**
  * Business location: Google Places search that fills the fields below it, which stay editable.

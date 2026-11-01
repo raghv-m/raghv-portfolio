@@ -7,7 +7,7 @@ import { Loader2, PenLine } from "lucide-react";
 import { signContractAction } from "@/app/portal/actions";
 
 const input =
-  "w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)]";
+  "w-full bg-[var(--bg)] border border-[var(--border)] rounded-none px-3.5 py-2.5 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)]";
 
 export function SignPanel({ id, defaultName, defaultTitle }: { id: string; defaultName: string; defaultTitle: string }) {
   const router = useRouter();
@@ -18,7 +18,7 @@ export function SignPanel({ id, defaultName, defaultTitle }: { id: string; defau
   const [pending, start] = useTransition();
 
   return (
-    <section className="mt-6 rounded-2xl border border-[rgba(212,160,23,0.35)] bg-[rgba(212,160,23,0.04)] p-6">
+    <section className="mt-6 rounded-none border border-[rgba(212,160,23,0.35)] bg-[rgba(212,160,23,0.04)] p-6">
       <h2 className="text-lg font-semibold text-[var(--text)]">Sign the agreement</h2>
       <p className="mt-1 text-sm text-[var(--text-muted)]">Typing your name and pressing Sign is a legally binding electronic signature.</p>
       <div className="mt-5 grid sm:grid-cols-2 gap-4">

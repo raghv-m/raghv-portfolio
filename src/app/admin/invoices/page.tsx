@@ -30,7 +30,7 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
           </Link>
         ))}
       </div>
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
+      <div className="rounded-none border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
         {invoices?.length ? (
           <table className={tableClass}>
             <thead>

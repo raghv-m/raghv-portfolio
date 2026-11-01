@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono, Anton } from "next/font/google";
 import "./globals.css";
+import "./case-file.css";
 import { validateEnv } from "@/lib/env";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -15,7 +16,9 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AlertTicker from "@/components/layout/AlertTicker";
 import NewsletterModal from "@/components/newsletter/NewsletterModal";
+import { ConsentBanner } from "@/components/layout/ConsentBanner";
 import { PublicChrome } from "@/components/layout/PublicChrome";
+import { CfScope } from "@/components/casefile/CfScope";
 import { SiteJsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/config/site";
 
@@ -34,6 +37,14 @@ const spaceGrotesk = Space_Grotesk({
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
   subsets: ["latin"],
+  display: "swap",
+});
+
+/* Heavy condensed display face for the case-file public design (headlines only). */
+const anton = Anton({
+  variable: "--font-anton",
+  subsets: ["latin"],
+  weight: "400",
   display: "swap",
 });
 
@@ -76,18 +87,32 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
-  colorScheme: "dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f3efe6" },
+    { media: "(prefers-color-scheme: dark)", color: "#16140f" },
+  ],
 };
+
+/**
+ * Theme, set before first paint so nobody sees the wrong one: a saved manual
+ * choice wins; otherwise the visitor's own clock decides (light 07:00-19:00
+ * local, dark the rest). Keep in sync with ThemeToggle's rule.
+ */
+const THEME_SCRIPT = `(function(){try{var v=localStorage.getItem("cf-theme");var m=(v==="light"||v==="dark")?v:"auto";var t=m;if(m==="auto"){var h=new Date().getHours();t=(h>=7&&h<19)?"light":"dark";}var d=document.documentElement;d.dataset.theme=t;d.dataset.themeMode=m;}catch(e){document.documentElement.dataset.theme="light";document.documentElement.dataset.themeMode="auto";}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en-CA"
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+      data-theme="light"
+      suppressHydrationWarning
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${anton.variable}`}
     >
-      <body className="bg-[#0a0a0a] text-[#f5f5f5] antialiased">
+      <body className="bg-[var(--bg)] text-[var(--text)] antialiased">
+        <Script id="cf-theme-init" strategy="beforeInteractive">
+          {THEME_SCRIPT}
+        </Script>
         {/* Google Tag Manager, loaded once the page has finished loading (lazyOnload) so its
             117 KB never competes with the page's own code. GTM's "tag checker" may say the
             snippet isn't in <head>; tags still fire normally. */}
@@ -110,11 +135,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <PublicChrome>
           <Navbar />
         </PublicChrome>
-        <main className="relative z-10">{children}</main>
+        <main className="relative z-10">
+          <CfScope>{children}</CfScope>
+        </main>
         <PublicChrome>
           <Footer />
           <AlertTicker />
           <NewsletterModal />
+          <ConsentBanner />
         </PublicChrome>
         <Analytics />
         <SpeedInsights />

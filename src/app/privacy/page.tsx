@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <LegalPage
       path="/privacy"
       title="Privacy policy"
-      updated="October 8, 2026"
+      updated="November 1, 2026"
       intro={
         <p>
           This site is run by {site.person}, a sole proprietor in Edmonton, Alberta, Canada (&ldquo;I&rdquo;, &ldquo;me&rdquo;).
@@ -27,7 +27,7 @@ export default function PrivacyPage() {
           <li><strong>Contact messages:</strong> your name, email, subject and message.</li>
           <li><strong>Client portal accounts:</strong> your email, name, a securely hashed password, and the projects, messages, files and invoices we share there.</li>
           <li><strong>Newsletter:</strong> your email and, if you give it, your name.</li>
-          <li><strong>Technical data:</strong> a one-way hash of your IP address (to stop spam and abuse), and, only if you allow analytics cookies, anonymous usage statistics (see the <a href="/cookies">cookie policy</a>).</li>
+          <li><strong>Technical data:</strong> a one-way hash of your IP address (to stop spam and abuse), and analytics usage statistics from Google Analytics and Vercel (see the <a href="/cookies">cookie policy</a>).</li>
         </ul>
       </section>
 
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
           <li><strong>Turso</strong>: database for blog posts, messages and newsletter sign-ups (United States).</li>
           <li><strong>Vercel</strong>: website hosting (global network).</li>
           <li><strong>Resend</strong>: sending emails (United States).</li>
-          <li><strong>Google</strong>: Maps address autocomplete on the estimate form, and Tag Manager/Analytics if you accept cookies.</li>
+          <li><strong>Google</strong>: Maps address autocomplete on the estimate form, and Tag Manager/Analytics for usage statistics.</li>
         </ul>
         <p className="mt-3">
           Some of these services store data outside Canada, so it may be subject to the laws of those countries. Each provider

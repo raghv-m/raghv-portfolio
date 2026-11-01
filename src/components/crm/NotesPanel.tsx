@@ -29,7 +29,7 @@ export function NotesPanel({ email, notes }: { email: string; notes: Note[] }) {
       </form>
       <ul className="mt-4 space-y-3">
         {sorted.map((n) => (
-          <li key={n.id} className={`rounded-lg border p-3 group ${n.pinned ? "border-[rgba(212,160,23,0.4)] bg-[rgba(212,160,23,0.04)]" : "border-[var(--border)]"}`}>
+          <li key={n.id} className={`rounded-none border p-3 group ${n.pinned ? "border-[rgba(212,160,23,0.4)] bg-[rgba(212,160,23,0.04)]" : "border-[var(--border)]"}`}>
             <p className="text-sm text-[var(--text)] whitespace-pre-wrap">{n.body}</p>
             <div className="mt-2 flex items-center justify-between">
               <span className="font-mono text-[10px] text-[var(--text-muted)]">{when(n.created_at)}</span>

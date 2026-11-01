@@ -5,9 +5,9 @@ export const site = {
   url: (process.env.NEXT_PUBLIC_SITE_URL || "https://www.raghv.dev").replace(/\/$/, ""),
   name: "raghv.dev",
   person: "Raghav Mahajan",
-  title: "Raghav Mahajan: Web Developer & Cybersecurity Analyst in Edmonton",
+  title: "Raghav Mahajan | Web Developer & SOC Analyst in Edmonton",
   description:
-    "Raghav Mahajan builds fast, secure websites and web apps for businesses in Edmonton and across Canada, and works in cybersecurity (SOC, blue team, homelab). Get an instant project estimate.",
+    "Raghav Mahajan builds secure websites for Edmonton businesses and works in cybersecurity: SOC analysis, blue team, homelab. Get an instant project estimate.",
   city: "Edmonton",
   region: "AB",
   country: "CA",

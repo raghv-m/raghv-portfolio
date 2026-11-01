@@ -2,8 +2,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/auth/actions";
+import { Logo } from "@/components/brand/Logo";
+import { ThemeToggle } from "@/components/casefile/ThemeToggle";
 import {
-  FileText, Mail, Users, ExternalLink, LogOut, PenSquare, LayoutDashboard, Calculator, Contact, Receipt, Tags, Gauge, FileSignature, Kanban, FolderKanban, ListChecks,
+  FileText, Mail, Users, ExternalLink, LogOut, PenSquare, Calculator, Contact, Receipt, Tags, Gauge, FileSignature, Kanban, FolderKanban, ListChecks,
 } from "lucide-react";
 
 const NAV = [
@@ -31,13 +33,16 @@ export default function AdminSidebar() {
       : pathname.startsWith(href) && !(href === "/admin/posts" && pathname === "/admin/posts/new");
 
   return (
-    <aside className="fixed top-0 left-0 bottom-0 w-52 flex flex-col bg-[var(--card)] border-r border-[var(--border)] z-30">
-      {/* Brand */}
+    <aside className="fixed top-0 left-0 bottom-0 w-52 flex flex-col bg-[var(--card)] border-r-2 border-r-[var(--text)] z-30">
+      {/* Brand: the back-office end of the same file. */}
       <div className="px-4 py-4 border-b border-[var(--border)]">
         <div className="flex items-center gap-2">
-          <LayoutDashboard className="w-3.5 h-3.5 text-[var(--gold)]" />
+          <Logo size={24} style={{ color: "var(--text)" }} />
           <span className="font-mono text-[10px] text-[var(--gold)] tracking-[0.2em] uppercase">Admin Panel</span>
         </div>
+        <p className="font-mono text-[9px] text-[var(--text-muted)] tracking-[0.14em] mt-1.5 uppercase">
+          File No. YEG-2026-001 · Back office
+        </p>
       </div>
 
       {/* Nav */}
@@ -46,10 +51,10 @@ export default function AdminSidebar() {
           <Link
             key={href}
             href={href}
-            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-mono transition-colors ${
+            className={`flex items-center gap-2.5 px-3 py-2 text-xs font-mono transition-colors ${
               isActive(href)
-                ? "bg-[rgba(212,160,23,0.1)] text-[var(--gold)] border border-[rgba(212,160,23,0.2)]"
-                : "text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)]"
+                ? "bg-[var(--surface)] text-[var(--text)] border-l-[3px] border-l-[var(--red)] font-bold"
+                : "text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)] border-l-[3px] border-l-transparent"
             }`}
           >
             <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -60,17 +65,21 @@ export default function AdminSidebar() {
 
       {/* Footer */}
       <div className="px-2 py-3 border-t border-[var(--border)] space-y-0.5">
+        <div className="flex items-center justify-between px-3 py-2">
+          <span className="font-mono text-[9px] tracking-[0.18em] text-[var(--text-muted)] uppercase">Theme</span>
+          <ThemeToggle className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors" />
+        </div>
         <Link
           href="/"
           target="_blank"
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-mono text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)] transition-colors"
+          className="flex items-center gap-2.5 px-3 py-2 text-xs font-mono text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)] transition-colors"
         >
           <ExternalLink className="w-3.5 h-3.5 shrink-0" />
           View Site
         </Link>
         <button
           onClick={() => signOutAction()}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-mono text-[var(--text-muted)] hover:text-red-400 hover:bg-[rgba(255,68,68,0.06)] transition-colors"
+          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-mono text-[var(--text-muted)] hover:text-[var(--red)] hover:bg-[var(--surface)] transition-colors"
         >
           <LogOut className="w-3.5 h-3.5 shrink-0" />
           Sign Out

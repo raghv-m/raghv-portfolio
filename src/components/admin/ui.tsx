@@ -14,7 +14,7 @@ export function AdminPage({ label, title, actions, children, back }: { label: st
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
           <p className="font-mono text-[9px] tracking-[0.2em] text-[var(--gold)] uppercase">{label}</p>
-          <h1 className="mt-1 text-2xl font-semibold text-[var(--text)]">{title}</h1>
+          <h1 className="cf-display mt-1.5 text-[30px] leading-none text-[var(--text)]">{title}</h1>
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
       </div>
@@ -25,7 +25,7 @@ export function AdminPage({ label, title, actions, children, back }: { label: st
 
 export function Panel({ title, children, className = "", aside }: { title?: string; children: ReactNode; className?: string; aside?: ReactNode }) {
   return (
-    <section className={`rounded-xl border border-[var(--border)] bg-[var(--card)] ${className}`}>
+    <section className={`rounded-none border border-[var(--border)] bg-[var(--card)] ${className}`}>
       {title && (
         <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--border)]">
           <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase">{title}</h2>
@@ -58,7 +58,7 @@ const PILL: Record<string, string> = {
 
 export function StatusPill({ status }: { status: string }) {
   return (
-    <span className={`inline-block px-2 py-0.5 rounded-full border font-mono text-[9px] tracking-wider uppercase ${PILL[status] ?? PILL.draft}`}>
+    <span className={`inline-block px-2 py-0.5 rounded-[2px] border font-mono text-[9px] tracking-wider uppercase ${PILL[status] ?? PILL.draft}`}>
       {status}
     </span>
   );
@@ -70,9 +70,9 @@ export function Empty({ children }: { children: ReactNode }) {
 
 export function Stat({ label, value, href, accent }: { label: string; value: ReactNode; href?: string; accent?: boolean }) {
   const body = (
-    <div className={`rounded-xl border p-5 h-full transition-colors ${accent ? "border-[rgba(212,160,23,0.35)] bg-[rgba(212,160,23,0.05)]" : "border-[var(--border)] bg-[var(--card)]"} ${href ? "hover:border-[rgba(212,160,23,0.5)]" : ""}`}>
+    <div className={`rounded-none border p-5 h-full transition-colors ${accent ? "border-[var(--gold)] bg-[var(--surface)]" : "border-[var(--border)] bg-[var(--card)]"} ${href ? "hover:border-[var(--gold)]" : ""}`}>
       <p className="font-mono text-[9px] tracking-wider text-[var(--text-muted)] uppercase">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-[var(--text)] tabular-nums">{value}</p>
+      <p className="mt-2 font-display text-[26px] font-bold text-[var(--text)] tabular-nums">{value}</p>
     </div>
   );
   return href ? <Link href={href}>{body}</Link> : body;
@@ -82,7 +82,7 @@ export const tableClass = "w-full text-sm";
 export const thClass = "text-left font-mono text-[9px] tracking-wider text-[var(--text-muted)] uppercase font-normal px-4 py-2.5 border-b border-[var(--border)]";
 export const tdClass = "px-4 py-3 border-b border-[var(--border)] text-[var(--text)] align-top";
 export const adminInput =
-  "w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)]";
+  "w-full bg-[var(--bg)] border border-[var(--border)] rounded-none px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:border-[var(--gold)] focus:shadow-[0_2px_0_var(--red)] transition-shadow";
 
 export function money(cents: number, currency = "cad") {
   return `${new Intl.NumberFormat("en-CA", { style: "currency", currency: currency.toUpperCase(), currencyDisplay: "narrowSymbol" }).format(cents / 100)}`;

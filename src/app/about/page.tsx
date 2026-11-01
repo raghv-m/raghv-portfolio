@@ -1,9 +1,11 @@
 "use client";
-import { SmokeBackground, SparklesCore } from "@/components/effects/deferred";
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import { Download } from "lucide-react";
+import { PageHead } from "@/components/casefile/PageHead";
+import { Reveal } from "@/components/casefile/Reveal";
+import { Stamp } from "@/components/casefile/Stamp";
 
 
 const STAGES = [
@@ -149,209 +151,164 @@ function StageSection({ stage, index }: { stage: typeof STAGES[0]; index: number
   return (
     <motion.section
       ref={ref}
-      className="min-h-screen flex items-center py-24"
+      className="relative py-14 sm:py-16"
+      style={{ borderTop: "2px solid var(--cf-ink)" }}
       initial={{ opacity: 0 }}
       animate={inView ? { opacity: 1 } : {}}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="max-w-6xl mx-auto px-6 w-full">
-        <div className={`grid lg:grid-cols-2 gap-16 items-center ${index % 2 === 1 ? "lg:grid-flow-col-dense" : ""}`}>
-          {/* Visual side */}
-          <motion.div
-            initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.9, delay: 0.2 }}
-            className={`flex flex-col items-center gap-6 ${index % 2 === 1 ? "lg:col-start-2" : ""}`}
+      {/* Grid-breaker: the target stamp sits on the section rule itself. */}
+      {stage.id === 5 && (
+        <Stamp
+          tone="red"
+          r={-3.7}
+          s={1.03}
+          o={0.91}
+          bw={2.7}
+          delay={250}
+          className="absolute -top-4 right-4 sm:right-10 z-10 text-[11px]"
+        >
+          Target
+        </Stamp>
+      )}
+
+      <div className="grid lg:grid-cols-[220px_1fr] gap-10 lg:gap-16 items-start">
+        {/* File rail: icon in a bordered square, tags as plain mono chips */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col items-start gap-6"
+        >
+          <div
+            className="w-[132px] h-[132px] flex items-center justify-center shrink-0"
+            style={{
+              border: "2px solid var(--cf-ink)",
+              background: "var(--cf-paper-2)",
+              color: "var(--cf-ink)",
+            }}
           >
-            {/* Stage number */}
-            <div className="relative">
-              <div
-                className="w-40 h-40 rounded-full flex items-center justify-center relative"
+            {stage.icon}
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 max-w-[220px]">
+            {stage.tags.map((t) => (
+              <span
+                key={t}
+                className="cf-mono text-[10px] px-2 py-1"
                 style={{
-                  background: `radial-gradient(circle, ${stage.accent}08 0%, transparent 70%)`,
-                  border: `1px solid ${stage.accent}20`,
+                  color: "var(--cf-ink-soft)",
+                  background: "transparent",
+                  border: "1px solid var(--cf-faint)",
                 }}
               >
-                <div style={{ color: stage.accent }}>
-                  {stage.icon}
-                </div>
-                {/* Pulse ring */}
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  style={{ border: `1px solid ${stage.accent}40` }}
-                  animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.1, 0.4] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                />
-              </div>
-              <div
-                className="absolute -top-2 -right-2 font-mono text-[10px] tracking-widest px-2 py-0.5 rounded"
-                style={{ background: `${stage.accent}15`, color: stage.accent, border: `1px solid ${stage.accent}30` }}
-              >
-                {stage.label}
-              </div>
-            </div>
-
-            {/* Tags */}
-            <div className="flex flex-wrap gap-1.5 justify-center max-w-xs">
-              {stage.tags.map((t) => (
-                <span
-                  key={t}
-                  className="font-mono text-[9px] px-2 py-0.5 rounded"
-                  style={{ color: stage.accent, background: `${stage.accent}10`, border: `1px solid ${stage.accent}20` }}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Text side */}
-          <motion.div
-            initial={{ opacity: 0, x: index % 2 === 0 ? 40 : -40 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.9, delay: 0.3 }}
-            className={index % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""}
-          >
-            <p className="font-mono text-[10px] tracking-[0.3em] mb-2" style={{ color: stage.accent }}>
-              {stage.period}
-            </p>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-[var(--text)] mb-6">
-              {stage.title}
-            </h2>
-            <div className="space-y-4">
-              {stage.narrative.split("\n\n").map((para, i) => (
-                <p key={i} className="text-[var(--text-muted)] leading-relaxed text-[15px]">
-                  {para}
-                </p>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Divider line (not on last) */}
-        {index < STAGES.length - 1 && (
-          <div className="mt-20 flex items-center gap-4">
-            <div className="flex-1 h-px bg-[var(--border)]" />
-            <span className="font-mono text-[9px] text-[#333] tracking-widest">↓</span>
-            <div className="flex-1 h-px bg-[var(--border)]" />
+                {t}
+              </span>
+            ))}
           </div>
-        )}
+        </motion.div>
+
+        {/* Narrative */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <p className="cf-kicker">
+            {stage.label} · {stage.period}
+          </p>
+          <h2 className="cf-h2 mt-3 mb-6">{stage.title}</h2>
+          <div className="space-y-4 max-w-3xl">
+            {stage.narrative.split("\n\n").map((para, i) => (
+              <p key={i} className="cf-body">
+                {para}
+              </p>
+            ))}
+          </div>
+          <p className="cf-note mt-6">File section {index + 1} of {STAGES.length}</p>
+        </motion.div>
       </div>
     </motion.section>
   );
 }
 
 export default function AboutPage() {
-  const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-
   return (
-    <div className="min-h-screen">
-      {/* Hero */}
-      <section ref={heroRef} className="pt-32 pb-16 px-6 text-center section relative overflow-hidden">
-        {/* Smoke + sparkles with bottom fade */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
-          }}
-        >
-          <div className="absolute inset-0 opacity-20">
-            <SmokeBackground smokeColor="#d4a017" />
-          </div>
-          <div className="absolute inset-0">
-            <SparklesCore
-              background="transparent"
-              minSize={0.3}
-              maxSize={1.1}
-              particleDensity={45}
-              particleColor="#d4a017"
-              speed={0.5}
-              className="w-full h-full"
-            />
-          </div>
-        </div>
-        <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{ y: heroY, opacity: heroOpacity }}
-        >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(212,160,23,0.06) 0%, transparent 70%)" }} />
-        </motion.div>
-        <div className="max-w-3xl mx-auto relative z-10">
-          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }}>
-            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-4">ABOUT</p>
-            <h1 className="font-display text-5xl sm:text-6xl font-bold mb-6 leading-[1.05]">
+    <div className="pb-24">
+      <div className="cf-wrap">
+        <PageHead
+          kicker="About, subject history"
+          title={
+            <>
               The Story Behind<br />
-              <span className="gradient-gold">The Analyst</span>
-            </h1>
-            <p className="text-[var(--text-muted)] text-lg leading-relaxed mb-8">
-              From kitchen operations to security operations: five stages of a non-traditional path
-              into cybersecurity, told in first person.
-            </p>
-            <div className="glow-line mb-12 max-w-24 mx-auto" />
-          </motion.div>
+              <span className="cf-u-red">The Analyst</span>
+            </>
+          }
+          lede="From kitchen operations to security operations: five stages of a non-traditional path into cybersecurity, told in first person."
+        />
 
-          {/* Stage nav */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-2"
-          >
+        {/* File contents: the stage nav, kept as index rows with the same anchors */}
+        <Reveal delay={0.05} className="mt-12 mb-4">
+          <div className="cf-sec-head relative">
+            <p className="cf-kicker">File contents</p>
+            <h2 className="cf-h2 mt-2">Five Stages</h2>
+            <Stamp
+              tone="ink"
+              r={2.6}
+              s={0.98}
+              o={0.88}
+              bw={3.2}
+              delay={300}
+              className="absolute -top-5 right-2 sm:right-8 text-[11px]"
+            >
+              Subject history
+            </Stamp>
+          </div>
+          <div>
             {STAGES.map((s) => (
-              <a
-                key={s.id}
-                href={`#stage-${s.id}`}
-                className="font-mono text-[10px] px-3 py-1.5 rounded-full transition-all hover:border-[rgba(212,160,23,0.3)]"
-                style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--text-muted)" }}
-              >
-                {s.label} · {s.title}
+              <a key={s.id} href={`#stage-${s.id}`} className="cf-idx-row">
+                <span className="cf-idx-no">{s.label}</span>
+                <span>
+                  <span className="cf-idx-title">{s.title}</span>
+                  <span className="cf-idx-desc">{s.period}</span>
+                </span>
+                <span className="cf-idx-arrow" aria-hidden="true">→</span>
               </a>
             ))}
-          </motion.div>
-        </div>
-      </section>
+          </div>
+        </Reveal>
 
-      {/* Stages */}
-      {STAGES.map((stage, i) => (
-        <div key={stage.id} id={`stage-${stage.id}`}>
-          <StageSection stage={stage} index={i} />
-        </div>
-      ))}
+        {/* Stages */}
+        {STAGES.map((stage, i) => (
+          <div key={stage.id} id={`stage-${stage.id}`}>
+            <StageSection stage={stage} index={i} />
+          </div>
+        ))}
 
-      {/* CTA */}
-      <section className="py-24 px-6 border-t border-[var(--border)]">
-        <div className="max-w-3xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--gold-muted)] mb-4">WHAT&apos;S NEXT</p>
-            <h2 className="font-display text-3xl font-bold mb-4">
-              Ready to see the <span className="gradient-gold">work</span>?
+        {/* CTA */}
+        <Reveal delay={0.05}>
+          <section className="py-16" style={{ borderTop: "2px solid var(--cf-ink)" }}>
+            <p className="cf-kicker">What&apos;s next</p>
+            <h2 className="cf-h2 mt-4 mb-4">
+              Ready to see the <span className="cf-u-red">work</span>?
             </h2>
-            <p className="text-[var(--text-muted)] mb-8">
+            <p className="cf-body max-w-2xl mb-8">
               The story is the context. The lab, the certs, and the projects are the evidence.
             </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/portfolio" className="btn-gold">
+            <div className="flex flex-wrap gap-3">
+              <Link href="/portfolio" className="cf-btn">
                 View Projects
               </Link>
-              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="btn-ghost">
+              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="cf-btn-ghost">
                 <Download className="w-3.5 h-3.5" /> Download Resume
               </a>
-              <Link href="/homelab" className="btn-ghost">
+              <Link href="/cybersecurity#home-lab" className="cf-btn-ghost">
                 Explore the Home Lab
               </Link>
             </div>
-          </motion.div>
-        </div>
-      </section>
+          </section>
+        </Reveal>
+      </div>
     </div>
   );
 }

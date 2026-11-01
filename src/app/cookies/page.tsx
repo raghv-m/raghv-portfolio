@@ -7,7 +7,7 @@ export const metadata: Metadata = pageMetadata("/cookies", "Cookie policy", "Whi
 
 export default function CookiesPage() {
   return (
-    <LegalPage path="/cookies" title="Cookie policy" updated="October 8, 2026" intro={<p>Cookies are small files a site stores in your browser. Here&apos;s every kind this site uses, and how to turn the optional ones off.</p>}>
+    <LegalPage path="/cookies" title="Cookie policy" updated="November 1, 2026" intro={<p>Cookies are small files a site stores in your browser. Here&apos;s every kind this site uses, and how to control them.</p>}>
       <section>
         <h2>Essential (always on)</h2>
         <p>Needed for the site to work, so they can&apos;t be switched off. They contain no tracking.</p>
@@ -19,11 +19,21 @@ export default function CookiesPage() {
       </section>
 
       <section>
-        <h2>Analytics (optional)</h2>
+        <h2>Your choices and preferences</h2>
+        <ul>
+          <li><strong>Privacy choice</strong> (<code>cf-consent</code> cookie and browser storage): remembers whether you accepted or declined analytics on the privacy banner, for one year. You can change it any time with &ldquo;Privacy choices&rdquo; in the footer.</li>
+          <li><strong>Theme</strong> (browser storage, not a cookie): remembers your light, dark or automatic theme choice. Nothing about it leaves your browser.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Analytics</h2>
         <p>
-          With your permission, Google Tag Manager and Google Analytics set cookies (<code>_ga</code>, <code>_ga_*</code>) to count
-          visits and see which pages are useful. The data is aggregated and isn&apos;t used for advertising. Vercel Web Analytics
-          measures page views without cookies.
+          This site loads Google Tag Manager and Google Analytics, which set cookies (<code>_ga</code>, <code>_ga_*</code>) to count
+          visits and see which pages are useful. The data is aggregated and isn&apos;t used for advertising. There is no device
+          fingerprinting and no cross-site advertising tracking. Vercel Web Analytics measures page views without cookies.
+          The privacy banner records your choice about analytics; you can also block or delete these cookies in your
+          browser settings at any time, as described below.
         </p>
       </section>
 

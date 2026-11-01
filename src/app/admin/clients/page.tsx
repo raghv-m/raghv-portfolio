@@ -26,11 +26,11 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
         </div>
         <form className="flex gap-2">
           {show !== "all" && <input type="hidden" name="show" value={show} />}
-          <input name="q" defaultValue={q} placeholder="Search name, email, company" className="bg-[var(--card)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:border-[rgba(212,160,23,0.5)]" />
+          <input name="q" defaultValue={q} placeholder="Search name, email, company" className="bg-[var(--card)] border border-[var(--border)] rounded-none px-3 py-1.5 text-sm w-64 focus:outline-none focus:border-[rgba(212,160,23,0.5)]" />
         </form>
       </div>
 
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
+      <div className="rounded-none border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
         {people.length ? (
           <table className={tableClass}>
             <thead>

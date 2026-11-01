@@ -47,14 +47,14 @@ export default function NewsletterClient({ subscribers, total, active }: Props) 
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="glass rounded-xl p-5 flex items-center gap-4">
+          <div className="glass rounded-none p-5 flex items-center gap-4">
             <Users className="w-8 h-8" style={{ color: "var(--gold)" }} />
             <div>
               <p className="font-display text-2xl font-bold text-[var(--text)]">{total}</p>
               <p className="font-mono text-[10px] text-[var(--text-muted)]">TOTAL SUBSCRIBERS</p>
             </div>
           </div>
-          <div className="glass rounded-xl p-5 flex items-center gap-4">
+          <div className="glass rounded-none p-5 flex items-center gap-4">
             <UserCheck className="w-8 h-8" style={{ color: "var(--green)" }} />
             <div>
               <p className="font-display text-2xl font-bold text-[var(--text)]">{active}</p>
@@ -70,7 +70,7 @@ export default function NewsletterClient({ subscribers, total, active }: Props) 
             <div>
               <label className="font-mono text-[10px] text-[var(--text-muted)] block mb-1">SUBJECT</label>
               <input
-                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--gold)]"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-none px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--gold)]"
                 placeholder="Raghav's Cyber Daily: Issue #1"
                 value={subject}
                 onChange={e => setSubject(e.target.value)}
@@ -79,7 +79,7 @@ export default function NewsletterClient({ subscribers, total, active }: Props) 
             <div>
               <label className="font-mono text-[10px] text-[var(--text-muted)] block mb-1">BODY (HTML)</label>
               <textarea
-                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm font-mono text-[var(--text-muted)] outline-none focus:border-[var(--gold)] resize-none"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-none px-4 py-3 text-sm font-mono text-[var(--text-muted)] outline-none focus:border-[var(--gold)] resize-none"
                 rows={14}
                 placeholder={'<div style="font-family:monospace">Your content here</div>'}
                 value={html}
@@ -98,7 +98,7 @@ export default function NewsletterClient({ subscribers, total, active }: Props) 
             <h2 className="font-display text-lg font-semibold text-[var(--text)] mb-4">Subscribers</h2>
             <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
               {subscribers.map(s => (
-                <div key={s.id} className="glass rounded-xl px-4 py-3 flex items-center justify-between">
+                <div key={s.id} className="glass rounded-none px-4 py-3 flex items-center justify-between">
                   <div className="min-w-0">
                     <p className="text-sm text-[var(--text)] truncate">{s.email}</p>
                     {s.name && <p className="font-mono text-[10px] text-[var(--text-muted)]">{s.name}</p>}

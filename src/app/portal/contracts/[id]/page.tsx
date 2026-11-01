@@ -33,7 +33,7 @@ export default async function PortalContractPage({ params }: { params: Promise<{
           <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-muted)]">{c.status === "sent" ? "Awaiting your signature" : c.status}</span>
         </div>
 
-        <article className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 sm:p-10">
+        <article className="mt-6 rounded-none border border-[var(--border)] bg-[var(--card)] p-6 sm:p-10">
           <ContractText body={c.body} />
           <div className="mt-10 pt-6 border-t border-[var(--border)] text-xs text-[var(--text-muted)] space-y-1">
             {c.provider_signed_at && <p>Signed by {c.provider_signature_name} for the Developer on {when(c.provider_signed_at)}.</p>}

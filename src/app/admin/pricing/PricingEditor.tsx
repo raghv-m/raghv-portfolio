@@ -54,7 +54,7 @@ export function PricingEditor({ items }: { items: PricingItemRow[] }) {
             </div>
             <button type="button" onClick={() => add(key)} className="btn-ghost inline-flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" /> Add</button>
           </div>
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
+          <div className="rounded-none border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="font-mono text-[9px] tracking-wider text-[var(--text-muted)] uppercase">

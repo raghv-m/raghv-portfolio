@@ -1,6 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import SubscribeWidget from "@/components/newsletter/SubscribeWidget";
+import { Logo } from "@/components/brand/Logo";
+import { PrivacyChoicesButton } from "@/components/layout/ConsentBanner";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
@@ -18,13 +19,13 @@ const LINKS = [
     { label: "About", href: "/about" },
     { label: "Cybersecurity", href: "/cybersecurity" },
     { label: "Portfolio", href: "/portfolio" },
-    { label: "Home Lab", href: "/homelab" },
+    { label: "Hobbies", href: "/hobbies" },
   ],
   [
     { label: "Experience", href: "/experience" },
     { label: "Certifications", href: "/certifications" },
-    { label: "Career", href: "/career" },
     { label: "Blog", href: "/blog" },
+    { label: "Newsletter", href: "/newsletter" },
     { label: "Daily security news", href: "/news" },
   ],
   [
@@ -44,53 +45,58 @@ const LEGAL = [
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-[#222] pb-8 mt-0">
-      <div className="glow-line mb-0" />
-      <div className="max-w-7xl mx-auto px-6 pt-12 pb-6">
-        {/* Newsletter subscribe */}
-        <div className="mb-10">
-          <div className="max-w-lg">
-            <SubscribeWidget compact />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-4 gap-10 mb-10">
-          {/* Brand */}
-          <div className="md:col-span-2">
-            <div className="mb-4">
-              <Image src="/logo-mobile.svg" alt="RAGHV.DEV" width={130} height={52} unoptimized className="h-12 w-auto" />
-            </div>
-            <p className="text-[var(--text-muted)] text-sm leading-relaxed max-w-xs mb-5">
-              Cybersecurity Analyst in Training. Building defensive systems through real-world labs,
-              threat detection, and SOC-style operations.
+    <footer className="cf-scope" style={{ borderTop: "3px double var(--cf-ink)" }}>
+      <div className="cf-wrap pt-12 pb-8">
+        <div className="grid lg:grid-cols-2 gap-12 mb-12">
+          {/* Talk block */}
+          <div>
+            <p className="cf-display leading-none" style={{ fontSize: "clamp(56px, 8vw, 92px)" }}>
+              Talk.
             </p>
-            <div className="flex items-center gap-1.5 mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" style={{ boxShadow: "0 0 6px rgba(0,255,136,0.6)" }} />
-              <span className="font-mono text-[10px] text-[var(--green)] tracking-wider">
+            <div className="flex flex-wrap gap-x-7 gap-y-2 mt-6 text-[16.5px]">
+              <a href="mailto:hello@raghv.dev" className="cf-ulink">hello@raghv.dev</a>
+              <a href="https://github.com/HomeLab-Raghav" target="_blank" rel="noopener noreferrer" className="cf-ulink inline-flex items-center gap-2">
+                <GithubIcon /> GitHub
+              </a>
+              <a href="https://linkedin.com/in/raghav-mahajan-17611b24b" target="_blank" rel="noopener noreferrer" className="cf-ulink inline-flex items-center gap-2">
+                <LinkedinIcon /> LinkedIn
+              </a>
+            </div>
+            <div className="flex items-center gap-1.5 mt-7">
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--cf-green)", boxShadow: "0 0 0 3px rgba(46,107,30,0.18)" }} />
+              <span className="cf-mono text-[10.5px] tracking-wider" style={{ color: "var(--cf-green)" }}>
                 AVAILABLE FOR SOC ANALYST ROLES
               </span>
             </div>
-            <div className="flex items-center gap-3">
-              <a href="https://github.com/HomeLab-Raghav" target="_blank" rel="noopener noreferrer" aria-label="GitHub"
-                className="text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors">
-                <GithubIcon />
-              </a>
-              <a href="https://linkedin.com/in/raghav-mahajan-17611b24b" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                className="text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors">
-                <LinkedinIcon />
-              </a>
-            </div>
+            <p className="cf-note mt-4">ISC2 CC · Security+ earned · Edmonton, AB</p>
           </div>
 
-          {/* Links */}
+          {/* Newsletter, filed */}
+          <div>
+            <p className="cf-kicker" style={{ color: "var(--cf-ink)" }}>Blue Team Brief, the newsletter</p>
+            <p className="mt-3 text-[15.5px] leading-relaxed" style={{ color: "var(--cf-ink-soft)" }}>
+              The week&apos;s real attacks in plain English. What happened, what to hunt for.
+              One email, no spam. <Link href="/newsletter" className="cf-ulink">Read past editions</Link>
+            </p>
+            <div className="mt-5 max-w-md">
+              <SubscribeWidget compact />
+            </div>
+          </div>
+        </div>
+
+        {/* Link columns */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10 pt-8" style={{ borderTop: "1px solid var(--cf-faint)" }}>
+          <p className="cf-mono text-[11px] uppercase leading-loose" style={{ letterSpacing: "0.09em", color: "var(--cf-muted)" }}>
+            Filed under:
+            <br />
+            Work, proof,
+            <br />
+            and contact
+          </p>
           {LINKS.map((group, i) => (
-            <div key={i} className="space-y-2">
+            <div key={i} className="space-y-2.5">
               {group.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block text-sm text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors underline-gold"
-                >
+                <Link key={link.href} href={link.href} className="block text-[15px] cf-navlink w-max" style={{ color: "var(--cf-ink-soft)" }}>
                   {link.label}
                 </Link>
               ))}
@@ -98,18 +104,20 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="divider mb-5" />
-
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="font-mono text-[10px] text-[#8a8a8a]">
-            © {new Date().getFullYear()} Raghav Mahajan · Edmonton, AB · ISC2 CC · Security+ EARNED
+        {/* The file closes here: this line is the dossier element that
+            survives to the very bottom of every page. */}
+        <div className="pt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3" style={{ borderTop: "2px solid var(--cf-ink)" }}>
+          <p className="cf-mono text-[10.5px] uppercase flex items-center gap-3" style={{ letterSpacing: "0.09em", color: "var(--cf-muted)" }}>
+            <Logo size={24} style={{ color: "var(--cf-ink)" }} />
+            <span>File No. YEG-2026-001 · © {new Date().getFullYear()} Raghav Mahajan · Page 1 of 1 · End of file</span>
           </p>
-          <nav aria-label="Legal" className="flex flex-wrap gap-x-4 gap-y-1">
+          <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-4 gap-y-1">
             {LEGAL.map((link) => (
-              <Link key={link.href} href={link.href} className="font-mono text-[10px] text-[#999] hover:text-[var(--gold)] transition-colors">
+              <Link key={link.href} href={link.href} className="cf-mono text-[10.5px] uppercase cf-navlink" style={{ letterSpacing: "0.09em", color: "var(--cf-muted)" }}>
                 {link.label}
               </Link>
             ))}
+            <PrivacyChoicesButton />
           </nav>
         </div>
       </div>

@@ -4,8 +4,8 @@ import { pageMetadata } from "@/config/site";
 
 export const metadata: Metadata = pageMetadata(
   "/cybersecurity",
-  "Cybersecurity skills",
-  "Detection engineering, incident response, SIEM (Wazuh, Splunk) and blue-team skills, mapped to MITRE ATT&CK.",
+  "SOC analyst skills and blue team work in Edmonton",
+  "Entry-level SOC analyst in Edmonton: detection, incident response and SIEM work with Wazuh and Splunk, mapped to MITRE ATT&CK and backed by a hands-on home lab.",
 );
 
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -19,7 +19,7 @@ const doubled = [...ALERTS, ...ALERTS];
 
 export default function AlertTicker() {
   return (
-    <div className="alert-feed">
+    <div className="alert-feed cf-scope">
       <div className="inline-flex ticker-content gap-0">
         {doubled.map((alert, i) => {
           const type = alert.startsWith("[ALERT]") ? "alert"
@@ -28,14 +28,14 @@ export default function AlertTicker() {
           return (
             <span key={i} className="inline-flex items-center mr-10 text-[10px]" style={{ fontFamily: "var(--font-jetbrains), monospace" }}>
               <span className={
-                type === "alert" ? "text-[var(--red)]"
-                : type === "warn" ? "text-yellow-400"
-                : "text-[var(--gold-muted)]"
+                type === "alert" ? "text-[#ff8a7a]"
+                : type === "warn" ? "text-[#e8b93c]"
+                : "text-[#c9a437]"
               }>
                 {alert.split("]")[0]}]
               </span>
-              <span className="text-[#444] ml-1">{alert.slice(alert.indexOf("]") + 1)}</span>
-              <span className="text-[#222] mx-6">·</span>
+              <span className="text-[#b9b3a4] ml-1">{alert.slice(alert.indexOf("]") + 1)}</span>
+              <span className="text-[#454138] mx-6">·</span>
             </span>
           );
         })}

@@ -29,14 +29,14 @@ export default async function PipelinePage() {
         {STAGES.map((stage) => {
           const inStage = (deals ?? []).filter((d) => d.status === stage.key);
           return (
-            <section key={stage.key} className="rounded-xl border border-[var(--border)] bg-[var(--card)] min-h-40">
+            <section key={stage.key} className="rounded-none border border-[var(--border)] bg-[var(--card)] min-h-40">
               <header className="px-3 py-2.5 border-b border-[var(--border)]">
                 <p className="font-mono text-[10px] tracking-wider uppercase text-[var(--text-muted)]">{stage.label} · {inStage.length}</p>
                 <p className="text-sm font-semibold tabular-nums text-[var(--text)]">{money(inStage.reduce((s, d) => s + mid(d), 0))}</p>
               </header>
               <ul className="p-2 space-y-2">
                 {inStage.map((d) => (
-                  <li key={d.id} className="rounded-lg border border-[var(--border)] bg-[var(--bg)] p-3">
+                  <li key={d.id} className="rounded-none border border-[var(--border)] bg-[var(--bg)] p-3">
                     <Link href={`/admin/estimates/${d.id}`} className="block hover:text-[var(--gold)]">
                       <span className="block text-sm text-[var(--text)] truncate">{d.company || d.name}</span>
                       <span className="block font-mono text-[10px] text-[var(--text-muted)]">{d.reference} · {when(d.created_at)}</span>

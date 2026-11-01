@@ -41,11 +41,11 @@ export default async function EstimatesPage({ searchParams }: { searchParams: Pr
         </div>
         <form className="flex gap-2">
           {status !== "all" && <input type="hidden" name="status" value={status} />}
-          <input name="q" defaultValue={q} placeholder="Search name, email, company, EST-…" className="bg-[var(--card)] border border-[var(--border)] rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:border-[rgba(212,160,23,0.5)]" />
+          <input name="q" defaultValue={q} placeholder="Search name, email, company, EST-…" className="bg-[var(--card)] border border-[var(--border)] rounded-none px-3 py-1.5 text-sm w-64 focus:outline-none focus:border-[rgba(212,160,23,0.5)]" />
         </form>
       </div>
 
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
+      <div className="rounded-none border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
         {estimates?.length ? (
           <table className={tableClass}>
             <thead>

@@ -49,8 +49,8 @@ export default function SubscribeWidget({ compact = false }: { compact?: boolean
   if (done) {
     return (
       <div role="status" className={`flex items-center gap-2 ${compact ? "text-sm" : ""}`}>
-        <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "var(--green)" }} />
-        <span className="text-[var(--text-muted)]">You&apos;re in. Check your inbox.</span>
+        <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "var(--cf-green, var(--green))" }} />
+        <span style={{ color: "var(--cf-muted, var(--text-muted))" }}>You&apos;re in. Check your inbox.</span>
       </div>
     );
   }
@@ -65,7 +65,7 @@ export default function SubscribeWidget({ compact = false }: { compact?: boolean
       value={email}
       onChange={(e) => setEmail(e.target.value)}
       {...invalidProps(emailName, error || undefined)}
-      className={`${className} aria-[invalid=true]:border-[var(--red)]`}
+      className={className}
     />
   );
 
@@ -74,7 +74,7 @@ export default function SubscribeWidget({ compact = false }: { compact?: boolean
       <form ref={formRef} onSubmit={submit} noValidate>
         <label htmlFor={emailName} className="sr-only">Email address</label>
         <div className="flex gap-2">
-          {emailInput("flex-1 bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--gold)] placeholder:text-[var(--border)] min-w-0", "Your email")}
+          {emailInput("cf-input flex-1 min-w-0", "Your email")}
           <button type="submit" disabled={loading} aria-label="Subscribe to the newsletter" className="btn-gold text-sm px-4 py-2 shrink-0 flex items-center gap-1" />
         </div>
         <FieldError name={emailName} message={error || undefined} />
@@ -83,15 +83,15 @@ export default function SubscribeWidget({ compact = false }: { compact?: boolean
   }
 
   return (
-    <div className="glass rounded-2xl p-8 text-center" style={{ border: "1px solid rgba(212,160,23,0.15)" }}>
-      <Mail className="w-8 h-8 mx-auto mb-4" style={{ color: "var(--gold)" }} />
-      <h3 className="font-display text-xl font-bold text-[var(--text)] mb-2">Raghav&apos;s Cyber Daily</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-6">Writeups, homelab experiments, and notes on breaking into offensive security. No spam, ever.</p>
+    <div className="p-8 text-center" style={{ background: "var(--cf-paper-2, var(--card))", border: "2px solid var(--cf-ink, var(--border))" }}>
+      <Mail className="w-8 h-8 mx-auto mb-4" style={{ color: "var(--cf-red, var(--gold))" }} />
+      <h3 className="cf-display text-[22px] mb-2" style={{ color: "var(--cf-ink, var(--text))" }}>Blue Team Brief</h3>
+      <p className="text-sm mb-6" style={{ color: "var(--cf-muted, var(--text-muted))" }}>The week&apos;s real attacks in plain English: what happened, what to hunt for. Plus notes from the homelab. No spam, ever.</p>
       <form ref={formRef} onSubmit={submit} noValidate className="space-y-3 max-w-sm mx-auto text-left">
         <label htmlFor={`${id}-name`} className="sr-only">Your name (optional)</label>
-        <input id={`${id}-name`} type="text" autoComplete="name" placeholder="Your name (optional)" value={name} onChange={(e) => setName(e.target.value)} className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--gold)] placeholder:text-[var(--border)]" />
+        <input id={`${id}-name`} type="text" autoComplete="name" placeholder="Your name (optional)" value={name} onChange={(e) => setName(e.target.value)} className="cf-input" />
         <label htmlFor={emailName} className="sr-only">Email address</label>
-        {emailInput("w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-[var(--gold)] placeholder:text-[var(--border)]", "your@email.com")}
+        {emailInput("cf-input", "your@email.com")}
         <FieldError name={emailName} message={error || undefined} />
         <button type="submit" disabled={loading} className="btn-gold w-full justify-center">
           {loading ? "Subscribing…" : "Subscribe"}

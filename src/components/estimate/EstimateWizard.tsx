@@ -35,9 +35,8 @@ type Form = {
   website: string;
 };
 
-const inputClass =
-  "w-full bg-[var(--card)] border border-[var(--border)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text)] placeholder:text-[#555] focus:outline-none focus:border-[rgba(212,160,23,0.5)] transition-colors";
-const labelClass = "block font-mono text-[10px] tracking-wider text-[var(--text-muted)] mb-1.5 uppercase";
+const inputClass = "cf-input";
+const labelClass = "cf-label";
 
 function Icon({ name, className }: { name: string | null; className?: string }) {
   return <DynamicIcon name={(name ?? "box") as IconName} fallback={() => <span className={className} />} className={className} />;
@@ -133,10 +132,10 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
           <motion.div
             key={step}
             custom={direction}
-            initial={{ opacity: 0, x: direction * 24 }}
+            initial={{ opacity: 0, x: direction * 28 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: direction * -24 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
+            exit={{ opacity: 0, x: direction * -28 }}
+            transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8"
           >
             {step === 0 && (
@@ -157,24 +156,24 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
 
             {step === 1 && category && (
               <StepFrame title="How many pages?" hint={category.included_pages > 0 ? `${category.label} includes ${category.included_pages} page${category.included_pages === 1 ? "" : "s"}. Extra pages are ${formatDollars(category.per_page_cents)} each.` : "This service isn't priced by page."}>
-                <div className="glass rounded-2xl p-6 sm:p-8" style={{ border: "1px solid var(--border)" }}>
+                <div className="p-6 sm:p-8" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
                   <div className="flex items-center justify-center gap-6">
-                    <button type="button" aria-label="Fewer pages" onClick={() => set("pages", Math.max(1, form.pages - 1))} className="size-11 rounded-full border border-[var(--border)] grid place-items-center text-[var(--text)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+                    <button type="button" aria-label="Fewer pages" onClick={() => set("pages", Math.max(1, form.pages - 1))} className="size-11 rounded-full border border-[var(--cf-faint)] grid place-items-center text-[var(--cf-ink)] hover:border-[var(--cf-ink)] hover:text-[var(--cf-red)] transition-colors">
                       <Minus className="w-4 h-4" />
                     </button>
                     <div className="text-center min-w-28">
-                      <motion.p key={form.pages} initial={{ scale: 0.85, opacity: 0.4 }} animate={{ scale: 1, opacity: 1 }} className="font-display text-6xl font-bold text-[var(--gold)] tabular-nums">
+                      <motion.p key={form.pages} initial={{ scale: 0.85, opacity: 0.4 }} animate={{ scale: 1, opacity: 1 }} className="cf-display text-[64px] leading-none text-[var(--cf-ink)] tabular-nums">
                         {form.pages}
                       </motion.p>
-                      <p className="font-mono text-[10px] tracking-widest text-[var(--text-muted)] mt-1">PAGE{form.pages === 1 ? "" : "S"}</p>
+                      <p className="font-mono text-[10px] tracking-widest text-[var(--cf-muted)] mt-2">PAGE{form.pages === 1 ? "" : "S"}</p>
                     </div>
-                    <button type="button" aria-label="More pages" onClick={() => set("pages", Math.min(200, form.pages + 1))} className="size-11 rounded-full border border-[var(--border)] grid place-items-center text-[var(--text)] hover:border-[var(--gold)] hover:text-[var(--gold)] transition-colors">
+                    <button type="button" aria-label="More pages" onClick={() => set("pages", Math.min(200, form.pages + 1))} className="size-11 rounded-full border border-[var(--cf-faint)] grid place-items-center text-[var(--cf-ink)] hover:border-[var(--cf-ink)] hover:text-[var(--cf-red)] transition-colors">
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                  <input type="range" min={1} max={60} value={Math.min(form.pages, 60)} onChange={(e) => set("pages", Number(e.target.value))} aria-label="Number of pages" className="w-full mt-8 accent-[#d4a017]" />
-                  <div className="flex justify-between font-mono text-[10px] text-[var(--text-muted)] mt-1"><span>1</span><span>60+</span></div>
-                  <p className="text-xs text-[var(--text-muted)] mt-6">Typical pages: Home, About, Services, each service page, Contact, Blog, FAQ, Privacy.</p>
+                  <input type="range" min={1} max={60} value={Math.min(form.pages, 60)} onChange={(e) => set("pages", Number(e.target.value))} aria-label="Number of pages" className="w-full mt-8 accent-[var(--cf-gold)]" />
+                  <div className="flex justify-between font-mono text-[10px] text-[var(--cf-muted)] mt-1"><span>1</span><span>60+</span></div>
+                  <p className="text-xs text-[var(--cf-muted)] mt-6">Typical pages: Home, About, Services, each service page, Contact, Blog, FAQ, Privacy.</p>
                 </div>
               </StepFrame>
             )}
@@ -255,11 +254,11 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
                   {/* Honeypot: hidden from people, tempting to bots. */}
                   <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" value={form.website} onChange={(e) => set("website", e.target.value)} className="absolute -left-[9999px] h-0 w-0 opacity-0" name="website" />
 
-                  <label className="flex items-start gap-3 text-sm text-[var(--text-muted)] cursor-pointer">
-                    <input id="consent" type="checkbox" {...invalidProps("consent", fieldErrors.consent)} checked={form.consent} onChange={(e) => set("consent", e.target.checked)} className="mt-1 accent-[#d4a017]" />
+                  <label className="flex items-start gap-3 text-sm text-[var(--cf-muted)] cursor-pointer">
+                    <input id="consent" type="checkbox" {...invalidProps("consent", fieldErrors.consent)} checked={form.consent} onChange={(e) => set("consent", e.target.checked)} className="mt-1 accent-[var(--cf-gold)]" />
                     <span>
                       I agree to my details being used to reply to this request, as described in the{" "}
-                      <Link href="/privacy" target="_blank" className="text-[var(--gold)] hover:underline">privacy policy</Link>.
+                      <Link href="/privacy" target="_blank" className="text-[var(--cf-gold)] hover:underline">privacy policy</Link>.
                     </span>
                   </label>
                   <FieldError name="consent" message={fieldErrors.consent} />
@@ -301,17 +300,17 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
 function Progress({ step, onJump }: { step: number; onJump: (i: number) => void }) {
   return (
     <div>
-      <div className="flex items-center justify-between font-mono text-[10px] tracking-wider text-[var(--text-muted)]">
+      <div className="flex items-center justify-between font-mono text-[10px] tracking-wider text-[var(--cf-muted)]">
         <span>STEP {step + 1} / {STEPS.length}</span>
-        <span className="text-[var(--gold)]">{STEPS[step].toUpperCase()}</span>
+        <span className="text-[var(--cf-red)] font-bold">{STEPS[step].toUpperCase()}</span>
       </div>
       <div className="mt-3 grid gap-1.5" style={{ gridTemplateColumns: `repeat(${STEPS.length}, minmax(0, 1fr))` }}>
         {STEPS.map((label, i) => (
           <button key={label} type="button" onClick={() => onJump(i)} aria-label={`Go to ${label}`} className="group py-1">
-            <span className="block h-1 rounded-full overflow-hidden bg-[var(--border)]">
-              <motion.span className="block h-full bg-[var(--gold)]" initial={false} animate={{ width: i <= step ? "100%" : "0%" }} transition={{ duration: 0.35 }} />
+            <span className="block h-1 overflow-hidden bg-[var(--cf-faint)]">
+              <motion.span className="block h-full bg-[var(--cf-red)]" initial={false} animate={{ width: i <= step ? "100%" : "0%" }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }} />
             </span>
-            <span className={`hidden sm:block mt-1.5 text-left font-mono text-[9px] tracking-wider ${i === step ? "text-[var(--text)]" : "text-[#555] group-hover:text-[var(--text-muted)]"}`}>{label.toUpperCase()}</span>
+            <span className={`hidden sm:block mt-1.5 text-left font-mono text-[9px] tracking-wider ${i === step ? "text-[var(--cf-ink)] font-bold" : "text-[var(--cf-muted)] group-hover:text-[var(--cf-ink)]"}`}>{label.toUpperCase()}</span>
           </button>
         ))}
       </div>
@@ -322,8 +321,8 @@ function Progress({ step, onJump }: { step: number; onJump: (i: number) => void 
 function StepFrame({ title, hint, children }: { title: string; hint: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="font-display text-2xl sm:text-3xl font-bold text-[var(--text)]">{title}</h2>
-      <p className="mt-2 text-sm text-[var(--text-muted)] max-w-xl">{hint}</p>
+      <h2 className="cf-display text-[30px] sm:text-[36px] leading-none text-[var(--cf-ink)]">{title}</h2>
+      <p className="mt-3 text-sm text-[var(--cf-muted)] max-w-xl leading-relaxed">{hint}</p>
       <div className="mt-6">{children}</div>
     </section>
   );
@@ -337,16 +336,14 @@ function OptionCard({ item, selected, onClick, price }: { item: PricingItem; sel
       whileHover={{ y: -3 }}
       whileTap={{ scale: 0.98 }}
       aria-pressed={selected}
-      className={`group relative text-left rounded-xl p-4 border transition-colors h-full ${
-        selected ? "border-[var(--gold)] bg-[rgba(212,160,23,0.08)]" : "border-[var(--border)] bg-[var(--card)] hover:border-[rgba(212,160,23,0.4)]"
-      }`}
+      className="cf-opt group h-full"
     >
-      <span className={`inline-grid place-items-center size-9 rounded-lg mb-3 transition-colors ${selected ? "bg-[var(--gold)] text-black" : "bg-[rgba(212,160,23,0.08)] text-[var(--gold)]"}`}>
+      <span className={`inline-grid place-items-center size-9 mb-3 transition-colors ${selected ? "bg-[var(--cf-ink)] text-[var(--cf-paper)]" : "bg-[var(--cf-paper-2)] text-[var(--cf-gold)]"}`} style={{ border: "1px solid var(--cf-faint)" }}>
         <Icon name={item.icon} className="w-4.5 h-4.5" />
       </span>
-      <span className="block text-sm font-semibold text-[var(--text)] leading-snug">{item.label}</span>
-      <span className="block text-[11px] text-[var(--text-muted)] mt-1 leading-relaxed line-clamp-2">{item.description}</span>
-      <span className="block font-mono text-[10px] text-[var(--gold)] mt-3">{price}</span>
+      <span className="block text-sm font-semibold leading-snug">{item.label}</span>
+      <span className="block text-[11px] text-[var(--cf-muted)] mt-1 leading-relaxed line-clamp-2">{item.description}</span>
+      <span className="block font-mono text-[10px] text-[var(--cf-gold)] mt-3">{price}</span>
     </motion.button>
   );
 }
@@ -363,19 +360,17 @@ function ToggleCard({ item, selected, onClick, radio }: { item: PricingItem; sel
       whileTap={{ scale: 0.985 }}
       role={radio ? "radio" : "checkbox"}
       aria-checked={selected}
-      className={`flex items-start gap-3 text-left rounded-xl p-4 border transition-colors ${
-        selected ? "border-[var(--gold)] bg-[rgba(212,160,23,0.08)]" : "border-[var(--border)] bg-[var(--card)] hover:border-[rgba(212,160,23,0.4)]"
-      }`}
+      className="cf-opt flex items-start gap-3"
     >
-      <span className={`shrink-0 inline-grid place-items-center size-8 rounded-lg ${selected ? "bg-[var(--gold)] text-black" : "bg-[rgba(212,160,23,0.08)] text-[var(--gold)]"}`}>
+      <span className={`shrink-0 inline-grid place-items-center size-8 ${selected ? "bg-[var(--cf-ink)] text-[var(--cf-paper)]" : "bg-[var(--cf-paper-2)] text-[var(--cf-gold)]"}`} style={{ border: "1px solid var(--cf-faint)" }}>
         {selected ? <Check className="w-4 h-4" /> : <Icon name={item.icon} className="w-4 h-4" />}
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-start justify-between gap-2">
-          <span className="text-sm font-semibold text-[var(--text)]">{item.label}</span>
-          <span className="shrink-0 font-mono text-[10px] text-[var(--gold)] mt-0.5">{price}</span>
+          <span className="text-sm font-semibold">{item.label}</span>
+          <span className="shrink-0 font-mono text-[10px] text-[var(--cf-gold)] mt-0.5">{price}</span>
         </span>
-        <span className="block text-[11px] text-[var(--text-muted)] mt-1 leading-relaxed">{item.description}</span>
+        <span className="block text-[11px] text-[var(--cf-muted)] mt-1 leading-relaxed">{item.description}</span>
       </span>
     </motion.button>
   );
@@ -393,9 +388,7 @@ function ChipGroup({ label, options, value, onChange }: { label: string; options
             role="radio"
             aria-checked={value === key}
             onClick={() => onChange(key)}
-            className={`px-3.5 py-1.5 rounded-full text-xs border transition-colors ${
-              value === key ? "border-[var(--gold)] text-[var(--gold)] bg-[rgba(212,160,23,0.08)]" : "border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)]"
-            }`}
+            className="cf-chip"
           >
             {text}
           </button>
@@ -407,35 +400,35 @@ function ChipGroup({ label, options, value, onChange }: { label: string; options
 
 function EstimatePanel({ estimate, categoryLabel, pages }: { estimate: EstimateResult | null; categoryLabel?: string; pages: number }) {
   return (
-    <aside className="lg:sticky lg:top-24">
-      <div className="glass-gold rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(212,160,23,0.25)" }}>
-        <div className="px-5 py-4 border-b border-[rgba(212,160,23,0.15)] flex items-center justify-between">
-          <span className="font-mono text-[10px] tracking-widest text-[var(--gold)]">LIVE ESTIMATE</span>
-          <span className="font-mono text-[10px] text-[var(--text-muted)]">CAD</span>
+    <aside className="lg:sticky lg:top-8">
+      <div style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
+        <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: "3px double var(--cf-ink)" }}>
+          <span className="font-mono text-[10px] tracking-widest text-[var(--cf-red)] font-bold">LIVE ESTIMATE</span>
+          <span className="font-mono text-[10px] text-[var(--cf-muted)]">CAD</span>
         </div>
         <div className="p-5">
           {!estimate ? (
-            <p className="text-sm text-[var(--text-muted)]">Pick a project type to see a price range. It updates as you choose.</p>
+            <p className="text-sm text-[var(--cf-muted)] leading-relaxed">Pick a project type to see a price range. It updates as you choose.</p>
           ) : (
             <>
-              <p className="text-xs text-[var(--text-muted)]">{categoryLabel} · {pages} page{pages === 1 ? "" : "s"}</p>
-              <p className="mt-4 font-mono text-[9px] tracking-wider text-[var(--text-muted)] uppercase">{estimatorConfig.marketLabel}</p>
-              <p className="mt-1 text-lg text-[var(--text-muted)] line-through decoration-[rgba(255,68,68,0.6)] tabular-nums">
+              <p className="text-xs text-[var(--cf-muted)]">{categoryLabel} · {pages} page{pages === 1 ? "" : "s"}</p>
+              <p className="mt-4 font-mono text-[9px] tracking-wider text-[var(--cf-muted)] uppercase">{estimatorConfig.marketLabel}</p>
+              <p className="mt-1 text-lg text-[var(--cf-muted)] line-through decoration-[var(--cf-red)] decoration-2 tabular-nums">
                 {formatDollars(estimate.oneTimeLowCents)} – {formatDollars(estimate.oneTimeHighCents)}
               </p>
-              <p className="mt-4 font-mono text-[9px] tracking-wider text-[var(--gold)] uppercase">{estimatorConfig.myPriceLabel}</p>
-              <motion.p key={`${estimate.myLowCents}-${estimate.myHighCents}`} initial={{ opacity: 0.4, y: 4 }} animate={{ opacity: 1, y: 0 }} className="mt-1 font-display text-3xl font-bold text-[var(--text)] tabular-nums">
-                {formatDollars(estimate.myLowCents)}<span className="text-[var(--text-muted)] font-normal"> – </span>{formatDollars(estimate.myHighCents)}
+              <p className="mt-4 font-mono text-[9px] tracking-wider text-[var(--cf-gold)] uppercase">{estimatorConfig.myPriceLabel}</p>
+              <motion.p key={`${estimate.myLowCents}-${estimate.myHighCents}`} initial={{ opacity: 0.4, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.4 }} className="cf-display mt-1 text-[32px] leading-tight text-[var(--cf-ink)] tabular-nums">
+                {formatDollars(estimate.myLowCents)}<span className="text-[var(--cf-muted)]"> – </span>{formatDollars(estimate.myHighCents)}
               </motion.p>
-              {estimate.monthlyCents > 0 && <p className="mt-1 text-sm text-[var(--gold)]">+ {formatDollars(estimate.monthlyCents)}/month hosting</p>}
-              <p className="mt-3 text-[11px] leading-relaxed text-[var(--text-muted)]">{estimatorConfig.pitch}</p>
-              <p className="mt-5 font-mono text-[9px] tracking-wider text-[var(--text-muted)] uppercase">Market estimate breakdown</p>
-              <ul className="mt-2 space-y-2 border-t border-[var(--border)] pt-3">
+              {estimate.monthlyCents > 0 && <p className="mt-1 text-sm text-[var(--cf-gold)]">+ {formatDollars(estimate.monthlyCents)}/month hosting</p>}
+              <p className="mt-3 text-[11px] leading-relaxed text-[var(--cf-muted)]">{estimatorConfig.pitch}</p>
+              <p className="mt-5 font-mono text-[9px] tracking-wider text-[var(--cf-muted)] uppercase">Market estimate breakdown</p>
+              <ul className="mt-2 space-y-2 pt-3" style={{ borderTop: "1px solid var(--cf-faint)" }}>
                 <AnimatePresence initial={false}>
                   {estimate.lines.map((line) => (
-                    <motion.li key={line.label} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="flex justify-between gap-3 text-xs">
-                      <span className="text-[var(--text-muted)] truncate">{line.label}</span>
-                      <span className="text-[var(--text)] tabular-nums shrink-0">
+                    <motion.li key={line.label} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.3 }} className="flex justify-between gap-3 text-xs">
+                      <span className="text-[var(--cf-muted)] truncate">{line.label}</span>
+                      <span className="text-[var(--cf-ink)] tabular-nums shrink-0">
                         {line.oneTimeCents ? formatDollars(line.oneTimeCents) : ""}
                         {line.monthlyCents ? `${line.oneTimeCents ? " + " : ""}${formatDollars(line.monthlyCents)}/mo` : ""}
                         {!line.oneTimeCents && !line.monthlyCents ? "-" : ""}
@@ -444,7 +437,7 @@ function EstimatePanel({ estimate, categoryLabel, pages }: { estimate: EstimateR
                   ))}
                 </AnimatePresence>
               </ul>
-              <p className="mt-5 text-[10px] leading-relaxed text-[#666]">An estimate, not a quote. Final price depends on content and design detail. Taxes extra.</p>
+              <p className="mt-5 text-[10px] leading-relaxed text-[var(--cf-muted)]">An estimate, not a quote. Final price depends on content and design detail. Taxes extra.</p>
             </>
           )}
         </div>
@@ -455,23 +448,23 @@ function EstimatePanel({ estimate, categoryLabel, pages }: { estimate: EstimateR
 
 function Submitted({ reference, result, emailed, email }: { reference: string; result: EstimateResult; emailed: boolean; email: string }) {
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="max-w-xl mx-auto text-center glass rounded-2xl p-8 sm:p-10" style={{ border: "1px solid var(--border)" }}>
-      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.1 }} className="mx-auto size-14 rounded-full bg-[rgba(212,160,23,0.12)] grid place-items-center">
-        <CheckCircle2 className="w-7 h-7 text-[var(--gold)]" />
+    <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.45 }} className="max-w-xl mx-auto text-center p-8 sm:p-10" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
+      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.1 }} className="mx-auto size-14 grid place-items-center" style={{ border: "2px solid var(--cf-green)" }}>
+        <CheckCircle2 className="w-7 h-7 text-[var(--cf-green)]" />
       </motion.div>
-      <p className="mt-6 font-mono text-[10px] tracking-widest text-[var(--gold)]">ESTIMATE {reference}</p>
-      <p className="mt-4 text-sm text-[var(--text-muted)] line-through">
+      <p className="mt-6 font-mono text-[10px] tracking-widest text-[var(--cf-red)] font-bold">ESTIMATE {reference}</p>
+      <p className="mt-4 text-sm text-[var(--cf-muted)] line-through decoration-[var(--cf-red)]">
         Market: {formatDollars(result.oneTimeLowCents)} – {formatDollars(result.oneTimeHighCents)}
       </p>
-      <h2 className="mt-1 font-display text-4xl font-bold text-[var(--text)]">
+      <h2 className="cf-display mt-1 text-[40px] leading-tight text-[var(--cf-ink)]">
         {formatDollars(result.myLowCents)} – {formatDollars(result.myHighCents)}
       </h2>
-      <p className="font-mono text-[10px] tracking-wider text-[var(--gold)] mt-1">MY PRICE · CAD</p>
-      {result.monthlyCents > 0 && <p className="mt-1 text-[var(--gold)]">+ {formatDollars(result.monthlyCents)}/month hosting</p>}
-      <p className="mt-5 text-sm text-[var(--text-muted)] leading-relaxed">
+      <p className="font-mono text-[10px] tracking-wider text-[var(--cf-gold)] mt-1">MY PRICE · CAD</p>
+      {result.monthlyCents > 0 && <p className="mt-1 text-[var(--cf-gold)]">+ {formatDollars(result.monthlyCents)}/month hosting</p>}
+      <p className="mt-5 text-sm text-[var(--cf-muted)] leading-relaxed">
         {emailed ? (
           <>
-            Check <span className="text-[var(--text)]">{email}</span>: your estimate is there, plus a link to set a password and open
+            Check <span className="text-[var(--cf-ink)] font-semibold">{email}</span>: your estimate is there, plus a link to set a password and open
             your client portal, where you can follow progress and message me.
           </>
         ) : (

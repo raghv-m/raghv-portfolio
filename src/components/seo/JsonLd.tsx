@@ -26,7 +26,7 @@ export function SiteJsonLd() {
             name: site.person,
             url: site.url,
             email: `mailto:${site.email}`,
-            jobTitle: "Web Developer & Cybersecurity Analyst",
+            jobTitle: "Web Developer & SOC Analyst",
             address: { "@type": "PostalAddress", addressLocality: site.city, addressRegion: site.region, addressCountry: site.country },
             knowsAbout: ["Web development", "Next.js", "React", "Cybersecurity", "Security operations", "Incident response", "SIEM"],
             sameAs: site.sameAs,
@@ -43,6 +43,16 @@ export function SiteJsonLd() {
             areaServed: [{ "@type": "City", name: "Edmonton" }, { "@type": "AdministrativeArea", name: "Alberta" }, { "@type": "Country", name: "Canada" }],
             address: { "@type": "PostalAddress", addressLocality: site.city, addressRegion: site.region, addressCountry: site.country },
             serviceType: ["Website design", "Web application development", "E-commerce", "Website security review"],
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Web development services",
+              itemListElement: [
+                { "@type": "Offer", itemOffered: { "@type": "Service", name: "Website design and build", url: `${site.url}/estimate` } },
+                { "@type": "Offer", itemOffered: { "@type": "Service", name: "Web application development", url: `${site.url}/estimate` } },
+                { "@type": "Offer", itemOffered: { "@type": "Service", name: "E-commerce websites", url: `${site.url}/estimate` } },
+                { "@type": "Offer", itemOffered: { "@type": "Service", name: "Website security review", url: `${site.url}/cybersecurity` } },
+              ],
+            },
             potentialAction: { "@type": "QuoteAction", target: `${site.url}/estimate`, name: "Get an instant estimate" },
           },
           {

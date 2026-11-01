@@ -4,6 +4,7 @@ import { EstimateWizard } from "@/components/estimate/EstimateWizard";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata, site } from "@/config/site";
 import { ServiceNotice } from "@/components/layout/ServiceNotice";
+import { PageHead } from "@/components/casefile/PageHead";
 import { getActiveCatalog } from "@/lib/estimator/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -29,7 +30,7 @@ export default async function EstimatePage() {
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-24">
+    <div className="cf-wrap pb-24">
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -42,25 +43,19 @@ export default async function EstimatePage() {
           offers: { "@type": "AggregateOffer", priceCurrency: "CAD", lowPrice: "400", availability: "https://schema.org/InStock" },
         }}
       />
-      <div className="max-w-6xl mx-auto px-6">
-        <header className="max-w-2xl">
-          <p className="font-mono text-[10px] tracking-[0.25em] text-[var(--gold)]">INSTANT ESTIMATE</p>
-          <h1 className="mt-3 font-display text-4xl sm:text-5xl font-bold text-[var(--text)] leading-tight">
-            What will your project <span className="gradient-gold">cost?</span>
-          </h1>
-          <p className="mt-4 text-[var(--text-muted)] leading-relaxed">
-            Six quick steps. See the typical market price next to mine as you go, then get a copy by email with access to your own client portal. Free, no obligation.
-          </p>
-        </header>
-        <div className="mt-12">
-          {unavailable ? (
-            <ServiceNotice what="The estimator" />
-          ) : catalog.length ? (
-            <EstimateWizard catalog={catalog} />
-          ) : (
-            <p className="text-[var(--text-muted)]">The estimator is being set up. Please use the contact page for now.</p>
-          )}
-        </div>
+      <PageHead
+        kicker="Instant estimate"
+        title="What will your project cost?"
+        lede="Six quick steps. See the typical market price next to mine as you go, then get a copy by email with access to your own client portal. Free, no obligation."
+      />
+      <div className="mt-10">
+        {unavailable ? (
+          <ServiceNotice what="The estimator" />
+        ) : catalog.length ? (
+          <EstimateWizard catalog={catalog} />
+        ) : (
+          <p className="text-[var(--cf-muted)]">The estimator is being set up. Please use the contact page for now.</p>
+        )}
       </div>
     </div>
   );

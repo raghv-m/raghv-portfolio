@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Callout } from "@/components/blog/Callout";
 import Link from "next/link";
-import { ArrowLeft, Clock, Tag, Calendar } from "lucide-react";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/config/site";
@@ -51,8 +50,8 @@ export default async function BlogPostPage({ params }: Props) {
   const post = loaded.post;
   if (!loaded.ok) {
     return (
-      <div className="min-h-screen pt-28 pb-24">
-        <div className="max-w-3xl mx-auto px-6">
+      <div className="cf-wrap pb-24" style={{ paddingTop: "44px" }}>
+        <div className="max-w-3xl mx-auto">
           <ServiceNotice what="This post" />
         </div>
       </div>
@@ -153,7 +152,7 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-32">
+    <div className="cf-wrap pb-24" style={{ paddingTop: "36px" }}>
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -171,25 +170,27 @@ export default async function BlogPostPage({ params }: Props) {
           ...(post.coverImage ? { image: post.coverImage } : {}),
         }}
       />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto">
         {/* Breadcrumb */}
-        <Link href="/blog" className="inline-flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors font-mono text-[10px] mb-8">
-          <ArrowLeft className="w-3 h-3" /> Back to Blog
+        <Link href="/blog" className="cf-ulink cf-mono inline-block mb-10" style={{ fontSize: "11.5px" }}>
+          ← Back to Blog
         </Link>
 
         <div className="lg:grid lg:grid-cols-4 lg:gap-10">
           {/* Sticky TOC sidebar — desktop */}
           {headings.length > 0 && (
             <aside className="hidden lg:block">
-              <div className="sticky top-24">
-                <p className="font-mono text-[9px] tracking-wider text-[var(--text-muted)] mb-3">ON THIS PAGE</p>
-                <nav className="space-y-1">
+              <div className="sticky" style={{ top: "36px" }}>
+                <p className="cf-kicker mb-3" style={{ fontSize: "10.5px" }}>
+                  ON THIS PAGE
+                </p>
+                <nav className="space-y-1" style={{ borderTop: "2px solid var(--cf-ink)", paddingTop: "12px" }}>
                   {headings.map((h) => (
                     <a
                       key={h.id}
                       href={`#${h.id}`}
-                      className="block font-mono text-[10px] text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors py-0.5 leading-snug"
-                      style={{ paddingLeft: h.level === 3 ? "12px" : "0" }}
+                      className="cf-mono block hover:text-[var(--cf-red)] transition-colors py-0.5 leading-snug"
+                      style={{ paddingLeft: h.level === 3 ? "12px" : "0", fontSize: "11px", color: "var(--cf-muted)" }}
                     >
                       {h.text}
                     </a>
@@ -204,55 +205,83 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Cover image */}
             {/* Usually the largest thing on screen, so it loads first (priority), never lazily. */}
             {post.coverImage && (
-              <SmartImage src={post.coverImage} alt={post.title} priority className="rounded-2xl mb-8" style={{ border: "1px solid var(--border)" }} />
+              <SmartImage src={post.coverImage} alt={post.title} priority className="mb-8" style={{ border: "1px solid #d8d2c0" }} />
             )}
 
-            {/* Meta */}
-            <div className="flex flex-wrap items-center gap-3 mb-4">
-              <span className="tag tag-gold">{post.category}</span>
-              {post.readTime && (
-                <div className="flex items-center gap-1 text-[var(--text-muted)]">
-                  <Clock className="w-3 h-3" />
-                  <span className="font-mono text-[10px]">{post.readTime} min read</span>
-                </div>
-              )}
-              <div className="flex items-center gap-1 text-[var(--text-muted)]">
-                <Calendar className="w-3 h-3" />
-                <span className="font-mono text-[10px]">{new Date(post.createdAt).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })}</span>
+            {/* Filed document head */}
+            <header>
+              <div
+                className="cf-mono flex flex-wrap items-center gap-x-3 gap-y-1 mb-5"
+                style={{ fontSize: "11.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cf-muted)" }}
+              >
+                <span>{new Date(post.createdAt).toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric" })}</span>
+                <span aria-hidden="true" style={{ color: "var(--cf-faint)" }}>
+                  /
+                </span>
+                <span style={{ color: "var(--cf-red)", fontWeight: 700 }}>{post.category}</span>
+                {post.readTime && (
+                  <>
+                    <span aria-hidden="true" style={{ color: "var(--cf-faint)" }}>
+                      /
+                    </span>
+                    <span>{post.readTime} min read</span>
+                  </>
+                )}
               </div>
-            </div>
 
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-[var(--text)] mb-4 leading-tight">{post.title}</h1>
-            <p className="text-[var(--text-muted)] text-base leading-relaxed mb-8 border-b border-[var(--border)] pb-8">{post.excerpt}</p>
+              <h1 className="cf-display mb-5" style={{ fontSize: "clamp(36px, 5.5vw, 58px)", lineHeight: 1.02 }}>
+                {post.title}
+              </h1>
+              <p className="cf-lede mb-8" style={{ color: "var(--cf-ink-soft)", borderBottom: "2px solid var(--cf-ink)", paddingBottom: "28px" }}>
+                {post.excerpt}
+              </p>
+            </header>
 
             {/* Mobile TOC */}
             {headings.length > 0 && (
-              <details className="lg:hidden mb-8 glass rounded-xl p-4">
-                <summary className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] cursor-pointer">TABLE OF CONTENTS</summary>
+              <details className="lg:hidden mb-8 p-4" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
+                <summary className="cf-mono cursor-pointer" style={{ fontSize: "10.5px", letterSpacing: "0.14em", color: "var(--cf-muted)" }}>
+                  TABLE OF CONTENTS
+                </summary>
                 <nav className="mt-3 space-y-1.5">
                   {headings.map((h) => (
-                    <a key={h.id} href={`#${h.id}`} className="block font-mono text-[10px] text-[var(--text-muted)] hover:text-[var(--gold)] transition-colors" style={{ paddingLeft: h.level === 3 ? "12px" : "0" }}>{h.text}</a>
+                    <a
+                      key={h.id}
+                      href={`#${h.id}`}
+                      className="cf-mono block hover:text-[var(--cf-red)] transition-colors"
+                      style={{ paddingLeft: h.level === 3 ? "12px" : "0", fontSize: "11px", color: "var(--cf-muted)" }}
+                    >
+                      {h.text}
+                    </a>
                   ))}
                 </nav>
               </details>
             )}
 
             {/* MDX Content */}
-            <div className="prose-content max-w-[72ch]">
+            <div className="cf-prose max-w-[72ch]">
               <MDXRemote source={post.content} components={components} />
             </div>
 
             {/* Tags */}
             {tags.length > 0 && (
-              <div className="mt-12 pt-6 border-t border-[var(--border)] flex items-center gap-2 flex-wrap">
-                <Tag className="w-3 h-3 text-[var(--text-muted)]" />
-                {tags.map((t) => <span key={t} className="tag">{t}</span>)}
+              <div className="mt-12 flex items-center gap-2 flex-wrap" style={{ borderTop: "2px solid var(--cf-ink)", paddingTop: "20px" }}>
+                <span className="cf-mono" style={{ fontSize: "10.5px", letterSpacing: "0.14em", color: "var(--cf-muted)", marginRight: "4px" }}>
+                  FILED UNDER
+                </span>
+                {tags.map((t) => (
+                  <span key={t} className="tag">
+                    {t}
+                  </span>
+                ))}
               </div>
             )}
 
             {/* Nav to next/prev posts */}
-            <div className="mt-12 pt-6 border-t border-[var(--border)]">
-              <Link href="/blog" className="btn-ghost btn-no-arrow">← All Posts</Link>
+            <div className="mt-12" style={{ borderTop: "2px solid var(--cf-ink)", paddingTop: "24px" }}>
+              <Link href="/blog" className="cf-btn-ghost">
+                ← All Posts
+              </Link>
             </div>
           </article>
         </div>

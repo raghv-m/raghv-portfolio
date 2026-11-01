@@ -9,7 +9,7 @@ import { FieldError, focusFirstInvalid, invalidProps } from "@/components/ui/Fie
 import { BUSINESS_TYPES, PAYMENT_METHODS, PAYMENT_SCHEDULES, questionnaireSchema } from "@/lib/contracts/questionnaire";
 
 const input =
-  "w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-lg px-3.5 py-2.5 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)]";
+  "w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-none px-3.5 py-2.5 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)]";
 
 type Values = Record<string, string | boolean>;
 
@@ -77,7 +77,7 @@ export function QuestionnaireForm({ id, defaults }: { id: string; defaults: Reco
     });
   }
 
-  const section = "rounded-xl border border-[var(--border)] bg-[rgba(255,255,255,0.01)] p-6 space-y-4";
+  const section = "rounded-none border border-[var(--border)] bg-[rgba(255,255,255,0.01)] p-6 space-y-4";
   const heading = "text-lg font-semibold text-[var(--text)]";
 
   return (

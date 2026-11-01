@@ -6,15 +6,23 @@ import Link from "next/link";
  */
 export function ServiceNotice({ what }: { what: string }) {
   return (
-    <div role="status" className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 sm:p-8">
-      <p className="font-mono text-[10px] tracking-[0.25em] text-[var(--gold)]">TEMPORARILY UNAVAILABLE</p>
-      <p className="mt-3 text-[var(--text)] font-medium">{what} can&apos;t load right now.</p>
-      <p className="mt-2 text-sm text-[var(--text-muted)] leading-relaxed">
+    <div role="status" className="p-6 sm:p-8" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
+      <p className="cf-mono" style={{ fontSize: "11px", letterSpacing: "0.25em", color: "var(--cf-red)", fontWeight: 700 }}>
+        TEMPORARILY UNAVAILABLE
+      </p>
+      <p className="mt-3 font-semibold" style={{ color: "var(--cf-ink)", fontSize: "17px" }}>
+        {what} can&apos;t load right now.
+      </p>
+      <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--cf-muted)" }}>
         This is on our side and usually clears up within a few minutes. Please refresh shortly, or get in touch directly.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
-        <Link href="/contact" className="btn-gold">Contact me</Link>
-        <Link href="/" className="btn-ghost">Home</Link>
+        <Link href="/contact" className="cf-btn">
+          Contact me
+        </Link>
+        <Link href="/" className="cf-btn-ghost">
+          Home
+        </Link>
       </div>
     </div>
   );

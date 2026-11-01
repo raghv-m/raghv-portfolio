@@ -54,7 +54,7 @@ export default function AdminMessagesClient({ messages }: { messages: Message[] 
           {/* Message list */}
           <div className="lg:col-span-2 space-y-2">
             {messages.length === 0 ? (
-              <div className="glass rounded-xl p-8 text-center">
+              <div className="glass rounded-none p-8 text-center">
                 <Mail className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-3 opacity-40" />
                 <p className="font-mono text-[10px] text-[var(--text-muted)]">No messages yet.</p>
               </div>
@@ -72,7 +72,7 @@ export default function AdminMessagesClient({ messages }: { messages: Message[] 
                       setSelected(msg);
                       if (!isRead) markRead(msg.id);
                     }}
-                    className={`w-full text-left glass rounded-xl p-4 transition-all ${
+                    className={`w-full text-left glass rounded-none p-4 transition-all ${
                       isSelected ? "ring-1 ring-[rgba(212,160,23,0.3)]" : ""
                     }`}
                   >
@@ -106,7 +106,7 @@ export default function AdminMessagesClient({ messages }: { messages: Message[] 
                 key={selected.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass rounded-2xl overflow-hidden h-full"
+                className="glass rounded-none overflow-hidden h-full"
               >
                 <div className="px-6 py-4 border-b border-[var(--border)] bg-[var(--card)]">
                   <div className="flex items-start justify-between gap-4">
@@ -140,7 +140,7 @@ export default function AdminMessagesClient({ messages }: { messages: Message[] 
                 </div>
               </motion.div>
             ) : (
-              <div className="glass rounded-2xl flex items-center justify-center h-48">
+              <div className="glass rounded-none flex items-center justify-center h-48">
                 <div className="text-center">
                   <Mail className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2 opacity-30" />
                   <p className="font-mono text-[10px] text-[var(--text-muted)]">Select a message</p>

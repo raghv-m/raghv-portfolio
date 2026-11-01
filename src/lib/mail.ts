@@ -70,19 +70,21 @@ export function friendlyMailError(error: unknown): string {
   return raw || "The email couldn't be sent.";
 }
 
-// ─── Design tokens (dark) ──────────────────────────────────────────────────
+// ─── Design tokens (case file: paper, ink, red) ────────────────────────────
 const C = {
-  page: "#070707",
-  card: "#0f0f0f",
-  panel: "#151515",
-  border: "#262626",
-  text: "#f2f2f2",
-  body: "#b4b4b4",
-  muted: "#7c7c7c",
-  faint: "#555555",
-  gold: "#d4a017",
-  goldSoft: "#1d1806",
-  green: "#3ddc97",
+  page: "#e7e1cf",
+  card: "#f3efe6",
+  panel: "#ece7d9",
+  border: "#d5cfba",
+  text: "#16150f",
+  body: "#3c3a31",
+  muted: "#6f6a5c",
+  faint: "#8a8474",
+  gold: "#9a7410",
+  goldSoft: "#f0e6c8",
+  green: "#2e6b1e",
+  red: "#b3231b",
+  link: "#7d5e0c",
 };
 // Always the production URL: an email can be opened years later, from any device.
 const LOGO_URL = "https://www.raghv.dev/logo-email.png";
@@ -91,7 +93,7 @@ const MONO = "'SFMono-Regular',Menlo,Consolas,'Courier New',monospace";
 
 // Building blocks. Inline styles and tables only: that's what email clients render reliably.
 const eyebrow = (t: string) =>
-  `<p style="margin:0 0 10px;font-family:${MONO};font-size:11px;line-height:1.4;color:${C.gold};letter-spacing:0.14em;text-transform:uppercase;">${t}</p>`;
+  `<p style="margin:0 0 10px;font-family:${MONO};font-size:11px;line-height:1.4;color:${C.red};letter-spacing:0.14em;text-transform:uppercase;">${t}</p>`;
 const heading = (t: string) =>
   `<h1 style="margin:0 0 14px;font-family:${SANS};font-size:24px;line-height:1.3;font-weight:700;color:${C.text};">${t}</h1>`;
 const para = (t: string, last = false) =>
@@ -99,15 +101,15 @@ const para = (t: string, last = false) =>
 const small = (t: string) =>
   `<p style="margin:18px 0 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.muted};">${t}</p>`;
 const strong = (t: string) => `<span style="color:${C.text};font-weight:600;">${t}</span>`;
-const link = (url: string, t: string) => `<a href="${url}" style="color:${C.gold};text-decoration:underline;">${t}</a>`;
+const link = (url: string, t: string) => `<a href="${url}" style="color:${C.link};text-decoration:underline;">${t}</a>`;
 
 /** Bulletproof button: a table cell with padding, so it stays clickable even when CSS is stripped. */
 function button(url: string, label: string, variant: "primary" | "secondary" = "primary") {
   const primary = variant === "primary";
   return `
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:6px 0 4px;">
-    <tr><td bgcolor="${primary ? C.gold : C.card}" style="border-radius:6px;border:1px solid ${primary ? C.gold : C.border};">
-      <a href="${url}" target="_blank" style="display:inline-block;padding:13px 26px;font-family:${SANS};font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;color:${primary ? "#0a0a0a" : C.text};border-radius:6px;">${label} &rarr;</a>
+    <tr><td bgcolor="${primary ? C.text : C.card}" style="border:2px solid ${C.text};">
+      <a href="${url}" target="_blank" style="display:inline-block;padding:13px 26px;font-family:${SANS};font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;color:${primary ? C.card : C.text};">${label} &rarr;</a>
     </td></tr>
   </table>`;
 }
@@ -115,7 +117,7 @@ function button(url: string, label: string, variant: "primary" | "secondary" = "
 /** Key/value summary, e.g. amount and due date. */
 function facts(rows: [string, string][], accent = C.gold) {
   return `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:4px 0 22px;background:${C.panel};border:1px solid ${C.border};border-left:3px solid ${accent};border-radius:8px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:4px 0 22px;background:${C.panel};border:1px solid ${C.border};border-left:3px solid ${accent};">
     ${rows.map(([k, v], i) => `
     <tr><td style="padding:${i ? 4 : 16}px 18px ${i === rows.length - 1 ? 16 : 4}px;">
       <p style="margin:0;font-family:${MONO};font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:${C.muted};">${k}</p>
@@ -127,9 +129,9 @@ function facts(rows: [string, string][], accent = C.gold) {
 /** Panel with a title, for secondary information inside an email. */
 function panel(title: string, inner: string) {
   return `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:22px 0 0;background:${C.panel};border:1px solid ${C.border};border-radius:8px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:22px 0 0;background:${C.panel};border:1px solid ${C.border};">
     <tr><td style="padding:18px;">
-      <p style="margin:0 0 8px;font-family:${MONO};font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:${C.gold};">${title}</p>
+      <p style="margin:0 0 8px;font-family:${MONO};font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:${C.red};">${title}</p>
       ${inner}
     </td></tr>
   </table>`;
@@ -147,15 +149,15 @@ function portalAccess(access: PortalAccess, label: string) {
 
 function layout(content: string, preview: string) {
   return `<!DOCTYPE html>
-<html lang="en" style="color-scheme:dark;supported-color-schemes:dark;">
+<html lang="en" style="color-scheme:light;supported-color-schemes:light;">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <meta name="color-scheme" content="dark"/>
-  <meta name="supported-color-schemes" content="dark"/>
+  <meta name="color-scheme" content="light"/>
+  <meta name="supported-color-schemes" content="light"/>
   <title>${esc(preview)}</title>
   <style>
-    :root { color-scheme: dark; supported-color-schemes: dark; }
+    :root { color-scheme: light; supported-color-schemes: light; }
     @media (max-width:600px) { .px { padding-left:22px !important; padding-right:22px !important; } }
   </style>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
@@ -166,18 +168,19 @@ function layout(content: string, preview: string) {
     <tr><td align="center" style="padding:36px 12px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;">
         <tr><td style="padding:0 6px 18px;">
-          <!-- PNG, not SVG: most email clients don't render SVG. Gold version, made for dark backgrounds. -->
-          <a href="${site.url}" style="text-decoration:none;"><img src="${LOGO_URL}" width="120" height="48" alt="RAGHV.DEV" style="display:block;width:120px;height:48px;border:0;outline:none;color:${C.gold};font-family:${MONO};font-size:14px;font-weight:700;letter-spacing:0.12em;"/></a>
+          <!-- PNG, not SVG: most email clients don't render SVG. The case-file
+               folder lockup, ink on transparent, made for the paper card. -->
+          <a href="${site.url}" style="text-decoration:none;"><img src="${LOGO_URL}" width="200" height="80" alt="RAGHV.DEV" style="display:block;width:200px;height:80px;border:0;outline:none;color:${C.text};font-family:${MONO};font-size:14px;font-weight:700;letter-spacing:0.12em;"/></a>
         </td></tr>
-        <tr><td bgcolor="${C.card}" style="background:${C.card};border:1px solid ${C.border};border-radius:12px;">
+        <tr><td bgcolor="${C.card}" style="background:${C.card};border:2px solid ${C.text};">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr><td height="3" style="height:3px;line-height:3px;font-size:0;background:${C.gold};border-radius:12px 12px 0 0;">&nbsp;</td></tr>
+            <tr><td height="4" style="height:4px;line-height:4px;font-size:0;background:${C.red};">&nbsp;</td></tr>
             <tr><td class="px" style="padding:34px 34px 32px;">${content}</td></tr>
           </table>
         </td></tr>
-        <tr><td style="padding:20px 6px 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.faint};">
-          Raghav Mahajan &middot; Web design &amp; security &middot; Edmonton, Alberta<br/>
-          Reply to this email and it comes straight to me. &middot; <a href="${site.url}" style="color:${C.muted};text-decoration:none;">raghv.dev</a>
+        <tr><td style="padding:20px 6px 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.muted};">
+          Raghav Mahajan &middot; Web design &amp; security &middot; Edmonton, Alberta &middot; File No. YEG-2026-001<br/>
+          Reply to this email and it comes straight to me. &middot; <a href="${site.url}" style="color:${C.link};text-decoration:none;">raghv.dev</a>
         </td></tr>
       </table>
     </td></tr>
@@ -265,7 +268,7 @@ export async function notifySubscribersAboutPost(post: { title: string; slug: st
       ${heading(esc(post.title))}
       ${para(esc(post.excerpt))}
       ${button(`${site.url}/blog/${post.slug}`, "Read the post")}
-      ${small(`You're subscribed to Raghav's Cyber Daily. ${link(unsubLink, "Unsubscribe")}`)}
+      ${small(`You're subscribed to Blue Team Brief. ${link(unsubLink, "Unsubscribe")}`)}
     `, post.excerpt || post.title);
     return { to: sub.email, subject: `New post: ${post.title}`, html };
   });
@@ -533,7 +536,7 @@ export async function sendWelcomeEmail(to: string, name: string | null, unsubscr
     </td></tr>`;
 
   const html = layout(`
-    ${eyebrow("Raghav's Cyber Daily")}
+    ${eyebrow("Blue Team Brief")}
     ${heading(`You're in${name ? `, ${esc(name)}` : ""}.`)}
     ${para("You'll get lab writeups, security research and notes from my home lab whenever something is worth reading. No filler, no spam.")}
     ${panel("What to expect", `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -569,7 +572,7 @@ export function buildNewsletterHtml({
     const href = safeHref(s.link);
     return `
     <tr><td style="padding:20px 0;border-bottom:1px solid ${C.border};">
-      <p style="margin:0 0 6px;font-family:${MONO};font-size:10px;color:${C.gold};text-transform:uppercase;letter-spacing:0.12em;">${esc(s.heading)}</p>
+      <p style="margin:0 0 6px;font-family:${MONO};font-size:10px;color:${C.red};text-transform:uppercase;letter-spacing:0.12em;">${esc(s.heading)}</p>
       <p style="margin:0;font-family:${SANS};font-size:15px;color:${C.body};line-height:1.7;">${esc(s.body)}</p>
       ${href ? `<p style="margin:10px 0 0;font-family:${SANS};font-size:13px;">${link(href, "Read more")}</p>` : ""}
     </td></tr>`;

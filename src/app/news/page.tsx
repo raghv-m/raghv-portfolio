@@ -4,6 +4,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata, site } from "@/config/site";
 import type { NewsItem } from "@/lib/supabase/database.types";
 import { ServiceNotice } from "@/components/layout/ServiceNotice";
+import { PageHead } from "@/components/casefile/PageHead";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -36,7 +37,7 @@ export default async function NewsPage() {
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-24">
+    <div className="cf-wrap pb-24">
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -46,31 +47,62 @@ export default async function NewsPage() {
           author: { "@id": `${site.url}/#person` },
         }}
       />
-      <div className="max-w-3xl mx-auto px-6">
-        <p className="font-mono text-[10px] tracking-[0.25em] text-[var(--gold)]">DAILY BRIEFING</p>
-        <h1 className="mt-3 font-display text-4xl font-bold text-[var(--text)]">Top 3 in security, every day</h1>
-        <p className="mt-4 text-[var(--text-muted)] leading-relaxed">
-          The three stories worth knowing about, with a link to the original reporting. Also posted daily on{" "}
-          <a href={site.sameAs[1]} target="_blank" rel="noopener noreferrer" className="text-[var(--gold)] hover:underline">my LinkedIn</a>.
-        </p>
+      <div className="max-w-3xl mx-auto">
+        <PageHead
+          kicker="Daily briefing"
+          title="Top 3 in security, every day"
+          lede={
+            <>
+              The three stories worth knowing about, with a link to the original reporting. Also posted daily on{" "}
+              <a href={site.sameAs[1]} target="_blank" rel="noopener noreferrer" className="cf-ulink">
+                my LinkedIn
+              </a>
+              .
+            </>
+          }
+        />
 
         <div className="mt-12 space-y-10">
           {unavailable && <ServiceNotice what="The news briefing" />}
-          {!unavailable && digests.length === 0 && <p className="text-[var(--text-muted)]">The first briefing lands soon.</p>}
+          {!unavailable && digests.length === 0 && <p className="cf-body">The first briefing lands soon.</p>}
           {digests.map((d) => (
             <section key={d.digest_date} aria-labelledby={`d-${d.digest_date}`}>
-              <div className="flex items-baseline justify-between gap-3 border-b border-[var(--border)] pb-2">
-                <h2 id={`d-${d.digest_date}`} className="font-mono text-[11px] tracking-wider text-[var(--text-muted)] uppercase">{day(d.digest_date)}</h2>
-                {d.linkedin_url && <a href={d.linkedin_url} target="_blank" rel="noopener noreferrer" className="font-mono text-[10px] text-[var(--gold)] hover:underline">Discuss on LinkedIn ↗</a>}
+              <div className="cf-sec-head" style={{ marginBottom: "18px" }}>
+                <div className="flex items-baseline justify-between gap-3 flex-wrap">
+                  <h2 id={`d-${d.digest_date}`} className="cf-h2" style={{ fontSize: "22px" }}>
+                    {day(d.digest_date)}
+                  </h2>
+                  {d.linkedin_url && (
+                    <a href={d.linkedin_url} target="_blank" rel="noopener noreferrer" className="cf-ulink cf-mono" style={{ fontSize: "11px" }}>
+                      Discuss on LinkedIn ↗
+                    </a>
+                  )}
+                </div>
               </div>
               <ol className="mt-4 space-y-5">
                 {(d.items as NewsItem[]).map((item, i) => (
                   <li key={item.url} className="grid grid-cols-[2rem_1fr] gap-2">
-                    <span className="font-display text-xl font-bold text-[var(--gold)]">{i + 1}</span>
+                    <span className="cf-mono" style={{ fontSize: "19px", fontWeight: 700, color: "var(--cf-red)", lineHeight: 1.3 }}>
+                      {i + 1}
+                    </span>
                     <div>
-                      <a href={item.url} target="_blank" rel="noopener noreferrer nofollow" className="text-[var(--text)] font-semibold hover:text-[var(--gold)]">{item.title}</a>
-                      {item.summary && <p className="mt-1 text-sm text-[var(--text-muted)] leading-relaxed">{item.summary}</p>}
-                      <p className="mt-1 font-mono text-[10px] text-[var(--text-muted)]">Source: {item.source}</p>
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="font-semibold hover:text-[var(--cf-red)]"
+                        style={{ color: "var(--cf-ink)", fontSize: "16.5px" }}
+                      >
+                        {item.title}
+                      </a>
+                      {item.summary && (
+                        <p className="mt-1 text-sm leading-relaxed" style={{ color: "var(--cf-muted)" }}>
+                          {item.summary}
+                        </p>
+                      )}
+                      <p className="cf-mono mt-1" style={{ fontSize: "10.5px", color: "var(--cf-muted)", letterSpacing: "0.04em" }}>
+                        Source: {item.source}
+                      </p>
                     </div>
                   </li>
                 ))}

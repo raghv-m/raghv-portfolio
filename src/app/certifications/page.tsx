@@ -1,7 +1,10 @@
 "use client";
-import { SmokeBackground, SparklesCore } from "@/components/effects/deferred";
 import { motion } from "framer-motion";
 import { CheckCircle, Clock, Target, Award } from "lucide-react";
+import { PageHead } from "@/components/casefile/PageHead";
+import { Reveal } from "@/components/casefile/Reveal";
+import { Stamp } from "@/components/casefile/Stamp";
+import { CertWall } from "@/components/casefile/CertWall";
 
 
 const CERTS = [
@@ -92,145 +95,135 @@ const STATUS_COLOR = {
   PLANNED: "var(--text-muted)",
 };
 
+const STATUS_TONE: Record<string, "red" | "gold" | "green" | "ink"> = {
+  EARNED: "green",
+  "IN PROGRESS": "gold",
+  PLANNED: "ink",
+};
+
+const STAMP_R = [-4.2, -1.8, 2.4, -5.6, 0.8, -3.1, 1.9, -6];
+const STAMP_S = [0.98, 1.05, 0.93, 1.02, 0.96, 1.08, 0.94, 1.0];
+const STAMP_O = [0.9, 0.86, 0.94, 0.82, 0.92, 0.88, 0.96, 0.84];
+const STAMP_BW = [2.5, 3.0, 2.0, 3.5, 2.2, 2.8, 3.2, 2.4];
+
 export default function CertificationsPage() {
   return (
-    <div className="min-h-screen pb-32">
-      {/* ── Sparkles Hero ──────────────────────────────────────── */}
-      <div className="relative pt-24 pb-16 overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
-          }}
+    <div className="pb-32">
+      <div className="cf-wrap">
+        <PageHead
+          kicker="Certifications"
+          title={<>Credential <span className="cf-u-red">Arsenal</span></>}
+          lede="A structured certification path from foundational credentials to expert-level recognition."
         >
-          <div className="absolute inset-0 opacity-20">
-            <SmokeBackground smokeColor="#d4a017" />
+          <div style={{ marginTop: 26, position: "relative" }}>
+            <Stamp tone="red" r={-5.2} s={1.04} o={0.88} bw={3.1} delay={250}>
+              Filed and verified
+            </Stamp>
           </div>
-          <div className="absolute inset-0">
-            <SparklesCore
-              background="transparent"
-              minSize={0.4}
-              maxSize={1.4}
-              particleDensity={70}
-              particleColor="#d4a017"
-              speed={0.5}
-              className="w-full h-full"
-            />
-          </div>
-        </div>
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 70% 80% at 50% 0%, transparent 0%, rgba(10,10,10,0.85) 100%)" }} />
-
-        <div className="max-w-5xl mx-auto px-6 relative z-10">
-          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }} className="mb-6">
-            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CERTIFICATIONS</p>
-            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-              Credential <span className="gradient-gold">Arsenal</span>
-            </h1>
-            <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-              A structured certification path from foundational credentials to expert-level recognition.
-            </p>
-            <div className="glow-line mt-6 max-w-24" />
-          </motion.div>
 
           {/* Earned stats bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-wrap gap-4 mt-8"
-          >
-            {[
-              { icon: Award, label: "4 Certs Earned", color: "var(--green)" },
-              { icon: Clock, label: "1 In Progress", color: "var(--gold)" },
-              { icon: Target, label: "3 Planned", color: "var(--text-muted)" },
-            ].map(({ icon: Icon, label, color }) => (
-              <div key={label} className="glass rounded-lg px-4 py-2.5 flex items-center gap-2.5">
-                <Icon className="w-3.5 h-3.5" style={{ color }} />
-                <span className="font-mono text-[10px] tracking-wider text-[var(--text-muted)]">{label}</span>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
+          <Reveal delay={0.1}>
+            <div className="flex flex-wrap gap-4 mt-8">
+              {[
+                { icon: Award, label: "4 Certs Earned", color: "var(--green)" },
+                { icon: Clock, label: "1 In Progress", color: "var(--gold)" },
+                { icon: Target, label: "3 Planned", color: "var(--text-muted)" },
+              ].map(({ icon: Icon, label, color }) => (
+                <div key={label} className="flex items-center gap-2.5 px-4 py-2.5"
+                  style={{ background: "var(--cf-paper-2)", border: "1.5px solid var(--cf-ink)" }}>
+                  <Icon className="w-3.5 h-3.5" style={{ color }} />
+                  <span className="cf-mono text-[10px] tracking-wider text-[var(--cf-ink-soft)]">{label}</span>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </PageHead>
 
-      <div className="max-w-5xl mx-auto px-6">
+        {/* The documents themselves: real certificates filed as exhibits */}
+        <section style={{ marginTop: 56 }}>
+          <Reveal>
+            <div className="cf-sec-head">
+              <h2 className="cf-h2">The documents themselves</h2>
+              <p className="cf-note" style={{ marginTop: 10, maxWidth: 620 }}>
+                Not badge icons — the actual certificates, rendered from the original files. All six earned
+                documents are on file.
+              </p>
+            </div>
+          </Reveal>
+          <CertWall />
+        </section>
 
         {/* Legend */}
-        <div className="flex gap-5 mb-10">
-          {Object.entries(STATUS_COLOR).map(([status, color]) => (
-            <div key={status} className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full" style={{ background: color }} />
-              <span className="font-mono text-[10px] text-[var(--text-muted)]">{status}</span>
-            </div>
-          ))}
-        </div>
+        <Reveal delay={0.05}>
+          <div className="flex gap-5 mb-10" style={{ marginTop: 40 }}>
+            {Object.entries(STATUS_COLOR).map(([status, color]) => (
+              <div key={status} className="flex items-center gap-1.5">
+                <span className="w-2 h-2" style={{ background: color }} />
+                <span className="cf-mono text-[10px] text-[var(--cf-muted)]">{status}</span>
+              </div>
+            ))}
+          </div>
+        </Reveal>
 
-        {/* Cards */}
-        <div className="grid sm:grid-cols-2 gap-4">
-          {CERTS.map((cert, i) => {
-            const Icon = STATUS_ICON[cert.status as keyof typeof STATUS_ICON];
-            const earned = cert.status === "EARNED";
-            return (
-              <motion.div
-                key={cert.name}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="glass rounded-xl p-5 card-lift relative overflow-hidden"
-                style={{
-                  boxShadow: earned ? `0 0 40px ${cert.glow}` : undefined,
-                  border: earned ? `1px solid ${cert.color}30` : "1px solid var(--border)",
-                }}
-              >
-                {/* Earned glow overlay */}
-                {earned && (
-                  <div className="absolute inset-0 opacity-5 pointer-events-none"
-                    style={{ background: `radial-gradient(ellipse at top right, ${cert.color}, transparent)` }} />
-                )}
-
-                <div className="flex items-start justify-between mb-3">
-                  <span className="font-mono text-[9px] tracking-wider text-[var(--text-muted)]">
-                    {cert.issuer}
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    <Icon className="w-3.5 h-3.5" style={{ color: STATUS_COLOR[cert.status as keyof typeof STATUS_COLOR] }} />
-                    <span className="font-mono text-[9px] tracking-wider" style={{ color: STATUS_COLOR[cert.status as keyof typeof STATUS_COLOR] }}>
-                      {cert.status}
-                    </span>
-                  </div>
-                </div>
-
-                <h3 className="font-display text-sm font-semibold text-[var(--text)] mb-1 leading-snug">
-                  {cert.name}
-                </h3>
-                <p className="font-mono text-[10px] text-[var(--gold)] mb-3">{cert.date}</p>
-
-                {cert.progress !== undefined && (
-                  <div className="mb-3">
-                    <div className="flex justify-between mb-1">
-                      <span className="font-mono text-[9px] text-[var(--text-muted)]">PROGRESS</span>
-                      <span className="font-mono text-[9px] text-[var(--gold)]">{cert.progress}%</span>
+        {/* Credential rows */}
+        <Reveal delay={0.08}>
+          <div className="cf-cred">
+            {CERTS.map((cert, i) => {
+              const Icon = STATUS_ICON[cert.status as keyof typeof STATUS_ICON];
+              return (
+                <motion.div
+                  key={cert.name}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                  className="cf-cred-row"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Icon className="w-4 h-4 shrink-0" style={{ color: STATUS_COLOR[cert.status as keyof typeof STATUS_COLOR] }} />
+                      <p className="cf-cred-name">{cert.name}</p>
                     </div>
-                    <div className="h-1 bg-[var(--card)] rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${cert.progress}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1.2, ease: "easeOut" }}
-                        className="h-full progress-bar"
-                      />
-                    </div>
+                    <p className="cf-cred-iss">{cert.issuer}</p>
+                    <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed" style={{ marginTop: 8, maxWidth: 560 }}>
+                      {cert.value}
+                    </p>
+                    {cert.progress !== undefined && (
+                      <div style={{ marginTop: 12, maxWidth: 560 }}>
+                        <div className="flex justify-between mb-1">
+                          <span className="cf-mono text-[9px] text-[var(--cf-muted)]">PROGRESS</span>
+                          <span className="cf-mono text-[9px]" style={{ color: "var(--cf-gold)" }}>{cert.progress}%</span>
+                        </div>
+                        <div className="h-1 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${cert.progress}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                            className="h-full progress-bar"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-
-                <p className="text-[var(--text-muted)] text-xs leading-relaxed">{cert.value}</p>
-              </motion.div>
-            );
-          })}
-        </div>
+                  <span className="cf-cred-code">{cert.date}</span>
+                  <Stamp
+                    tone={STATUS_TONE[cert.status] ?? "ink"}
+                    r={STAMP_R[i % STAMP_R.length]}
+                    s={STAMP_S[i % STAMP_S.length]}
+                    o={STAMP_O[i % STAMP_O.length]}
+                    bw={STAMP_BW[i % STAMP_BW.length]}
+                    delay={i * 90}
+                    live={cert.status === "IN PROGRESS"}
+                    className="text-[11px]"
+                  >
+                    {cert.status}
+                  </Stamp>
+                </motion.div>
+              );
+            })}
+          </div>
+        </Reveal>
       </div>
     </div>
   );

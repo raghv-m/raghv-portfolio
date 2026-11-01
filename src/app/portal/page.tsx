@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 
 import { signOutAction } from "@/app/auth/actions";
+import { Logo } from "@/components/brand/Logo";
+import { ThemeToggle } from "@/components/casefile/ThemeToggle";
 import { requirePortalUser } from "@/lib/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -69,17 +71,23 @@ export default async function PortalHome() {
       <div className="max-w-4xl mx-auto">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-[10px] tracking-[0.2em] text-[var(--gold)]">CLIENT PORTAL</p>
-            <h1 className="mt-2 text-3xl font-semibold text-[var(--text)]">Hi {profile.full_name?.split(" ")[0] || "there"}</h1>
-            <p className="mt-1 text-sm text-[var(--text-muted)]">Signed in as {email}</p>
+            <div className="flex items-center gap-3">
+              <Logo size={30} style={{ color: "var(--text)" }} />
+              <p className="font-mono text-[10px] tracking-[0.2em] text-[var(--gold)]">CLIENT PORTAL · YOUR FILE</p>
+            </div>
+            <h1 className="cf-display mt-2 text-[36px] leading-none text-[var(--text)]">Hi {profile.full_name?.split(" ")[0] || "there"}</h1>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">Signed in as {email}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <span className="mr-1 hidden sm:inline-flex items-center gap-2 font-mono text-[9px] tracking-[0.18em] text-[var(--text-muted)] uppercase">
+              Theme <ThemeToggle className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors" />
+            </span>
             <Link href="/estimate" className="btn-gold">New request</Link>
             <form action={signOutAction}><button type="submit" className="btn-ghost">Sign out</button></form>
           </div>
         </header>
 
-        <section className="mt-10 rounded-xl border border-[var(--border)] bg-[var(--card)] p-5 sm:p-6" aria-labelledby="journey-title">
+        <section className="mt-10 rounded-none border border-[var(--border)] bg-[var(--card)] p-5 sm:p-6" aria-labelledby="journey-title">
           <div className="flex items-baseline justify-between gap-3">
             <h2 id="journey-title" className="font-mono text-[10px] tracking-wider text-[var(--gold)] uppercase">Your project</h2>
             {project && <Link href={`/portal/projects/${project.id}`} className="text-xs text-[var(--gold)] hover:underline">Full progress and timeline →</Link>}
@@ -89,7 +97,7 @@ export default async function PortalHome() {
               const state = step.done ? "done" : i === current ? "current" : "upcoming";
               const body = (
                 <>
-                  <span className={`size-7 shrink-0 rounded-full grid place-items-center border text-xs font-semibold ${state === "done" ? "bg-[var(--gold)] border-[var(--gold)] text-black" : state === "current" ? "border-[var(--gold)] text-[var(--gold)]" : "border-[var(--border)] text-[var(--text-muted)]"}`}>
+                  <span className={`size-7 shrink-0 rounded-none grid place-items-center border text-xs font-semibold ${state === "done" ? "bg-[var(--gold)] border-[var(--gold)] text-[var(--bg)]" : state === "current" ? "border-[var(--red)] text-[var(--red)]" : "border-[var(--border)] text-[var(--text-muted)]"}`}>
                     {state === "done" ? <Check className="w-3.5 h-3.5" aria-hidden="true" /> : i + 1}
                   </span>
                   <span className="min-w-0">
@@ -101,7 +109,7 @@ export default async function PortalHome() {
               return (
                 <li key={step.title} aria-current={state === "current" ? "step" : undefined}>
                   {step.href ? (
-                    <Link href={step.href} className="flex lg:flex-col gap-3 rounded-lg p-1 -m-1 hover:bg-[rgba(212,160,23,0.06)] transition-colors">{body}</Link>
+                    <Link href={step.href} className="flex lg:flex-col gap-3 rounded-none p-1 -m-1 hover:bg-[rgba(212,160,23,0.06)] transition-colors">{body}</Link>
                   ) : (
                     <div className="flex lg:flex-col gap-3">{body}</div>
                   )}
@@ -111,7 +119,7 @@ export default async function PortalHome() {
           </ol>
           {project && (
             <div className="mt-5">
-              <div className="h-1.5 rounded-full bg-[var(--border)] overflow-hidden"><div className="h-full bg-[var(--gold)]" style={{ width: `${project.progress}%` }} /></div>
+              <div className="h-1.5 bg-[var(--border)] overflow-hidden"><div className="h-full bg-[var(--gold)] transition-[width] duration-700" style={{ width: `${project.progress}%`, transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)" }} /></div>
               <p className="mt-1.5 text-xs text-[var(--text-muted)]">{project.title}: {project.progress}% complete</p>
             </div>
           )}
@@ -123,7 +131,7 @@ export default async function PortalHome() {
             <ul className="space-y-3">
               {todo.map((t) => (
                 <li key={t.href}>
-                  <Link href={t.href} className="flex items-center justify-between gap-4 rounded-xl border border-[rgba(212,160,23,0.4)] bg-[rgba(212,160,23,0.05)] p-5 hover:border-[var(--gold)] transition-colors">
+                  <Link href={t.href} className="flex items-center justify-between gap-4 rounded-none border border-[rgba(212,160,23,0.4)] bg-[rgba(212,160,23,0.05)] p-5 hover:border-[var(--gold)] transition-colors">
                     <span>
                       <span className="block text-[var(--text)] font-medium">{t.title}</span>
                       <span className="block text-sm text-[var(--text-muted)]">{t.detail}</span>
@@ -143,7 +151,7 @@ export default async function PortalHome() {
               {estimates.map((e) => {
                 const stage = STAGE[e.status] ?? STAGE.new;
                 return (
-                  <li key={e.id} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
+                  <li key={e.id} className="rounded-none border border-[var(--border)] bg-[var(--card)] p-5">
                     <div className="flex flex-wrap justify-between gap-3">
                       <div>
                         <p className="font-mono text-[10px] text-[var(--gold)]">{e.reference}</p>
@@ -159,7 +167,7 @@ export default async function PortalHome() {
                       <div className="mt-5">
                         <div className="grid grid-cols-4 gap-1.5">
                           {[1, 2, 3, 4].map((n) => (
-                            <span key={n} className={`h-1 rounded-full ${n <= stage.step ? "bg-[var(--gold)]" : "bg-[var(--border)]"}`} />
+                            <span key={n} className={`h-1 ${n <= stage.step ? "bg-[var(--gold)]" : "bg-[var(--border)]"}`} />
                           ))}
                         </div>
                         <p className="mt-2 font-mono text-[10px] tracking-wider text-[var(--text-muted)]">STATUS: <span className="text-[var(--text)]">{stage.label.toUpperCase()}</span></p>
@@ -180,12 +188,12 @@ export default async function PortalHome() {
             <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-3">Projects</h2>
             <ul className="space-y-3">
               {projects.map((p) => (
-                <li key={p.id} className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-5">
+                <li key={p.id} className="rounded-none border border-[var(--border)] bg-[var(--card)] p-5">
                   <div className="flex justify-between gap-3">
                     <Link href={`/portal/projects/${p.id}`} className="text-[var(--text)] hover:text-[var(--gold)]">{p.title} →</Link>
                     <p className="font-mono text-[10px] text-[var(--text-muted)] uppercase">{p.status.replace("_", " ")}</p>
                   </div>
-                  <div className="mt-3 h-1.5 rounded-full bg-[var(--border)] overflow-hidden">
+                  <div className="mt-3 h-1.5 bg-[var(--border)] overflow-hidden">
                     <div className="h-full bg-[var(--gold)]" style={{ width: `${p.progress}%` }} />
                   </div>
                   <p className="mt-1 text-xs text-[var(--text-muted)]">{p.progress}% complete{p.end_date ? ` · target ${date(p.end_date)}` : ""}</p>
@@ -204,7 +212,7 @@ export default async function PortalHome() {
         {contracts && contracts.some((c) => c.status === "signed") && (
           <section className="mt-10">
             <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-3">Agreements</h2>
-            <ul className="divide-y divide-[var(--border)] rounded-xl border border-[var(--border)] bg-[var(--card)]">
+            <ul className="divide-y divide-[var(--border)] rounded-none border border-[var(--border)] bg-[var(--card)]">
               {contracts.filter((c) => c.status === "signed").map((c) => (
                 <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
                   <Link href={`/portal/contracts/${c.id}`} className="hover:text-[var(--gold)]">
@@ -221,7 +229,7 @@ export default async function PortalHome() {
         <section id="invoices" className="mt-10 scroll-mt-24">
           <h2 className="font-mono text-[10px] tracking-wider text-[var(--text-muted)] uppercase mb-3">Invoices</h2>
           {invoices?.length ? (
-            <ul className="divide-y divide-[var(--border)] rounded-xl border border-[var(--border)] bg-[var(--card)]">
+            <ul className="divide-y divide-[var(--border)] rounded-none border border-[var(--border)] bg-[var(--card)]">
               {invoices.map((i) => (
                 <li key={i.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
                   <div>

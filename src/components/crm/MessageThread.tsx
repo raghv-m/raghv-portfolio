@@ -57,7 +57,7 @@ export function MessageThread({
           const mine = m.sender_id === meId;
           return (
             <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-              <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${mine ? "bg-[rgba(212,160,23,0.12)] border border-[rgba(212,160,23,0.3)]" : "bg-[var(--bg)] border border-[var(--border)]"}`}>
+              <div className={`max-w-[80%] rounded-none px-4 py-2.5 ${mine ? "bg-[rgba(212,160,23,0.12)] border border-[rgba(212,160,23,0.3)]" : "bg-[var(--bg)] border border-[var(--border)]"}`}>
                 <p className="text-sm text-[var(--text)] whitespace-pre-wrap">{m.body}</p>
                 <p className="mt-1 font-mono text-[9px] text-[var(--text-muted)]">{mine ? "You" : names[m.sender_id] ?? "Them"} · {when(m.created_at)}</p>
               </div>
@@ -90,7 +90,7 @@ export function MessageThread({
           }}
           rows={2}
           placeholder="Write a message… (Enter to send, Shift+Enter for a new line)"
-          className="flex-1 bg-[var(--bg)] border border-[var(--border)] rounded-lg px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)] resize-none"
+          className="flex-1 bg-[var(--bg)] border border-[var(--border)] rounded-none px-3 py-2 text-sm text-[var(--text)] focus:outline-none focus:border-[rgba(212,160,23,0.5)] resize-none"
         />
         <button type="submit" disabled={pending || !draft.trim()} className="btn-solid-gold btn-no-arrow self-end inline-flex items-center gap-2" aria-label="Send message">
           {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 
 const LEGAL_LINKS = [
@@ -12,18 +12,32 @@ const LEGAL_LINKS = [
 /** Shared layout for the legal pages: readable column, last-updated date, links between them. */
 export function LegalPage({ title, updated, intro, children, path }: { title: string; updated: string; intro: ReactNode; children: ReactNode; path: string }) {
   return (
-    <div className="min-h-screen pt-28 pb-24">
-      <article className="max-w-3xl mx-auto px-6">
-        <p className="font-mono text-[10px] tracking-[0.25em] text-[var(--gold)]">LEGAL</p>
-        <h1 className="mt-3 font-display text-4xl font-bold text-[var(--text)]">{title}</h1>
-        <p className="mt-2 font-mono text-[11px] text-[var(--text-muted)]">Last updated {updated}</p>
-        <div className="mt-6 text-[var(--text-muted)] leading-relaxed">{intro}</div>
-        <div className="legal mt-10 space-y-8 text-[15px] leading-[1.8] text-[var(--text-muted)] [&_h2]:font-display [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-[var(--text)] [&_h2]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_a]:text-[var(--gold)] [&_a]:underline [&_strong]:text-[var(--text)]">
+    <div className="cf-wrap pb-24">
+      <article className="max-w-3xl mx-auto">
+        <header className="cf-pagehead">
+          <p className="cf-kicker cf-load">Legal, filed document</p>
+          <h1 className="cf-load" style={{ "--cf-d": "0.08s" } as CSSProperties}>
+            {title}
+          </h1>
+          <p className="cf-mono cf-load" style={{ "--cf-d": "0.14s", fontSize: "11.5px", color: "var(--cf-muted)", letterSpacing: "0.06em", marginTop: "14px" } as CSSProperties}>
+            Last updated {updated}
+          </p>
+          <div className="cf-body cf-load" style={{ "--cf-d": "0.18s", marginTop: "22px" } as CSSProperties}>
+            {intro}
+          </div>
+        </header>
+        <div className="legal mt-10 space-y-8" style={{ fontSize: "15px", lineHeight: 1.8 }}>
           {children}
         </div>
-        <nav aria-label="Legal pages" className="mt-16 pt-6 border-t border-[var(--border)] flex flex-wrap gap-x-5 gap-y-2 font-mono text-[11px]">
+        <nav aria-label="Legal pages" className="cf-mono mt-16 flex flex-wrap gap-x-5 gap-y-2" style={{ borderTop: "2px solid var(--cf-ink)", paddingTop: "20px", fontSize: "11.5px" }}>
           {LEGAL_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} aria-current={link.href === path ? "page" : undefined} className={link.href === path ? "text-[var(--gold)]" : "text-[var(--text-muted)] hover:text-[var(--gold)]"}>
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={link.href === path ? "page" : undefined}
+              className="cf-navlink"
+              style={{ color: link.href === path ? "var(--cf-ink)" : "var(--cf-muted)" }}
+            >
               {link.label}
             </Link>
           ))}

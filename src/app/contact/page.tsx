@@ -1,8 +1,9 @@
 "use client";
-import { SmokeBackground } from "@/components/effects/deferred";
 import { useState, useEffect, useRef } from "react";
 
 import { FieldError, focusFirstInvalid, invalidProps } from "@/components/ui/FieldError";
+import { PageHead } from "@/components/casefile/PageHead";
+import { Stamp } from "@/components/casefile/Stamp";
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Globe, Lock, CheckCircle, Download } from "lucide-react";
 
@@ -71,63 +72,50 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen pb-40">
-      {/* Hero — mirrors the Career page: green smoke bleeds to the very top, no gap */}
-      <section className="relative pt-32 pb-16 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none opacity-35">
-          <SmokeBackground smokeColor="#22c55e" />
-        </div>
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.97) 100%)" }} />
-        <div className="max-w-5xl mx-auto px-6 relative z-10 text-center">
-          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }}>
-            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CONTACT</p>
-            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-              Establish <span className="gradient-gold">Connection</span>
-            </h1>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              className="inline-flex items-center gap-2 glass-gold rounded-full px-5 py-2 mt-2"
-            >
-              <span className="w-2 h-2 rounded-full bg-[var(--green)] pulse-green" />
-              <span className="font-mono text-[11px] text-[var(--green)] tracking-wider">
-                AVAILABLE FOR OPPORTUNITIES · 2025/2026
-              </span>
-            </motion.div>
-            <div className="glow-line mt-6 max-w-24 mx-auto" />
-          </motion.div>
-        </div>
-      </section>
+    <div className="cf-wrap pb-24">
+      <PageHead
+        kicker="Contact"
+        title="Establish connection"
+        lede="Job opportunity, a website you need built, or a question about the lab: this form reaches me directly. I reply within 24 to 48 hours."
+      />
 
-      <div className="max-w-5xl mx-auto px-6">
+      <div className="mt-8 flex flex-wrap items-center gap-5">
+        <span className="inline-flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[var(--cf-green)] animate-pulse" />
+          <span className="cf-mono text-[11px] tracking-wider" style={{ color: "var(--cf-green)" }}>
+            AVAILABLE FOR OPPORTUNITIES · 2025/2026
+          </span>
+        </span>
+        <Stamp tone="green" r={-2.3} s={0.97} o={0.9} bw={2.5}>Open to work</Stamp>
+      </div>
+
+      <div className="mt-12">
         <div className="grid lg:grid-cols-5 gap-10">
           {/* Info panel — 2 cols */}
           <motion.div
             initial={{ opacity: 0, x: -24 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-2 space-y-4"
           >
-            <div className="glass rounded-xl p-6">
-              <p className="font-mono text-[9px] tracking-wider text-[var(--gold)] mb-5">CONTACT ENDPOINTS</p>
+            <div className="p-6" style={{ border: "1.5px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
+              <p className="cf-mono text-[10px] font-bold tracking-wider mb-5" style={{ color: "var(--cf-red)" }}>CONTACT ENDPOINTS</p>
               <div className="space-y-4">
                 {[
-                  { icon: Mail, label: "Email", value: "hello@raghv.dev", href: "mailto:hello@raghv.dev", color: "var(--gold)" },
-                  { icon: MapPin, label: "Location", value: "Edmonton, AB, Canada", color: "var(--blue)" },
-                  { icon: Globe, label: "Portfolio", value: "raghv.dev", href: "https://www.raghv.dev", color: "var(--gold)" },
+                  { icon: Mail, label: "Email", value: "hello@raghv.dev", href: "mailto:hello@raghv.dev", color: "var(--cf-gold)" },
+                  { icon: MapPin, label: "Location", value: "Edmonton, AB, Canada", color: "var(--cf-gold)" },
+                  { icon: Globe, label: "Portfolio", value: "raghv.dev", href: "https://www.raghv.dev", color: "var(--cf-gold)" },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ background: `${item.color}12`, border: `1px solid ${item.color}25`, color: item.color }}>
+                    <div className="w-8 h-8 flex items-center justify-center shrink-0"
+                      style={{ border: "1px solid var(--cf-faint)", background: "var(--cf-paper)", color: item.color }}>
                       <item.icon className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <p className="font-mono text-[9px] text-[var(--text-muted)]">{item.label}</p>
+                      <p className="cf-mono text-[9px]" style={{ color: "var(--cf-muted)" }}>{item.label}</p>
                       {item.href
-                        ? <a href={item.href} className="text-[var(--text)] text-xs hover:text-[var(--gold)] transition-colors">{item.value}</a>
-                        : <p className="text-[var(--text)] text-xs">{item.value}</p>}
+                        ? <a href={item.href} className="cf-ulink text-[13px]" style={{ color: "var(--cf-ink)" }}>{item.value}</a>
+                        : <p className="text-[13px]" style={{ color: "var(--cf-ink)" }}>{item.value}</p>}
                     </div>
                   </div>
                 ))}
@@ -135,22 +123,22 @@ export default function ContactPage() {
             </div>
 
             {/* Social links */}
-            <div className="glass rounded-xl p-5">
-              <p className="font-mono text-[9px] tracking-wider text-[var(--text-muted)] mb-4">SOCIAL · COMMUNITY</p>
+            <div className="p-5" style={{ border: "1px solid var(--cf-faint)", background: "var(--cf-paper-2)" }}>
+              <p className="cf-mono text-[10px] tracking-wider mb-4" style={{ color: "var(--cf-muted)" }}>SOCIAL · COMMUNITY</p>
               <div className="space-y-3">
                 {[
-                  { icon: GithubIcon, label: "GitHub", value: "HomeLab-Raghav", href: "https://github.com/HomeLab-Raghav", color: "var(--text-muted)" },
-                  { icon: LinkedinIcon, label: "LinkedIn", value: "raghav-mahajan-17611b24b", href: "https://linkedin.com/in/raghav-mahajan-17611b24b", color: "var(--blue)" },
+                  { icon: GithubIcon, label: "GitHub", value: "HomeLab-Raghav", href: "https://github.com/HomeLab-Raghav", color: "var(--cf-muted)" },
+                  { icon: LinkedinIcon, label: "LinkedIn", value: "raghav-mahajan-17611b24b", href: "https://linkedin.com/in/raghav-mahajan-17611b24b", color: "var(--cf-gold)" },
                 ].map((s) => (
                   <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-3 group">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center glass group-hover:border-[rgba(212,160,23,0.3)] transition-all"
-                      style={{ color: s.color }}>
+                    <div className="w-8 h-8 flex items-center justify-center shrink-0"
+                      style={{ border: "1px solid var(--cf-faint)", background: "var(--cf-paper)", color: s.color }}>
                       <s.icon />
                     </div>
                     <div>
-                      <p className="font-mono text-[9px] text-[var(--text-muted)]">{s.label}</p>
-                      <p className="text-[var(--text)] text-xs group-hover:text-[var(--gold)] transition-colors">{s.value}</p>
+                      <p className="cf-mono text-[9px]" style={{ color: "var(--cf-muted)" }}>{s.label}</p>
+                      <p className="text-[13px] group-hover:text-[var(--cf-red)] transition-colors" style={{ color: "var(--cf-ink)" }}>{s.value}</p>
                     </div>
                   </a>
                 ))}
@@ -163,9 +151,9 @@ export default function ContactPage() {
             </a>
 
             {/* Security notice */}
-            <div className="flex items-center gap-2 glass rounded-lg px-4 py-2.5">
-              <Lock className="w-3 h-3 text-[var(--gold-muted)]" />
-              <p className="font-mono text-[9px] text-[#444]">
+            <div className="flex items-center gap-2 px-4 py-2.5" style={{ border: "1px solid var(--cf-faint)" }}>
+              <Lock className="w-3 h-3" style={{ color: "var(--cf-gold)" }} />
+              <p className="cf-mono text-[9px]" style={{ color: "var(--cf-muted)" }}>
                 HTTPS · CSRF protected · IP hashed
               </p>
             </div>
@@ -175,17 +163,15 @@ export default function ContactPage() {
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-3"
           >
-            <div className="glass rounded-xl overflow-hidden" style={{ border: "1px solid rgba(212,160,23,0.2)" }}>
-              {/* Terminal header */}
-              <div className="flex items-center gap-2 px-5 py-3 border-b border-[var(--border)] bg-[var(--card)]">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-                <span className="font-mono text-[10px] text-[var(--text-muted)] ml-2">secure-compose · raghv.dev</span>
-                <Lock className="w-2.5 h-2.5 text-[var(--gold)] ml-auto" />
+            <div style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
+              {/* Dossier form header */}
+              <div className="flex items-center gap-2 px-5 py-3" style={{ borderBottom: "3px double var(--cf-ink)" }}>
+                <span className="cf-mono text-[10px] font-bold" style={{ color: "var(--cf-ink)" }}>FILE A MESSAGE</span>
+                <span className="cf-mono text-[10px]" style={{ color: "var(--cf-muted)" }}>secure-compose · raghv.dev</span>
+                <Lock className="w-3 h-3 ml-auto" style={{ color: "var(--cf-red)" }} />
               </div>
 
               <div className="p-6">
@@ -195,14 +181,14 @@ export default function ContactPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex flex-col items-center justify-center py-16 gap-4 text-center"
                   >
-                    <CheckCircle className="w-14 h-14 text-[var(--green)]" style={{ filter: "drop-shadow(0 0 12px rgba(0,255,136,0.5))" }} />
+                    <CheckCircle className="w-14 h-14" style={{ color: "var(--cf-green)" }} />
                     <div>
-                      <p className="font-mono text-sm text-[var(--green)] mb-1">MESSAGE TRANSMITTED</p>
-                      <p className="font-mono text-[10px] text-[var(--text-muted)]">
+                      <p className="cf-mono text-sm font-bold mb-1" style={{ color: "var(--cf-green)" }}>MESSAGE TRANSMITTED</p>
+                      <p className="cf-mono text-[10px]" style={{ color: "var(--cf-muted)" }}>
                         {">"} Auto-reply sent to {form.email}
                       </p>
-                      <p className="font-mono text-[10px] text-[var(--text-muted)]">
-                        {">"} Expected response: 24–48 hours
+                      <p className="cf-mono text-[10px]" style={{ color: "var(--cf-muted)" }}>
+                        {">"} Expected response: 24 to 48 hours
                       </p>
                     </div>
                   </motion.div>
@@ -212,7 +198,7 @@ export default function ContactPage() {
                     <input type="text" name="website" className="hidden" aria-hidden="true" value={form.website}
                       onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex={-1} autoComplete="off" />
 
-                    <p className="font-mono text-[9px] text-[var(--text-muted)] mb-4">
+                    <p className="cf-mono text-[10px] mb-4" style={{ color: "var(--cf-muted)" }}>
                       {">"} COMPOSE ENCRYPTED MESSAGE
                     </p>
 
@@ -222,7 +208,7 @@ export default function ContactPage() {
                         { key: "email", label: "EMAIL", placeholder: "jane@company.com", type: "email", autoComplete: "email" },
                       ] as const).map((f) => (
                         <div key={f.key}>
-                          <label htmlFor={`contact-${f.key}`} className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5">{f.label}</label>
+                          <label htmlFor={`contact-${f.key}`} className="cf-label">{f.label}</label>
                           <input
                             id={`contact-${f.key}`}
                             name={f.key}
@@ -233,7 +219,7 @@ export default function ContactPage() {
                             placeholder={f.placeholder}
                             value={form[f.key as keyof typeof form]}
                             onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                            className="w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono placeholder-[#333] focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors"
+                            className="cf-input font-mono aria-[invalid=true]:border-[var(--cf-red)]"
                           />
                           <FieldError name={f.key} message={fieldErrors[f.key]} />
                         </div>
@@ -241,7 +227,7 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="contact-subject" className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5">SUBJECT</label>
+                      <label htmlFor="contact-subject" className="cf-label">SUBJECT</label>
                       <select
                         id="contact-subject"
                         name="subject"
@@ -249,7 +235,7 @@ export default function ContactPage() {
                         {...invalidProps("subject", fieldErrors.subject)}
                         value={form.subject}
                         onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                        className="w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors"
+                        className="cf-input font-mono aria-[invalid=true]:border-[var(--cf-red)]"
                       >
                         <option value="">Select a subject...</option>
                         {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -258,7 +244,7 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                      <label htmlFor="contact-message" className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider block mb-1.5">MESSAGE</label>
+                      <label htmlFor="contact-message" className="cf-label">MESSAGE</label>
                       <textarea
                         id="contact-message"
                         name="message"
@@ -268,7 +254,7 @@ export default function ContactPage() {
                         placeholder="Tell me about the role, project, or opportunity..."
                         value={form.message}
                         onChange={(e) => setForm({ ...form, message: e.target.value })}
-                        className="w-full bg-[var(--card)] border border-[var(--border)] aria-[invalid=true]:border-[var(--red)] rounded-lg px-4 py-2.5 text-[var(--text)] text-sm font-mono placeholder-[#333] focus:outline-none focus:border-[rgba(212,160,23,0.4)] transition-colors resize-none"
+                        className="cf-input font-mono resize-none aria-[invalid=true]:border-[var(--cf-red)]"
                       />
                       <FieldError name="message" message={fieldErrors.message} />
                     </div>

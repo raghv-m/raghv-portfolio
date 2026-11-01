@@ -16,7 +16,7 @@ export default async function ProjectsPage() {
   return (
     <AdminPage label="Delivery" title="Projects">
       <p className="text-sm text-[var(--text-muted)] mb-6 max-w-2xl">Start a project from a client&apos;s page once their contract is signed. Milestones drive the progress bar the client sees in their portal.</p>
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
+      <div className="rounded-none border border-[var(--border)] bg-[var(--card)] overflow-x-auto">
         {projects?.length ? (
           <table className={tableClass}>
             <thead>

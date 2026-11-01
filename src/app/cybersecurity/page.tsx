@@ -1,9 +1,13 @@
 "use client";
-import { CyberSphere, SparklesCore } from "@/components/effects/deferred";
 import { useState, useRef } from "react";
+import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 
 import { Shield, Eye, Zap, Lock } from "lucide-react";
+import { PageHead } from "@/components/casefile/PageHead";
+import { Reveal } from "@/components/casefile/Reveal";
+import { Stamp } from "@/components/casefile/Stamp";
+import { HomeLabSection } from "@/components/sections/HomeLabSection";
 
 // MITRE ATT&CK techniques simplified — 12 tactics, select techniques per tactic
 const ATTACK_MATRIX = [
@@ -41,6 +45,7 @@ const TOOL_GROUPS = [
       { name: "Wireshark", desc: "Packet capture analysis: identifying C2 traffic patterns, credential harvesting in plaintext, DNS tunneling indicators." },
       { name: "Nmap", desc: "Network discovery and port scanning. Running scans against lab network from KALI01 to verify Wazuh detection rules trigger correctly." },
       { name: "tcpdump", desc: "CLI packet capture on Linux endpoints. Used for real-time traffic analysis during active lab exercises." },
+      { name: "LAN Setup (Home Lab)", desc: "Built and runs the lab LAN himself: IP addressing and subnetting, DHCP and DNS on the domain controller, NAT, and firewall rules across all four nodes." },
     ],
   },
   {
@@ -74,7 +79,7 @@ const TOOL_GROUPS = [
 
 const SKILL_DOMAINS = [
   { name: "Threat Detection", pct: 55, color: "var(--gold)", desc: "SIEM rule writing, alert triage, IOC identification" },
-  { name: "Network Security", pct: 65, color: "var(--blue)", desc: "Packet analysis, firewall rules, port scanning" },
+  { name: "Network Security", pct: 65, color: "var(--blue)", desc: "Packet analysis, firewall rules, port scanning; home-lab LAN: subnetting, DHCP, DNS, NAT" },
   { name: "Active Directory", pct: 60, color: "var(--gold)", desc: "Domain management, GPO, authentication protocols" },
   { name: "Incident Response", pct: 50, color: "var(--blue)", desc: "IR lifecycle, documentation, escalation procedures" },
   { name: "Linux Administration", pct: 70, color: "var(--green)", desc: "Server hardening, service management, log analysis" },
@@ -93,23 +98,23 @@ function ToolCard({ tool, color }: { tool: { name: string; desc: string }; color
     >
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="relative w-full h-full"
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* Front */}
         <div
-          className="absolute inset-0 glass rounded-xl flex items-center justify-center"
-          style={{ backfaceVisibility: "hidden", border: `1px solid ${color}25` }}
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ backfaceVisibility: "hidden", background: "var(--cf-paper-2)", border: `1.5px solid ${color}` }}
         >
-          <span className="font-display text-sm font-semibold" style={{ color }}>{tool.name}</span>
+          <span className="cf-display text-sm" style={{ color }}>{tool.name}</span>
         </div>
         {/* Back */}
         <div
-          className="absolute inset-0 glass rounded-xl flex items-center p-3"
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)", border: `1px solid ${color}30`, background: `${color}06` }}
+          className="absolute inset-0 flex items-center p-3"
+          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)", background: "var(--cf-paper)", border: `1.5px solid ${color}` }}
         >
-          <p className="text-[var(--text-muted)] text-[10px] leading-relaxed">{tool.desc}</p>
+          <p className="text-[var(--cf-ink-soft)] text-[10px] leading-relaxed">{tool.desc}</p>
         </div>
       </motion.div>
     </div>
@@ -121,196 +126,179 @@ export default function CybersecurityPage() {
   const matrixInView = useInView(matrixRef, { once: true, margin: "-80px" });
 
   return (
-    <div className="min-h-screen pb-32">
-      {/* 3D hero section */}
-      <section className="relative min-h-[52vh] flex items-center overflow-hidden pt-24">
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
-          }}
+    <div className="pb-32">
+      <div className="cf-wrap">
+        <PageHead
+          kicker="Cybersecurity"
+          title={<>Threat <span className="cf-u-red">Operations</span></>}
+          lede="Blue team fundamentals, SIEM operations, and hands-on offensive tooling. Built through real home lab exercises, not just theory."
         >
-          <div className="absolute inset-0 opacity-40">
-            <CyberSphere />
+          <div style={{ marginTop: 26 }}>
+            <Stamp tone="gold" r={2.6} s={0.97} o={0.92} bw={2.6} delay={250}>
+              14 tactics mapped
+            </Stamp>
           </div>
-          <div className="absolute inset-0 pointer-events-none">
-            <SparklesCore
-              background="transparent"
-              minSize={0.3}
-              maxSize={1.2}
-              particleDensity={45}
-              particleColor="#d4a017"
-              speed={0.5}
-              className="w-full h-full"
-            />
-          </div>
-        </div>
-        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.92) 100%)" }} />
-        <div className="relative z-10 max-w-6xl mx-auto px-6 w-full">
-          <motion.div initial={{ y: 20 }} animate={{ y: 0 }} transition={{ duration: 0.6 }}>
-            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-2">CYBERSECURITY</p>
-            <h1 className="font-display text-4xl sm:text-5xl font-bold mb-4">
-              Threat <span className="gradient-gold">Operations</span>
-            </h1>
-            <p className="text-[var(--text-muted)] max-w-xl leading-relaxed">
-              Blue team fundamentals, SIEM operations, and hands-on offensive tooling.
-              Built through real home lab exercises, not just theory.
-            </p>
-            <div className="glow-line mt-6 max-w-24" />
-          </motion.div>
-        </div>
-      </section>
-
-      <div className="max-w-6xl mx-auto px-6">
+        </PageHead>
 
         {/* Quick stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
-          {[
-            { icon: Shield, label: "Certs Earned", value: "3", color: "var(--green)" },
-            { icon: Eye, label: "THM Labs", value: "50+", color: "var(--gold)" },
-            { icon: Zap, label: "Wazuh Rules", value: "12+", color: "var(--blue)" },
-            { icon: Lock, label: "MITRE Tactics", value: "14", color: "var(--text-muted)" },
-          ].map((stat) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="glass rounded-xl p-4 text-center"
-            >
-              <stat.icon className="w-5 h-5 mx-auto mb-2" style={{ color: stat.color }} />
-              <p className="font-display text-2xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
-              <p className="font-mono text-[9px] text-[var(--text-muted)] mt-0.5">{stat.label}</p>
-            </motion.div>
-          ))}
-        </div>
+        <Reveal delay={0.05}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16" style={{ marginTop: 40 }}>
+            {[
+              { icon: Shield, label: "Certs Earned", value: "3", color: "var(--green)" },
+              { icon: Eye, label: "THM Labs", value: "50+", color: "var(--gold)" },
+              { icon: Zap, label: "Wazuh Rules", value: "12+", color: "var(--blue)" },
+              { icon: Lock, label: "MITRE Tactics", value: "14", color: "var(--text-muted)" },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="p-4 text-center"
+                style={{ background: "var(--cf-paper-2)", border: "1.5px solid var(--cf-ink)" }}
+              >
+                <stat.icon className="w-5 h-5 mx-auto mb-2" style={{ color: stat.color }} />
+                <p className="cf-display text-2xl" style={{ color: stat.color }}>{stat.value}</p>
+                <p className="cf-mono text-[9px] text-[var(--cf-muted)] mt-0.5">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </Reveal>
 
         {/* MITRE ATT&CK Heatmap */}
-        <motion.section ref={matrixRef} className="mb-16">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gold-muted)] mb-1">MITRE ATT&CK</p>
-              <h2 className="font-display text-xl font-bold">Detection Coverage Heatmap</h2>
+        <section ref={matrixRef} className="mb-16">
+          <Reveal>
+            <div className="cf-sec-head flex items-end justify-between flex-wrap gap-4">
+              <div>
+                <p className="cf-kicker" style={{ marginBottom: 8 }}>MITRE ATT&CK</p>
+                <h2 className="cf-h2">Detection Coverage Heatmap</h2>
+              </div>
+              <div className="flex gap-3">
+                {[["Low", "rgba(46,107,30,0.18)"], ["Med", "rgba(46,107,30,0.45)"], ["High", "var(--cf-gold)"]].map(([l, c]) => (
+                  <div key={l} className="flex items-center gap-1.5">
+                    <div className="w-3 h-3" style={{ background: c, border: "1px solid var(--cf-faint)" }} />
+                    <span className="cf-mono text-[9px] text-[var(--cf-muted)]">{l}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex gap-3">
-              {[["Low", "#1a2a1a"], ["Med", "#2a3a10"], ["High", "var(--gold)"]].map(([l, c]) => (
-                <div key={l} className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded" style={{ background: c }} />
-                  <span className="font-mono text-[9px] text-[var(--text-muted)]">{l}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          </Reveal>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
             {ATTACK_MATRIX.map((tactic, i) => (
               <motion.div
                 key={tactic.id}
-                initial={{ opacity: 0, scale: 0.8 }}
+                initial={{ opacity: 0, scale: 0.92 }}
                 animate={matrixInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: i * 0.04 }}
-                className="glass rounded-lg p-3 relative overflow-hidden group cursor-default"
-                style={{ minHeight: 80 }}
+                transition={{ delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                className="relative overflow-hidden group cursor-default"
+                style={{
+                  minHeight: 80,
+                  padding: 12,
+                  border: "1px solid var(--cf-faint)",
+                  background: tactic.coverage >= 0.65
+                    ? `rgba(154,116,16,${tactic.coverage * 0.28})`
+                    : `rgba(46,107,30,${tactic.coverage * 0.3})`,
+                }}
               >
-                <div
-                  className="absolute inset-0 opacity-30"
-                  style={{
-                    background: tactic.coverage >= 0.65
-                      ? `rgba(212,160,23,${tactic.coverage * 0.5})`
-                      : `rgba(0,100,0,${tactic.coverage * 0.8})`,
-                  }}
-                />
                 <div className="relative">
-                  <p className="font-mono text-[8px] text-[var(--text-muted)] tracking-wide">{tactic.id}</p>
-                  <p className="font-display text-[10px] font-semibold text-[var(--text)] mt-0.5 leading-tight">{tactic.tactic}</p>
-                  <p className="font-mono text-[9px] mt-1.5" style={{ color: tactic.coverage >= 0.65 ? "var(--gold)" : "var(--green)" }}>
+                  <p className="cf-mono text-[8px] text-[var(--cf-muted)] tracking-wide">{tactic.id}</p>
+                  <p className="cf-display text-[10px] text-[var(--cf-ink)] mt-0.5 leading-tight">{tactic.tactic}</p>
+                  <p className="cf-mono text-[9px] mt-1.5" style={{ color: tactic.coverage >= 0.65 ? "var(--cf-gold)" : "var(--cf-green, #2e6b1e)" }}>
                     {Math.round(tactic.coverage * 100)}%
                   </p>
                 </div>
               </motion.div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         {/* Skill bars */}
-        <motion.section
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="glass rounded-2xl p-8 mb-16"
-        >
-          <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gold-muted)] mb-1">SKILL DOMAINS</p>
-          <h2 className="font-display text-xl font-bold mb-8">Current Proficiency</h2>
-          <div className="grid sm:grid-cols-2 gap-x-10 gap-y-5">
-            {SKILL_DOMAINS.map((skill, i) => (
-              <div key={skill.name}>
-                <div className="flex justify-between mb-1.5">
-                  <div>
-                    <span className="font-display text-sm text-[var(--text)]">{skill.name}</span>
-                    <p className="font-mono text-[9px] text-[var(--text-muted)] mt-0.5">{skill.desc}</p>
+        <Reveal>
+          <section
+            className="p-8 mb-16"
+            style={{ border: "2px solid var(--cf-ink)", background: "transparent" }}
+          >
+            <p className="cf-kicker" style={{ marginBottom: 8 }}>Skill Domains</p>
+            <h2 className="cf-h2" style={{ marginBottom: 32 }}>Current Proficiency</h2>
+            <div className="grid sm:grid-cols-2 gap-x-10 gap-y-5">
+              {SKILL_DOMAINS.map((skill, i) => (
+                <div key={skill.name}>
+                  <div className="flex justify-between mb-1.5">
+                    <div>
+                      <span className="cf-display text-sm text-[var(--cf-ink)]">{skill.name}</span>
+                      <p className="cf-mono text-[9px] text-[var(--cf-muted)] mt-0.5">{skill.desc}</p>
+                    </div>
+                    <span className="cf-mono text-[11px] shrink-0 ml-4" style={{ color: skill.color }}>{skill.pct}%</span>
                   </div>
-                  <span className="font-mono text-[11px] shrink-0 ml-4" style={{ color: skill.color }}>{skill.pct}%</span>
+                  <div className="h-1.5 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${skill.pct}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: i * 0.05 }}
+                      className="h-full progress-bar"
+                    />
+                  </div>
                 </div>
-                <div className="h-1.5 bg-[var(--card)] rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${skill.pct}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.2, ease: "easeOut", delay: i * 0.05 }}
-                    className="h-full rounded-full"
-                    style={{ background: skill.color, boxShadow: `0 0 8px ${skill.color}50` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.section>
+              ))}
+            </div>
+          </section>
+        </Reveal>
 
         {/* Tool flip cards */}
         <section className="mb-16">
-          <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gold-muted)] mb-1">TOOLSTACK</p>
-          <h2 className="font-display text-xl font-bold mb-2">Click any card to flip</h2>
-          <p className="font-mono text-[10px] text-[var(--text-muted)] mb-8">Hover/tap to reveal usage context from the home lab</p>
+          <Reveal>
+            <div className="cf-sec-head">
+              <p className="cf-kicker" style={{ marginBottom: 8 }}>Toolstack</p>
+              <h2 className="cf-h2">Click any card to flip</h2>
+              <p className="cf-mono text-[10px] text-[var(--cf-muted)]" style={{ marginTop: 10 }}>Hover/tap to reveal usage context from the home lab</p>
+            </div>
+          </Reveal>
 
           {TOOL_GROUPS.map((group, gi) => (
-            <motion.div
-              key={group.group}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: gi * 0.1 }}
-              className="mb-8"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1.5 h-4 rounded-full" style={{ background: group.color }} />
-                <p className="font-mono text-[10px] tracking-wider" style={{ color: group.color }}>{group.group}</p>
+            <Reveal key={group.group} delay={gi * 0.04}>
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1.5 h-4" style={{ background: group.color }} />
+                  <p className="cf-mono text-[10px] tracking-wider" style={{ color: group.color }}>{group.group}</p>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {group.tools.map((tool) => (
+                    <ToolCard key={tool.name} tool={tool} color={group.color} />
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {group.tools.map((tool) => (
-                  <ToolCard key={tool.name} tool={tool} color={group.color} />
-                ))}
-              </div>
-            </motion.div>
+            </Reveal>
           ))}
         </section>
 
         {/* Certifications quick strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="glass-gold rounded-xl p-5 flex flex-wrap items-center justify-between gap-4"
-        >
-          <div>
-            <p className="font-mono text-[9px] text-[var(--gold)] tracking-wider mb-1">CREDENTIAL STATUS</p>
-            <p className="text-[var(--text)] text-sm">ISC2 CC · Google Cyber · Security+ in progress · THM SOC L1 (65%)</p>
+        <Reveal>
+          <div
+            className="p-5 flex flex-wrap items-center justify-between gap-4"
+            style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}
+          >
+            <div>
+              <p className="cf-mono text-[9px] tracking-wider mb-1" style={{ color: "var(--cf-gold)" }}>CREDENTIAL STATUS</p>
+              <p className="text-[var(--cf-ink)] text-sm">ISC2 CC · Google Cyber · Security+ earned · SC-200 in progress · THM SOC L1 (65%)</p>
+            </div>
+            <Link href="/certifications" className="cf-btn-ghost text-sm gap-1.5">
+              Full cert stack
+            </Link>
           </div>
-          <a href="/certifications" className="btn-ghost text-sm gap-1.5">
-            Full cert stack
-          </a>
-        </motion.div>
+        </Reveal>
+
+        <Reveal className="mt-10">
+          <p className="cf-note">
+            Cross-references: the detections above run in the{" "}
+            <a href="#home-lab" className="cf-ulink">home lab</a> below, and the write-ups land on the{" "}
+            <Link href="/blog" className="cf-ulink">blog</Link> and in{" "}
+            <Link href="/newsletter" className="cf-ulink">Blue Team Brief</Link>.
+          </p>
+        </Reveal>
+
+        {/* Home Lab (merged in from the old /homelab page, round 2) */}
+        <div className="mt-20">
+          <HomeLabSection />
+        </div>
       </div>
     </div>
   );

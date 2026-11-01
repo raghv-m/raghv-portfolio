@@ -1,9 +1,12 @@
 "use client";
-import { SmokeBackground, SparklesCore } from "@/components/effects/deferred";
 import { useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import { Briefcase, Shield, Code2, ChevronDown, MapPin, Calendar, ArrowRight } from "lucide-react";
+import { PageHead } from "@/components/casefile/PageHead";
+import { Reveal } from "@/components/casefile/Reveal";
+import { Stamp } from "@/components/casefile/Stamp";
+import { CareerSection } from "@/components/sections/CareerSection";
 
 
 const ROLES = [
@@ -144,6 +147,12 @@ const STATS = [
   { value: "2026", label: "SOC Target" },
 ];
 
+/* Every ACTIVE stamp gets its own rotation, scale, opacity and border weight. */
+const STAMP_R = [-4.5, -1.6, 2.1];
+const STAMP_S = [1.04, 0.95, 1.07];
+const STAMP_O = [0.93, 0.86, 0.96];
+const STAMP_BW = [2.4, 3.2, 2.9];
+
 function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -154,60 +163,67 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
       ref={ref}
       initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
     >
       <div
-        className="glass rounded-2xl overflow-hidden cursor-pointer group"
+        className="overflow-hidden cursor-pointer group"
         onClick={() => setOpen(!open)}
         style={{
-          border: `1px solid ${role.accentHex}22`,
-          boxShadow: open ? `0 0 30px ${role.accentHex}12` : undefined,
+          border: "1.5px solid var(--cf-ink)",
+          background: open ? "var(--cf-paper-2)" : "transparent",
         }}
       >
-        {/* Top accent line */}
-        <div className="h-[2px] w-full" style={{ background: `linear-gradient(90deg, ${role.accentHex}80, transparent)` }} />
+        {/* Top file rule */}
+        <div className="h-[3px] w-full" style={{ background: "var(--cf-ink)" }} />
 
         {/* Card header */}
         <div className="p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-4">
-              {/* Icon */}
+              {/* Icon in a bordered square */}
               <div
-                className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
-                style={{ background: `${role.accentHex}15`, border: `1px solid ${role.accentHex}30` }}
+                className="w-11 h-11 flex items-center justify-center shrink-0 mt-0.5"
+                style={{ background: "transparent", border: "1.5px solid var(--cf-ink)" }}
               >
-                <role.icon className="w-4.5 h-4.5" style={{ color: role.color }} />
+                <role.icon className="w-4.5 h-4.5" style={{ color: "var(--cf-ink)" }} />
               </div>
 
               <div>
                 {/* Badges row */}
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex flex-wrap items-center gap-3 mb-2">
                   <span
-                    className="font-mono text-[9px] tracking-[0.2em] px-2 py-0.5 rounded"
-                    style={{ color: role.color, background: `${role.accentHex}15`, border: `1px solid ${role.accentHex}30` }}
+                    className="cf-mono text-[9px] tracking-[0.2em] px-2 py-0.5"
+                    style={{ color: "var(--cf-ink)", background: "transparent", border: "1px solid var(--cf-faint)" }}
                   >
                     {role.type}
                   </span>
                   {role.active && (
-                    <span className="font-mono text-[9px] tracking-wider text-[var(--green)] flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)] inline-block" style={{ boxShadow: "0 0 6px rgba(0,255,136,0.6)" }} />
-                      ACTIVE
-                    </span>
+                    <Stamp
+                      tone="green"
+                      r={STAMP_R[index % STAMP_R.length]}
+                      s={STAMP_S[index % STAMP_S.length]}
+                      o={STAMP_O[index % STAMP_O.length]}
+                      bw={STAMP_BW[index % STAMP_BW.length]}
+                      delay={120 + index * 110}
+                      className="text-[9px] px-2 py-0.5"
+                    >
+                      Active
+                    </Stamp>
                   )}
                 </div>
 
-                <h3 className="font-display text-base sm:text-lg font-semibold text-[var(--text)] leading-snug mb-1">
+                <h3 className="text-base sm:text-lg font-semibold text-[var(--cf-ink)] leading-snug mb-1">
                   {role.role}
                 </h3>
-                <p className="font-medium text-sm" style={{ color: role.color }}>{role.company}</p>
+                <p className="font-medium text-sm" style={{ color: "var(--cf-ink)" }}>{role.company}</p>
                 {role.clients !== role.company && (
-                  <p className="text-[var(--text-muted)] text-xs mt-0.5">{role.clients}</p>
+                  <p className="text-[var(--cf-muted)] text-xs mt-0.5">{role.clients}</p>
                 )}
               </div>
             </div>
 
             <ChevronDown
-              className="w-4 h-4 text-[var(--text-muted)] shrink-0 mt-1 transition-transform duration-300"
+              className="w-4 h-4 text-[var(--cf-muted)] shrink-0 mt-1 transition-transform duration-300"
               style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
             />
           </div>
@@ -215,12 +231,12 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
           {/* Meta row */}
           <div className="flex flex-wrap gap-4 mt-4 pl-[60px]">
             <div className="flex items-center gap-1.5">
-              <MapPin className="w-3 h-3 text-[var(--text-muted)]" />
-              <span className="font-mono text-[10px] text-[var(--text-muted)]">{role.location}</span>
+              <MapPin className="w-3 h-3 text-[var(--cf-muted)]" />
+              <span className="cf-mono text-[10px] text-[var(--cf-muted)]">{role.location}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <Calendar className="w-3 h-3 text-[var(--text-muted)]" />
-              <span className="font-mono text-[10px] text-[var(--text-muted)]">{role.period}</span>
+              <Calendar className="w-3 h-3 text-[var(--cf-muted)]" />
+              <span className="cf-mono text-[10px] text-[var(--cf-muted)]">{role.period}</span>
             </div>
           </div>
 
@@ -239,15 +255,18 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               className="overflow-hidden"
             >
-              <div className="border-t border-[var(--border)] px-6 pb-6 pt-5 space-y-6">
-                <p className="text-[var(--text-muted)] text-sm leading-relaxed">{role.summary}</p>
+              <div
+                className="px-6 pb-6 pt-5 space-y-6"
+                style={{ borderTop: "1px solid var(--cf-faint)" }}
+              >
+                <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed">{role.summary}</p>
 
                 {/* Bullets */}
                 <div>
-                  <p className="font-mono text-[10px] tracking-[0.2em] mb-3" style={{ color: role.color }}>
+                  <p className="cf-mono text-[10px] tracking-[0.2em] mb-3" style={{ color: "var(--cf-ink)" }}>
                     RESPONSIBILITIES
                   </p>
                   <ul className="space-y-2.5">
@@ -256,12 +275,12 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
                         key={i}
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        className="flex items-start gap-3 text-[var(--text-muted)] text-sm"
+                        transition={{ delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                        className="flex items-start gap-3 text-[var(--cf-ink-soft)] text-sm"
                       >
                         <span
-                          className="w-1 h-1 rounded-full shrink-0 mt-2"
-                          style={{ background: role.color }}
+                          className="w-1.5 h-1.5 shrink-0 mt-2"
+                          style={{ background: "var(--cf-red)" }}
                         />
                         {b}
                       </motion.li>
@@ -271,18 +290,18 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
 
                 {/* Skill transfer grid */}
                 <div
-                  className="rounded-xl p-4"
-                  style={{ background: `${role.accentHex}08`, border: `1px solid ${role.accentHex}20` }}
+                  className="p-4"
+                  style={{ background: "var(--cf-paper-2)", border: "1px solid var(--cf-faint)" }}
                 >
-                  <p className="font-mono text-[10px] tracking-[0.2em] mb-3" style={{ color: role.color }}>
+                  <p className="cf-mono text-[10px] tracking-[0.2em] mb-3" style={{ color: "var(--cf-ink)" }}>
                     CYBERSECURITY SKILL TRANSFER
                   </p>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {role.transfer.map((t, i) => (
-                      <div key={i} className="flex items-center gap-2 text-[11px] font-mono">
-                        <span className="text-[var(--text-muted)]">{t.from}</span>
-                        <ArrowRight className="w-3 h-3 shrink-0" style={{ color: role.color }} />
-                        <span style={{ color: role.color }}>{t.to}</span>
+                      <div key={i} className="flex items-center gap-2 text-[11px] cf-mono">
+                        <span className="text-[var(--cf-muted)]">{t.from}</span>
+                        <ArrowRight className="w-3 h-3 shrink-0" style={{ color: "var(--cf-red)" }} />
+                        <span style={{ color: "var(--cf-ink)" }}>{t.to}</span>
                       </div>
                     ))}
                   </div>
@@ -298,80 +317,61 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
 
 export default function ExperiencePage() {
   return (
-    <div className="min-h-screen pb-32">
-      {/* ── Smoke Hero ────────────────────────────────────────── */}
-      <div className="relative min-h-[52vh] flex items-center overflow-hidden">
-        {/* Smoke + stars with bottom fade */}
-        <div
-          className="absolute inset-0"
-          style={{
-            maskImage: "linear-gradient(to bottom, black 0%, black 62%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 62%, transparent 100%)",
-          }}
-        >
-          <div className="absolute inset-0">
-            <SmokeBackground smokeColor="#4488ff" />
-          </div>
-          <div className="absolute inset-0 pointer-events-none">
-            <SparklesCore
-              background="transparent"
-              minSize={0.3}
-              maxSize={1.1}
-              particleDensity={45}
-              particleColor="#4488ff"
-              speed={0.4}
-              className="w-full h-full"
-            />
-          </div>
-        </div>
-        {/* Subtle dark vignette — not a blackout */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 100% 100% at 50% 50%, rgba(10,10,10,0.35) 0%, rgba(10,10,10,0.78) 100%)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 left-0 right-0 h-32"
-          style={{ background: "linear-gradient(to bottom, transparent, rgba(10,10,10,1))" }}
+    <div className="pb-24">
+      <div className="cf-wrap">
+        <PageHead
+          kicker="Experience, work history"
+          title={
+            <>
+              Operator <span className="cf-u-red">History</span>
+            </>
+          }
+          lede="Every role has built the mindset of a security professional, from physical access control to secure software development. Click any card to expand."
         />
 
-        <div className="max-w-4xl mx-auto px-6 relative z-10 pt-28 pb-10 w-full">
-          <motion.div initial={{ y: 24 }} animate={{ y: 0 }} transition={{ duration: 0.7 }}>
-            <p className="font-mono text-[10px] tracking-[0.35em] text-[var(--gold-muted)] mb-3">EXPERIENCE</p>
-            <h1 className="font-display text-5xl sm:text-6xl font-bold mb-4 leading-[1.05]">
-              Operator <span className="gradient-gold">History</span>
-            </h1>
-            <p className="text-[var(--text-muted)] max-w-lg text-base leading-relaxed mb-8">
-              Every role has built the mindset of a security professional, from physical access control
-              to secure software development. Click any card to expand.
-            </p>
+        {/* Stats: a mono ruled strip, with a stamp sitting on its top rule */}
+        <Reveal delay={0.08} className="relative mt-12">
+          <Stamp
+            tone="red"
+            r={-4.1}
+            s={1.01}
+            o={0.9}
+            bw={2.6}
+            delay={350}
+            className="absolute -top-4 right-4 sm:right-10 z-10 text-[11px]"
+          >
+            On file
+          </Stamp>
+          <div
+            className="grid grid-cols-2 sm:grid-cols-4"
+            style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}
+          >
+            {STATS.map((s, i) => (
+              <div
+                key={s.label}
+                className="px-5 py-4"
+                style={{
+                  borderLeft: i > 0 ? "1px solid var(--cf-faint)" : undefined,
+                }}
+              >
+                <p className="cf-display text-2xl" style={{ color: "var(--cf-ink)" }}>{s.value}</p>
+                <p className="cf-mono text-[9px] text-[var(--cf-muted)] tracking-wider mt-1 uppercase">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </Reveal>
 
-            {/* Stats row */}
-            <div className="flex flex-wrap gap-3">
-              {STATS.map((s, i) => (
-                <motion.div
-                  key={s.label}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + i * 0.07 }}
-                  className="glass rounded-xl px-5 py-3 text-center"
-                >
-                  <p className="font-display text-xl font-bold text-[var(--gold)]">{s.value}</p>
-                  <p className="font-mono text-[9px] text-[var(--text-muted)] tracking-wider mt-0.5">{s.label}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </div>
+        {/* Role entries */}
+        <Reveal delay={0.05} className="mt-12">
+          <div className="space-y-5">
+            {ROLES.map((role, i) => (
+              <RoleCard key={i} role={role} index={i} />
+            ))}
+          </div>
+        </Reveal>
 
-      {/* ── Role Cards ────────────────────────────────────────── */}
-      <div className="max-w-4xl mx-auto px-6 mt-10 space-y-4">
-        {ROLES.map((role, i) => (
-          <RoleCard key={i} role={role} index={i} />
-        ))}
+        {/* Career roadmap (merged in from the old /career page, round 2) */}
+        <CareerSection />
       </div>
     </div>
   );

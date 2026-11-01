@@ -3,9 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Reveal } from "@/components/casefile/Reveal";
+import { staggerDelay } from "@/components/casefile/stagger";
 import { Stamp } from "@/components/casefile/Stamp";
 import { Tape } from "@/components/casefile/Tape";
 import { TypeLog } from "@/components/casefile/TypeLog";
+import { Kinetic } from "@/components/casefile/Kinetic";
+import { Magnetic } from "@/components/casefile/Magnetic";
+import { ParallaxLayer } from "@/components/casefile/ParallaxLayer";
+import { SpotWrap } from "@/components/casefile/SpotWrap";
 
 const LOG_LINES = [
   <>** Alert 1791978824.294411: - syslog,sshd,authentication_failed,</>,
@@ -84,20 +89,22 @@ export default function HomePage() {
       <div className="grid lg:grid-cols-[7fr_5fr] gap-12 items-start pt-12 pb-4">
         <div className="relative">
           <p className="cf-kicker cf-load">Subject dossier — web developer + security analyst</p>
-          <h1
-            className="cf-display"
-            style={{ fontSize: "clamp(68px, 10.5vw, 122px)", lineHeight: 0.94, marginTop: 18 }}
-          >
-            <span className="cf-load block" style={{ "--cf-d": "0.05s" } as CSSProperties}>
-              Raghav
-            </span>
-            <span
-              className="cf-load block"
-              style={{ "--cf-d": "0.14s", marginLeft: "clamp(26px, 5.5vw, 66px)" } as CSSProperties}
+          <Kinetic>
+            <h1
+              className="cf-display"
+              style={{ fontSize: "clamp(68px, 10.5vw, 122px)", lineHeight: 0.94, marginTop: 18 }}
             >
-              Mahajan
-            </span>
-          </h1>
+              <span className="cf-load block" style={{ "--cf-d": "0.05s" } as CSSProperties}>
+                Raghav
+              </span>
+              <span
+                className="cf-load block"
+                style={{ "--cf-d": "0.14s", marginLeft: "clamp(26px, 5.5vw, 66px)" } as CSSProperties}
+              >
+                Mahajan
+              </span>
+            </h1>
+          </Kinetic>
 
           {/* The red rule, and the stamp that lands on it (desktop placement). */}
           <div className="relative" style={{ marginLeft: "clamp(26px, 5.5vw, 66px)", marginTop: 14 }}>
@@ -125,9 +132,11 @@ export default function HomePage() {
           </div>
 
           <div className="cf-load flex flex-wrap items-center gap-6" style={{ marginTop: 30, "--cf-d": "0.45s" } as CSSProperties}>
-            <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="cf-btn">
-              Download the resume
-            </a>
+            <Magnetic strength={6}>
+              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="cf-btn">
+                Download the resume
+              </a>
+            </Magnetic>
             <Link href="/estimate" className="cf-ulink">
               Start an estimate →
             </Link>
@@ -139,17 +148,19 @@ export default function HomePage() {
 
         {/* Exhibit A */}
         <div className="cf-load" style={{ "--cf-d": "0.35s" } as CSSProperties}>
-          <div className="cf-exhibit rotate-[3.4deg] hover:rotate-[2.3deg]" style={{ transition: "rotate 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}>
-            <Tape width={118} height={30} top={-15} left={24} rotate={-7} opacity={0.8} />
-            <Image
-              src="/images/newsletter/edition-04.webp"
-              alt="Blue Team Brief newsletter cover, Edition 4"
-              width={1200}
-              height={675}
-              priority
-              className="cf-exhibit-frame"
-            />
-          </div>
+          <ParallaxLayer speed={0.045}>
+            <div className="cf-exhibit rotate-[3.4deg] hover:rotate-[2.3deg]" style={{ transition: "rotate 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}>
+              <Tape width={118} height={30} top={-15} left={24} rotate={-7} opacity={0.8} />
+              <Image
+                src="/images/newsletter/edition-04.webp"
+                alt="Blue Team Brief newsletter cover, Edition 4"
+                width={1200}
+                height={675}
+                priority
+                className="cf-exhibit-frame"
+              />
+            </div>
+          </ParallaxLayer>
           <p className="cf-caption" style={{ marginTop: 20 }}>
             <b>Exhibit A.</b> Blue Team Brief — his plain-English cybersecurity newsletter. Written, designed, and
             shipped by the subject. 256 subscribers and counting.
@@ -163,14 +174,16 @@ export default function HomePage() {
           className="grid sm:grid-cols-[104px_1fr] gap-6 items-center py-7 mt-6"
           style={{ borderTop: "2px solid var(--cf-ink)", borderBottom: "1px solid var(--cf-faint)" }}
         >
-          <Image
-            src="/images/subject-photo.jpg"
-            alt="Raghav Mahajan"
-            width={150}
-            height={150}
-            className="grayscale contrast-125 -rotate-[1.2deg]"
-            style={{ width: 96, height: 96, objectFit: "cover", objectPosition: "50% 40%", border: "1.5px solid var(--cf-ink)" }}
-          />
+          <ParallaxLayer speed={-0.04}>
+            <Image
+              src="/images/subject-photo.jpg"
+              alt="Raghav Mahajan"
+              width={150}
+              height={150}
+              className="grayscale contrast-125 -rotate-[1.2deg]"
+              style={{ width: 96, height: 96, objectFit: "cover", objectPosition: "50% 40%", border: "1.5px solid var(--cf-ink)" }}
+            />
+          </ParallaxLayer>
           <dl className="cf-mono grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 text-[12px] uppercase" style={{ letterSpacing: "0.07em" }}>
             <div>
               <dt style={{ color: "var(--cf-muted)" }}>Subject</dt>
@@ -194,7 +207,9 @@ export default function HomePage() {
 
       {/* ── Exhibit B: the captured log ───────────────────────────── */}
       <Reveal className="mt-12">
-        <TypeLog head="Exhibit B — Homelab, live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} />
+        <ParallaxLayer speed={0.03}>
+          <TypeLog head="Exhibit B — Homelab, live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} />
+        </ParallaxLayer>
       </Reveal>
 
       {/* ── What he does ──────────────────────────────────────────── */}
@@ -235,6 +250,7 @@ export default function HomePage() {
           <div className="cf-sec-head">
             <h2 className="cf-h2">Exhibit C — The price machine</h2>
           </div>
+          <ParallaxLayer speed={0.025}>
           <div className="cf-machine grid lg:grid-cols-[7fr_5fr] gap-10 items-center p-8 sm:p-11">
             <div>
               <Reveal>
@@ -254,12 +270,15 @@ export default function HomePage() {
                 and the quote goes straight into his pipeline, so a human answers fast.
               </p>
               <div className="mt-6">
-                <Link href="/estimate" className="cf-btn">
-                  Run the estimator
-                </Link>
+                <Magnetic strength={6}>
+                  <Link href="/estimate" className="cf-btn">
+                    Run the estimator
+                  </Link>
+                </Magnetic>
               </div>
             </div>
           </div>
+          </ParallaxLayer>
         </Reveal>
       </section>
 
@@ -270,11 +289,12 @@ export default function HomePage() {
             <h2 className="cf-h2">Credentials, verified</h2>
           </div>
         </Reveal>
-        <div className="grid lg:grid-cols-[1fr_350px] gap-12 items-start">
+        <SpotWrap className="grid lg:grid-cols-[1fr_350px] gap-12 items-start">
           <div>
             <div className="cf-cred">
               {CREDS.map((c, i) => (
-                <div key={c.name} className="cf-cred-row">
+                <Reveal key={c.name} delay={staggerDelay(i)} variant="left">
+                  <div className="cf-cred-row">
                   <div>
                     <div className="cf-cred-name">{c.name}</div>
                     <div className="cf-cred-iss">{c.iss}</div>
@@ -294,7 +314,8 @@ export default function HomePage() {
                       {c.stamp}
                     </Stamp>
                   )}
-                </div>
+                  </div>
+                </Reveal>
               ))}
             </div>
             <p className="mt-6">
@@ -303,8 +324,8 @@ export default function HomePage() {
               </Link>
             </p>
           </div>
-          <Reveal delay={0.1}>
-            <figure className="cf-doc rotate-[0.8deg]">
+          <Reveal delay={0.1} className="lg:self-stretch">
+            <figure className="cf-doc rotate-[0.8deg] lg:sticky lg:top-24">
               <Image
                 src="/images/cert-google-foundations.jpg"
                 alt="Google Foundations of Cybersecurity certificate issued to Raghav Mahajan, January 8, 2026"
@@ -317,7 +338,7 @@ export default function HomePage() {
               </figcaption>
             </figure>
           </Reveal>
-        </div>
+        </SpotWrap>
       </section>
 
       {/* ── Contents of this file ─────────────────────────────────── */}
@@ -327,10 +348,10 @@ export default function HomePage() {
             <h2 className="cf-h2">Contents of this file</h2>
           </div>
         </Reveal>
-        <Reveal>
-          <nav aria-label="Site contents">
-            {CONTENTS.map((row) => (
-              <Link key={row.no} href={row.href} className="cf-idx-row">
+        <nav aria-label="Site contents">
+          {CONTENTS.map((row, i) => (
+            <Reveal key={row.no} delay={staggerDelay(i, 0.05, 0.4)} variant="left">
+              <Link href={row.href} className="cf-idx-row">
                 <span className="cf-idx-no">{row.no}</span>
                 <span>
                   <span className="cf-idx-title">{row.title}</span>
@@ -338,9 +359,9 @@ export default function HomePage() {
                 </span>
                 <span className="cf-idx-arrow">→</span>
               </Link>
-            ))}
-          </nav>
-        </Reveal>
+            </Reveal>
+          ))}
+        </nav>
       </section>
     </div>
   );

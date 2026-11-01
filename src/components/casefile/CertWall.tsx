@@ -3,18 +3,21 @@ import Image from "next/image";
 
 import { CERT_DOCS } from "@/data/cert-docs";
 import { Reveal } from "./Reveal";
+import { staggerDelay } from "./stagger";
+import { SpotWrap } from "./SpotWrap";
 
 /**
  * The document wall: every certificate he can produce, filed as a paper
  * exhibit — each at its own tilt and fade, settling straighter on hover.
  * All six earned documents are filed; the empty-frame branch stays for any
  * future credential earned before its scan lands in src/data/cert-docs.ts.
+ * The wall sits in a SpotWrap: a pointer-following wash behind the paper.
  */
 export function CertWall() {
   return (
-    <div className="cf-docwall">
+    <SpotWrap className="cf-docwall">
       {CERT_DOCS.map((doc, i) => (
-        <Reveal key={doc.id} delay={0.05 + (i % 2) * 0.08}>
+        <Reveal key={doc.id} delay={staggerDelay(i)} variant="scale">
           <figure
             className="cf-doc"
             style={{ "--tilt": `${doc.rotate}deg`, opacity: doc.fade } as CSSProperties}
@@ -36,6 +39,6 @@ export function CertWall() {
           </figure>
         </Reveal>
       ))}
-    </div>
+    </SpotWrap>
   );
 }

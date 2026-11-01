@@ -226,21 +226,21 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
                   <ChipGroup label="Budget in mind" options={BUDGET_LABELS} value={form.budget} onChange={(v) => set("budget", v)} />
 
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
+                    <div className="cf-field">
                       <label htmlFor="name" className={labelClass}>Name *</label>
                       <input id="name" required autoComplete="name" {...invalidProps("name", fieldErrors.name)} value={form.name} onChange={(e) => set("name", e.target.value)} className={`${inputClass} aria-[invalid=true]:border-[var(--red)]`} />
                       <FieldError name="name" message={fieldErrors.name} />
                     </div>
-                    <div>
+                    <div className="cf-field">
                       <label htmlFor="email" className={labelClass}>Email *</label>
                       <input id="email" type="email" required autoComplete="email" {...invalidProps("email", fieldErrors.email)} value={form.email} onChange={(e) => set("email", e.target.value)} className={`${inputClass} aria-[invalid=true]:border-[var(--red)]`} />
                       <FieldError name="email" message={fieldErrors.email} />
                     </div>
-                    <div>
+                    <div className="cf-field">
                       <label htmlFor="company" className={labelClass}>Business name</label>
                       <input id="company" autoComplete="organization" value={form.company} onChange={(e) => set("company", e.target.value)} className={inputClass} />
                     </div>
-                    <div>
+                    <div className="cf-field">
                       <label htmlFor="phone" className={labelClass}>Phone</label>
                       <input id="phone" type="tel" autoComplete="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} className={inputClass} />
                     </div>

@@ -8,6 +8,7 @@ import { Menu, X, Download } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/casefile/ThemeToggle";
 import { LiveClock } from "@/components/casefile/LiveClock";
+import { Magnetic } from "@/components/casefile/Magnetic";
 
 const LINKS = [
   { href: "/about", label: "About" },
@@ -109,6 +110,24 @@ export default function Navbar() {
                     style={{ letterSpacing: "0.1em", color: active ? undefined : "var(--cf-ink-soft)" }}
                   >
                     {link.label}
+                    {active && (
+                      <motion.span
+                        layoutId="cf-nav-rule"
+                        transition={
+                          reduceMotion
+                            ? { duration: 0 }
+                            : { type: "spring", stiffness: 520, damping: 42 }
+                        }
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          right: 0,
+                          bottom: -4,
+                          height: 2,
+                          background: "var(--cf-red)",
+                        }}
+                      />
+                    )}
                   </Link>
                 );
               })}
@@ -116,7 +135,7 @@ export default function Navbar() {
 
             <div className="ml-auto flex items-center gap-4">
               <div className="hidden xl:flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--cf-green)", boxShadow: "0 0 0 3px rgba(46,107,30,0.18)" }} />
+                <span className="cf-live-dot w-1.5 h-1.5 rounded-full" style={{ background: "var(--cf-green)", color: "var(--cf-green)" }} />
                 <span className="cf-mono text-[10px] tracking-wider" style={{ color: "var(--cf-green)" }}>AVAILABLE</span>
               </div>
               <a
@@ -128,19 +147,21 @@ export default function Navbar() {
                 <Download className="w-3 h-3" />
                 Resume
               </a>
-              <Link
-                href="/estimate"
-                className="cf-mono hidden md:inline-flex items-center text-[11px] font-bold uppercase px-4 py-2.5"
-                style={{
-                  letterSpacing: "0.1em",
-                  background: "var(--cf-ink)",
-                  color: "var(--cf-paper)",
-                  border: "2px solid var(--cf-ink)",
-                  boxShadow: "4px 4px 0 var(--cf-shadow)",
-                }}
-              >
-                Start an estimate
-              </Link>
+              <Magnetic strength={3} className="hidden md:inline-block">
+                <Link
+                  href="/estimate"
+                  className="cf-mono hidden md:inline-flex items-center text-[11px] font-bold uppercase px-4 py-2.5"
+                  style={{
+                    letterSpacing: "0.1em",
+                    background: "var(--cf-ink)",
+                    color: "var(--cf-paper)",
+                    border: "2px solid var(--cf-ink)",
+                    boxShadow: "4px 4px 0 var(--cf-shadow)",
+                  }}
+                >
+                  Start an estimate
+                </Link>
+              </Magnetic>
               <button
                 className="lg:hidden -mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 style={{ color: "var(--cf-ink)" }}
@@ -205,7 +226,7 @@ export default function Navbar() {
                     key={link.href}
                     initial={reduceMotion ? false : { opacity: 0, x: 12 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.05 + i * 0.025, duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ delay: 0.05 + i * 0.035, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <Link
                       href={link.href}
@@ -221,7 +242,13 @@ export default function Navbar() {
                   </motion.div>
                 ))}
               </nav>
-              <div className="px-6 pb-8 pt-4 flex flex-col gap-4" style={{ borderTop: "1px solid var(--cf-faint)" }}>
+              <motion.div
+                className="px-6 pb-8 pt-4 flex flex-col gap-4"
+                style={{ borderTop: "1px solid var(--cf-faint)" }}
+                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 + LINKS.length * 0.035 + 0.05, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--cf-green)" }} />
@@ -245,7 +272,7 @@ export default function Navbar() {
                   <Download className="w-3.5 h-3.5" />
                   Download Resume
                 </a>
-              </div>
+              </motion.div>
             </motion.div>
           </>
         )}

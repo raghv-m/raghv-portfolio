@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
+import { staggerDelay } from "@/components/casefile/stagger";
 import { Stamp } from "@/components/casefile/Stamp";
 
 type Post = {
@@ -49,10 +50,10 @@ export default function BlogContent({ posts }: { posts: Post[] }) {
         {filtered.length === 0 ? (
           <p className="cf-body">No posts yet in this category.</p>
         ) : (
-          <Reveal>
-            <div style={{ borderTop: "2px solid var(--cf-ink)" }}>
-              {filtered.map((post, i) => (
-                <Link key={post.id} href={`/blog/${post.slug}`} className="cf-arch-row group">
+          <div style={{ borderTop: "2px solid var(--cf-ink)" }}>
+            {filtered.map((post, i) => (
+              <Reveal key={post.id} delay={staggerDelay(i, 0.05, 0.35)} variant="left">
+                <Link href={`/blog/${post.slug}`} className="cf-arch-row group">
                   <span className="cf-arch-no">{String(i + 1).padStart(2, "0")}</span>
                   <span className="cf-arch-date">
                     {new Date(post.createdAt).toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric" })}
@@ -90,9 +91,9 @@ export default function BlogContent({ posts }: { posts: Post[] }) {
                     )}
                   </span>
                 </Link>
-              ))}
-            </div>
-          </Reveal>
+              </Reveal>
+            ))}
+          </div>
         )}
 
         {/* Newsletter CTA */}

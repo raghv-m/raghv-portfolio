@@ -2,6 +2,7 @@ import Link from "next/link";
 import SubscribeWidget from "@/components/newsletter/SubscribeWidget";
 import { Logo } from "@/components/brand/Logo";
 import { PrivacyChoicesButton } from "@/components/layout/ConsentBanner";
+import { Reveal } from "@/components/casefile/Reveal";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
@@ -49,6 +50,7 @@ export default function Footer() {
       <div className="cf-wrap pt-12 pb-8">
         <div className="grid lg:grid-cols-2 gap-12 mb-12">
           {/* Talk block */}
+          <Reveal>
           <div>
             <p className="cf-display leading-none" style={{ fontSize: "clamp(56px, 8vw, 92px)" }}>
               Talk.
@@ -63,15 +65,17 @@ export default function Footer() {
               </a>
             </div>
             <div className="flex items-center gap-1.5 mt-7">
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--cf-green)", boxShadow: "0 0 0 3px rgba(46,107,30,0.18)" }} />
+              <span className="cf-live-dot w-1.5 h-1.5 rounded-full" style={{ background: "var(--cf-green)", color: "var(--cf-green)" }} />
               <span className="cf-mono text-[10.5px] tracking-wider" style={{ color: "var(--cf-green)" }}>
                 AVAILABLE FOR SOC ANALYST ROLES
               </span>
             </div>
             <p className="cf-note mt-4">ISC2 CC · Security+ earned · Edmonton, AB</p>
           </div>
+          </Reveal>
 
           {/* Newsletter, filed */}
+          <Reveal delay={0.08}>
           <div>
             <p className="cf-kicker" style={{ color: "var(--cf-ink)" }}>Blue Team Brief, the newsletter</p>
             <p className="mt-3 text-[15.5px] leading-relaxed" style={{ color: "var(--cf-ink-soft)" }}>
@@ -82,6 +86,7 @@ export default function Footer() {
               <SubscribeWidget compact />
             </div>
           </div>
+          </Reveal>
         </div>
 
         {/* Link columns */}

@@ -220,9 +220,15 @@ function StageSection({ stage, index }: { stage: typeof STAGES[0]; index: number
           <h2 className="cf-h2 mt-3 mb-6">{stage.title}</h2>
           <div className="space-y-4 max-w-3xl">
             {stage.narrative.split("\n\n").map((para, i) => (
-              <p key={i} className="cf-body">
+              <motion.p
+                key={i}
+                className="cf-body"
+                initial={{ opacity: 0, y: 12 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.7, delay: 0.35 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              >
                 {para}
-              </p>
+              </motion.p>
             ))}
           </div>
           <p className="cf-note mt-6">File section {index + 1} of {STAGES.length}</p>

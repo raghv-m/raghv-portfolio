@@ -2,23 +2,32 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
+// staggerDelay lives in ./stagger (no "use client") so server components can
+// call it; re-exported here for convenience for other client components.
+export { staggerDelay } from "./stagger";
+
 /**
  * Scroll reveal: content rises 18px and fades in with the shared Apple easing
  * when it enters the viewport. The hidden pre-state is applied from JS only
  * (data-cf="pre"), so server renders and no-JS visits stay fully visible, and
  * a safety timer guarantees nothing can stay hidden. Reduced motion shows
  * everything immediately.
+ *
+ * Variants change only the pre-state pose: "rise" (default), "scale"
+ * (settles from 0.965), "left" (slides from -18px, the index-row direction).
  */
 export function Reveal({
   children,
   delay = 0,
   className = "",
   id,
+  variant = "rise",
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
   id?: string;
+  variant?: "rise" | "scale" | "left";
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -62,6 +71,7 @@ export function Reveal({
       ref={ref}
       id={id}
       className={`cf-rv ${className}`}
+      data-variant={variant === "rise" ? undefined : variant}
       style={{ "--cf-d": `${delay}s` } as React.CSSProperties}
     >
       {children}

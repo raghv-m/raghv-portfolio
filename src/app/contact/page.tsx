@@ -207,7 +207,7 @@ export default function ContactPage() {
                         { key: "name", label: "YOUR NAME", placeholder: "Jane Smith", type: "text", autoComplete: "name" },
                         { key: "email", label: "EMAIL", placeholder: "jane@company.com", type: "email", autoComplete: "email" },
                       ] as const).map((f) => (
-                        <div key={f.key}>
+                        <div key={f.key} className="cf-field">
                           <label htmlFor={`contact-${f.key}`} className="cf-label">{f.label}</label>
                           <input
                             id={`contact-${f.key}`}
@@ -226,7 +226,7 @@ export default function ContactPage() {
                       ))}
                     </div>
 
-                    <div>
+                    <div className="cf-field">
                       <label htmlFor="contact-subject" className="cf-label">SUBJECT</label>
                       <select
                         id="contact-subject"
@@ -243,7 +243,7 @@ export default function ContactPage() {
                       <FieldError name="subject" message={fieldErrors.subject} />
                     </div>
 
-                    <div>
+                    <div className="cf-field">
                       <label htmlFor="contact-message" className="cf-label">MESSAGE</label>
                       <textarea
                         id="contact-message"

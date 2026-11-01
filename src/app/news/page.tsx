@@ -5,6 +5,8 @@ import { pageMetadata, site } from "@/config/site";
 import type { NewsItem } from "@/lib/supabase/database.types";
 import { ServiceNotice } from "@/components/layout/ServiceNotice";
 import { PageHead } from "@/components/casefile/PageHead";
+import { Reveal } from "@/components/casefile/Reveal";
+import { staggerDelay } from "@/components/casefile/stagger";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -65,8 +67,9 @@ export default async function NewsPage() {
         <div className="mt-12 space-y-10">
           {unavailable && <ServiceNotice what="The news briefing" />}
           {!unavailable && digests.length === 0 && <p className="cf-body">The first briefing lands soon.</p>}
-          {digests.map((d) => (
-            <section key={d.digest_date} aria-labelledby={`d-${d.digest_date}`}>
+          {digests.map((d, di) => (
+            <Reveal key={d.digest_date} delay={staggerDelay(di)}>
+            <section aria-labelledby={`d-${d.digest_date}`}>
               <div className="cf-sec-head" style={{ marginBottom: "18px" }}>
                 <div className="flex items-baseline justify-between gap-3 flex-wrap">
                   <h2 id={`d-${d.digest_date}`} className="cf-h2" style={{ fontSize: "22px" }}>
@@ -108,6 +111,7 @@ export default async function NewsPage() {
                 ))}
               </ol>
             </section>
+            </Reveal>
           ))}
         </div>
       </div>

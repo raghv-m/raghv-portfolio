@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { pageMetadata, site } from "@/config/site";
 import { ServiceNotice } from "@/components/layout/ServiceNotice";
 import { PageHead } from "@/components/casefile/PageHead";
+import { Reveal } from "@/components/casefile/Reveal";
 import { getActiveCatalog } from "@/lib/estimator/catalog";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -48,7 +49,7 @@ export default async function EstimatePage() {
         title="What will your project cost?"
         lede="Six quick steps. See the typical market price next to mine as you go, then get a copy by email with access to your own client portal. Free, no obligation."
       />
-      <div className="mt-10">
+      <Reveal className="mt-10">
         {unavailable ? (
           <ServiceNotice what="The estimator" />
         ) : catalog.length ? (
@@ -56,7 +57,7 @@ export default async function EstimatePage() {
         ) : (
           <p className="text-[var(--cf-muted)]">The estimator is being set up. Please use the contact page for now.</p>
         )}
-      </div>
+      </Reveal>
     </div>
   );
 }

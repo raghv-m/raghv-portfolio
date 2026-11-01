@@ -30,6 +30,23 @@
   --cf-log-text: #d7e0c8;
   --cf-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --cf-ease-spring: cubic-bezier(0.34, 1.45, 0.46, 1);
+  --cf-ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Motion system, formalized. One vocabulary for every animation in the
+     dossier scope; new code uses ONLY these tokens.
+       feedback  150-250ms — direct manipulation response (hover, press, focus)
+       reveal    650ms     — scroll-triggered entrances (band: 400-700ms)
+       entrance  850ms     — first-paint choreography (hero, page heads)
+       page      280ms     — route-to-route transition (never above 300ms)
+       ambient   38s+      — environmental loops, slow and low-contrast
+     Stagger rule: 75ms per item (band 60-90ms), capped at 450ms total,
+     applied through the existing --cf-d delay channel. */
+  --cf-dur-feedback: 180ms;
+  --cf-dur-ui: 250ms;
+  --cf-dur-reveal: 650ms;
+  --cf-dur-entrance: 850ms;
+  --cf-dur-page: 280ms;
+  --cf-dur-ambient: 38s;
+  --cf-stagger: 75ms;
   --cf-display: var(--font-anton), "Arial Narrow", sans-serif;
   --cf-serif: Georgia, "Times New Roman", serif;
 
@@ -89,6 +106,26 @@ html[data-theme="dark"] {
 .cf-scope {
   background: var(--cf-paper);
   color: var(--cf-ink);
+  /* Own stacking context, so the ambient layer (z-index -1) can wash the
+     paper behind the content without ever painting over it. */
+  isolation: isolate;
+}
+/* Ambient paper drift: two oversized low-contrast paper-tone washes on a
+   fixed layer, sliding a few percent over ~60s. Transform-only (compositor),
+   no blobs, no glass, no gradient text: just uneven paper. Sits inside the
+   main content scope, so the header/footer chrome stays crisp. */
+.cf-ambient {
+  position: fixed; inset: -14%; z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(46% 38% at 22% 10%, var(--cf-paper-3) 0%, transparent 70%),
+    radial-gradient(42% 36% at 84% 90%, var(--cf-paper-2) 0%, transparent 72%);
+  opacity: 0.5;
+  animation: cf-drift calc(var(--cf-dur-ambient) * 1.6) ease-in-out infinite alternate;
+}
+@keyframes cf-drift {
+  from { transform: translate3d(-1.6%, -1%, 0) scale(1); }
+  to { transform: translate3d(1.6%, 1.3%, 0) scale(1.045); }
 }
 /* Working areas (portal, admin, auth): quieter dossier. Same tokens and
    button/input treatment, no theatrics. */
@@ -98,7 +135,12 @@ html[data-theme="dark"] {
 .cf-scope ::selection, .cf-app ::selection { background: rgba(179, 35, 27, 0.25); }
 html[data-theme="dark"] .cf-scope ::selection,
 html[data-theme="dark"] .cf-app ::selection { background: rgba(224, 86, 75, 0.35); }
-.cf-scope :focus-visible, .cf-app :focus-visible { outline: 2px solid var(--cf-red); outline-offset: 2px; }
+.cf-scope :focus-visible, .cf-app :focus-visible {
+  outline: 2px solid var(--cf-red); outline-offset: 2px;
+  animation: cf-focus-in var(--cf-dur-ui) var(--cf-ease);
+}
+/* The focus ring settles in from 5px: visible, quick, and over in 250ms. */
+@keyframes cf-focus-in { from { outline-offset: 5px; } to { outline-offset: 2px; } }
 
 /* The old glass helpers and gradient text look wrong in the dossier.
    Inside either scope they flatten to filed paper. */
@@ -128,8 +170,10 @@ html[data-theme="dark"] .cf-app ::selection { background: rgba(224, 86, 75, 0.35
 .cf-scope .tag-green, .cf-app .tag-green { border-color: var(--cf-green); color: var(--cf-green); background: transparent; }
 .cf-scope .text-glow-gold, .cf-app .text-glow-gold { text-shadow: none; }
 .cf-scope .glow-gold, .cf-app .glow-gold, .cf-scope .glow-gold-sm, .cf-app .glow-gold-sm { box-shadow: none; }
-.cf-scope .card-lift, .cf-app .card-lift { transition: transform 0.45s var(--cf-ease), border-color 0.45s var(--cf-ease); }
-.cf-scope .card-lift:hover, .cf-app .card-lift:hover { transform: translateY(-3px); box-shadow: none; }
+.cf-scope .card-lift { transition: transform 0.45s var(--cf-ease), box-shadow 0.45s var(--cf-ease), border-color 0.45s var(--cf-ease); }
+.cf-scope .card-lift:hover { transform: translateY(-4px); box-shadow: 0 16px 34px var(--cf-exhibit-shadow); }
+.cf-app .card-lift { transition: transform 0.45s var(--cf-ease), border-color 0.45s var(--cf-ease); }
+.cf-app .card-lift:hover { transform: translateY(-3px); box-shadow: none; }
 .cf-scope .progress-bar, .cf-app .progress-bar { background: var(--cf-red); box-shadow: none; }
 .cf-scope .alert-feed { background: var(--cf-ink); border-top: 1px solid var(--cf-ink); }
 html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-color: #3a372c; }
@@ -215,14 +259,26 @@ html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-
 /* ── Buttons and links ───────────────────────────────────────────────────── */
 /* The flat offset shadow lives HERE and nowhere else (primary actions). */
 .cf-btn {
+  position: relative; overflow: hidden;
   display: inline-flex; align-items: center; gap: 10px;
   background: var(--cf-ink); color: var(--cf-paper);
   border: 2px solid var(--cf-ink);
   padding: 15px 26px;
   font-weight: 700; font-size: 16px; line-height: 1.2; text-decoration: none;
   box-shadow: 5px 5px 0 var(--cf-shadow);
-  transition: transform 0.18s var(--cf-ease), box-shadow 0.18s var(--cf-ease), background-color 0.25s var(--cf-ease);
+  transition: transform var(--cf-dur-feedback) var(--cf-ease), box-shadow var(--cf-dur-feedback) var(--cf-ease), background-color var(--cf-dur-ui) var(--cf-ease);
   cursor: pointer;
+}
+/* Shimmer sweep: one pass of light across the ink on hover, then gone. */
+.cf-btn::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.16) 50%, transparent 58%);
+  transform: translateX(-130%);
+  transition: transform 0.6s var(--cf-ease);
+}
+.cf-btn:hover::after { transform: translateX(130%); }
+html[data-theme="dark"] .cf-btn::after {
+  background: linear-gradient(105deg, transparent 42%, rgba(22, 20, 15, 0.16) 50%, transparent 58%);
 }
 .cf-btn:hover { background: var(--cf-ink-soft); border-color: var(--cf-ink-soft); }
 .cf-btn:active { transform: scale(0.97); box-shadow: 2px 2px 0 var(--cf-shadow); }
@@ -231,7 +287,7 @@ html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-
   background: transparent; color: var(--cf-ink);
   border: 2px solid var(--cf-ink);
   padding: 15px 26px; font-weight: 700; font-size: 16px; line-height: 1.2; text-decoration: none;
-  transition: transform 0.18s var(--cf-ease), background-color 0.25s var(--cf-ease);
+  transition: transform var(--cf-dur-feedback) var(--cf-ease), background-color var(--cf-dur-ui) var(--cf-ease);
   cursor: pointer;
 }
 .cf-btn-ghost:hover { background: var(--cf-paper-2); }
@@ -485,7 +541,7 @@ html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-
 }
 @keyframes cf-strike-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .cf-in .cf-strike::after, .cf-strike.cf-in::after {
-  animation: cf-strike-draw 0.8s var(--cf-ease) 0.25s both;
+  animation: cf-strike-draw var(--cf-dur-reveal) var(--cf-ease) 0.25s both;
 }
 
 /* ── File contents index + archive rows ──────────────────────────────────── */
@@ -525,7 +581,7 @@ html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-
   border-radius: 0;
   padding: 11px 14px;
   font-size: 15px; color: var(--cf-ink);
-  transition: box-shadow 0.25s var(--cf-ease), background-color 0.25s var(--cf-ease);
+  transition: box-shadow var(--cf-dur-ui) var(--cf-ease), background-color var(--cf-dur-ui) var(--cf-ease);
 }
 .cf-input::placeholder { color: var(--cf-faint); }
 .cf-input:focus { outline: none; box-shadow: 0 3px 0 var(--cf-red); background: var(--cf-paper-2); }
@@ -535,7 +591,10 @@ html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-
   font-family: var(--font-jetbrains), monospace;
   font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--cf-ink-soft); margin-bottom: 7px;
+  transition: color var(--cf-dur-ui) var(--cf-ease);
 }
+/* While a field has focus, its label files itself in red. */
+.cf-field:focus-within .cf-label { color: var(--cf-red); }
 .cf-opt {
   text-align: left; width: 100%;
   border: 1.5px solid var(--cf-faint);
@@ -603,21 +662,57 @@ html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-
 }
 @keyframes cf-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cf-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.cf-load { opacity: 0; animation: cf-rise 0.9s var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
-.cf-load-fade { opacity: 0; animation: cf-fade 1s var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
+.cf-load { opacity: 0; animation: cf-rise var(--cf-dur-entrance) var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
+.cf-load-fade { opacity: 0; animation: cf-fade var(--cf-dur-entrance) var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
 .cf-rule-draw {
   transform: scaleX(0); transform-origin: left center;
   animation: cf-draw 0.8s var(--cf-ease) forwards; animation-delay: var(--cf-d, 0.4s);
 }
 
 /* Scroll reveal: the pre-state is only applied by JS (data-cf="pre"), so
-   no-JS and SSR renders are fully visible. */
+   no-JS and SSR renders are fully visible. Variants share the reveal
+   duration token; only the pre-state pose differs. */
 .cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(18px); }
+.cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(10px) scale(0.965); }
+.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateX(-18px); }
 .cf-rv[data-cf="in"] {
   opacity: 1; transform: translateY(0);
-  transition: opacity 0.85s var(--cf-ease), transform 0.85s var(--cf-ease);
+  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease);
   transition-delay: var(--cf-d, 0s);
 }
+/* A scale-variant reveal ends at scale(1), not translateY(0) alone. */
+.cf-rv[data-variant="scale"][data-cf="in"] { transform: translateY(0) scale(1); }
+
+/* Route-to-route transition (template.tsx): a short rise, then done.
+   280ms per the motion system; entrance, never an exit that blocks. */
+@keyframes cf-page-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.cf-page-enter { animation: cf-page-in var(--cf-dur-page) var(--cf-ease) both; }
+
+/* Availability beacon: the green dot breathes on a slow 3.2s cycle. */
+.cf-live-dot { animation: cf-dot-pulse 3.2s var(--cf-ease) infinite; }
+@keyframes cf-dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, currentColor 6%, transparent); }
+}
+
+/* Pointer spotlight for document surfaces (credentials wall): a soft gold
+   wash that follows the pointer BEHIND the documents (z-index -1 inside an
+   isolated wrapper), so text and paper never lose contrast. Set --mx/--my
+   from JS; coarse pointers never see it. */
+.cf-spot { position: relative; isolation: isolate; }
+.cf-spot::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  opacity: 0; transition: opacity var(--cf-dur-ui) var(--cf-ease);
+  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(154, 116, 16, 0.13), transparent 65%);
+}
+html[data-theme="dark"] .cf-spot::before {
+  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(212, 160, 23, 0.14), transparent 65%);
+}
+.cf-spot:hover::before { opacity: 1; }
+@media (hover: none), (pointer: coarse) { .cf-spot::before { display: none; } }
 
 /* Nav link underline (grows from the left, Apple easing). */
 .cf-navlink { position: relative; text-decoration: none; }
@@ -629,7 +724,9 @@ html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-
 }
 .cf-navlink:hover::after, .cf-navlink:focus-visible::after { transform: scaleX(1); }
 .cf-navlink[aria-current="page"] { color: var(--cf-ink); }
-.cf-navlink[aria-current="page"]::after { transform: scaleX(1); }
+/* The current page's rule is a framer-motion span that SLIDES between links
+   (layoutId in Navbar), so the CSS underline stands down for it. */
+.cf-navlink[aria-current="page"]::after { transform: scaleX(0); }
 
 /* ── Reduced motion: EVERYTHING off, content fully visible ───────────────── */
 @media (prefers-reduced-motion: reduce) {
@@ -651,4 +748,11 @@ html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-
   .cf-prog-ring { animation: none !important; }
   .cf-prog-dots i { animation: none !important; opacity: 0.85 !important; }
   .cf-term-rec i { animation: none !important; opacity: 1 !important; }
+  /* Motion-pass additions off: no paper drift, no page rise, no beacon
+     pulse, no spotlight, no shimmer sweep. */
+  .cf-ambient { animation: none !important; }
+  .cf-page-enter { animation: none !important; }
+  .cf-live-dot { animation: none !important; }
+  .cf-spot::before { display: none !important; }
+  .cf-btn::after { display: none !important; }
 }

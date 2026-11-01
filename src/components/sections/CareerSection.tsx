@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
@@ -270,6 +270,38 @@ function NodeGraph() {
   );
 }
 
+/**
+ * The percentage beside a skill bar, counting up in step with the bar's own
+ * 1.2s fill when it scrolls into view. Reduced motion (or MotionConfig's
+ * user setting) shows the final number immediately.
+ */
+function CountUp({ value }: { value: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  const reduce = useReducedMotion();
+  // Server render and no-JS show the real number; the count-up only takes
+  // over (from 0, in step with the bar) once the bar scrolls into view.
+  const [display, setDisplay] = useState(value);
+
+  useEffect(() => {
+    if (!inView) return;
+    // Reduced motion: display already holds the final value (see useState),
+    // so there is nothing to animate and nothing to set.
+    if (reduce) return;
+    let raf = 0;
+    const t0 = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / 1200);
+      setDisplay(Math.round(value * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, value, reduce]);
+
+  return <span ref={ref}>{display}</span>;
+}
+
 function SkillBars() {
   return (
     <div className="max-w-3xl mx-auto grid sm:grid-cols-2 gap-x-10 gap-y-5">
@@ -283,7 +315,7 @@ function SkillBars() {
         >
           <div className="flex justify-between items-baseline mb-1.5">
             <span className="text-sm font-semibold text-[var(--cf-ink)]">{skill.name}</span>
-            <span className="cf-mono text-[10px]" style={{ color: "var(--cf-gold)" }}>{skill.pct}%</span>
+            <span className="cf-mono text-[10px]" style={{ color: "var(--cf-gold)" }}><CountUp value={skill.pct} />%</span>
           </div>
           <div className="h-1.5 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
             <motion.div

@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Shield, Code2, Server, Brain } from "lucide-react";
 import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { Tape } from "@/components/casefile/Tape";
+import { Magnetic } from "@/components/casefile/Magnetic";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
@@ -148,6 +149,21 @@ const PROJECTS: {
     icon: Code2,
   },
   {
+    id: 12,
+    featured: true,
+    title: "Vic Cameleers",
+    subtitle: "Removalist Company Website, Melbourne, Australia",
+    category: "Development" as Category,
+    status: "LIVE",
+    statusColor: "var(--green)",
+    stack: ["Design & Build", "Business Website", "Responsive", "Enquiry Path"],
+    color: "var(--gold)",
+    description: "A full website for a removals company in Cranbourne, Melbourne, designed and built end to end: what they move, where they cover, and a direct way for customers to reach the crew. My first international client, delivered from Edmonton to Australia, and still live.",
+    impact: ["Live at viccameleers.com", "First international client (Australia)", "Designed and built end to end, solo", "Direct customer enquiry path, no middleman"],
+    live: "https://viccameleers.com",
+    icon: Code2,
+  },
+  {
     id: 9,
     title: "raghv.dev Portfolio",
     subtitle: "This Site: Premium Cybersecurity Brand",
@@ -208,8 +224,10 @@ function ProjectCard({ project, index }: { project: typeof PROJECTS[0]; index: n
   const tilt = index % 2 === 1 ? 0.7 : -0.5;
   return (
     <motion.article
+      layout
       initial={{ opacity: 0, y: 20, rotate: tilt }}
       whileInView={{ opacity: 1, y: 0, rotate: tilt }}
+      exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: (index % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
       className="card-lift group relative"
@@ -317,11 +335,11 @@ export default function ProjectsPage() {
         <PageHead
           kicker="Projects"
           title={<>Operational <span className="cf-u-red">Evidence</span></>}
-          lede="11 projects spanning security engineering, full-stack development, and infrastructure operations. Built in the home lab, shipped to production, and documented in detail."
+          lede="12 projects spanning security engineering, full-stack development, and infrastructure operations. Built in the home lab, shipped to production, and documented in detail."
         >
           <div style={{ marginTop: 26 }}>
             <Stamp tone="red" r={-4.8} s={1.03} o={0.9} bw={2.9} delay={250}>
-              11 cases filed
+              12 cases filed
             </Stamp>
           </div>
         </PageHead>
@@ -348,13 +366,16 @@ export default function ProjectsPage() {
           </div>
         </Reveal>
 
-        {/* Grid */}
+        {/* Grid: filter changes animate — leaving cards fade/shrink while the
+            rest lay out into their new slots instead of snapping. */}
         <Reveal delay={0.1}>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map((project, i) => (
-              <ProjectCard key={project.id} project={project} index={i} />
-            ))}
-          </div>
+          <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <AnimatePresence initial={false}>
+              {filtered.map((project, i) => (
+                <ProjectCard key={project.id} project={project} index={i} />
+              ))}
+            </AnimatePresence>
+          </motion.div>
         </Reveal>
 
         <Reveal className="mt-14">
@@ -362,7 +383,9 @@ export default function ProjectsPage() {
             <p className="cf-body" style={{ maxWidth: "52ch" }}>
               Want a site like one of these? The estimate takes two minutes and shows my price next to the market rate.
             </p>
-            <Link href="/estimate" className="cf-btn">Start an estimate</Link>
+            <Magnetic strength={6}>
+              <Link href="/estimate" className="cf-btn">Start an estimate</Link>
+            </Magnetic>
           </div>
         </Reveal>
       </div>

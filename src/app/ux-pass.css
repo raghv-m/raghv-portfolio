@@ -1,0 +1,220 @@
+/* ── UX follow-up pass (Nov 2026) ─────────────────────────────────────────
+   View transitions between pages, skeleton loading blocks, and the site
+   command menu. Kept in its own file so the case-file system sheet stays
+   untouched; layout.tsx imports this after case-file.css.
+   Square corners, ink/paper/red only, hard shadows: same system. */
+
+/* ── View transitions ─────────────────────────────────────────────────────
+   template.tsx wraps every public page in React's <ViewTransition> with
+   enter="cf-vt-enter" exit="cf-v-exit" (classes land on the transition
+   pseudo-elements). The old page leaves fast and slightly up; the new one
+   rises 14px and settles from scale 0.994 over 280ms, the same move the
+   old .cf-page-enter entrance made, now with a real exit phase.
+   The navbar is a named participant pinned in place: a sliding header
+   would break the reader's one fixed reference point. */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-old(.cf-vt-exit) {
+  animation: 140ms cubic-bezier(0.5, 0, 0.75, 0) both cf-vt-old;
+}
+::view-transition-new(.cf-vt-enter) {
+  animation: 280ms cubic-bezier(0.22, 1, 0.36, 1) both cf-vt-new;
+}
+@keyframes cf-vt-old {
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.996);
+  }
+}
+@keyframes cf-vt-new {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.994);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.cf-nav {
+  view-transition-name: site-header;
+}
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* ── Skeleton blocks ──────────────────────────────────────────────────────
+   A flat ink wash pulsing between two opacities (paint-only animation).
+   The global reduced-motion kill switch in case-file.css covers these
+   inside .cf-scope; the explicit rule below keeps them still anywhere. */
+.cf-skel {
+  background: var(--cf-ink);
+  opacity: 0.14;
+  animation: cf-skel-pulse 1.15s ease-in-out infinite;
+}
+@keyframes cf-skel-pulse {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.22;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-skel {
+    animation: none !important;
+    opacity: 0.14 !important;
+  }
+}
+
+/* ── Command menu ─────────────────────────────────────────────────────────
+   Ctrl+K / Cmd+K (or the navbar button). Paper panel, 3px ink frame, the
+   red block offset behind it, mono furniture. Rendered by
+   src/components/casefile/CommandMenu.tsx inside a .cf-scope root, so the
+   tokens and the reduced-motion kill switch apply. */
+.cf-cmd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 11vh 16px 16px;
+  background: rgba(20, 20, 20, 0.55);
+}
+.cf-cmd-panel {
+  width: min(92vw, 640px);
+  max-height: 76vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cf-paper);
+  color: var(--cf-ink);
+  border: 3px solid var(--cf-ink);
+  box-shadow: 10px 10px 0 var(--cf-red);
+  animation: cf-cmd-in 170ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes cf-cmd-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.cf-cmd-inputrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 16px;
+  border-bottom: 3px solid var(--cf-ink);
+}
+.cf-cmd-prompt {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--cf-red);
+}
+.cf-cmd-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font-family: var(--cf-caps);
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--cf-ink);
+}
+.cf-cmd-input::placeholder {
+  color: var(--cf-muted);
+  font-weight: 500;
+}
+.cf-cmd-kbd {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--cf-muted);
+  border: 1.5px solid var(--cf-ink);
+  background: var(--cf-paper-2);
+  padding: 3px 6px;
+}
+.cf-cmd-list {
+  overflow-y: auto;
+  padding: 8px 10px 12px;
+}
+.cf-cmd-group {
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cf-red);
+  padding: 13px 10px 5px;
+}
+.cf-cmd-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 10px;
+  border: 2px solid transparent;
+  background: transparent;
+  color: var(--cf-ink);
+  cursor: pointer;
+}
+.cf-cmd-item[data-active="true"] {
+  background: var(--cf-ink);
+  color: var(--cf-paper);
+}
+.cf-cmd-label {
+  font-family: var(--cf-caps);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.cf-cmd-hint {
+  font-size: 12.5px;
+  color: var(--cf-muted);
+}
+.cf-cmd-item[data-active="true"] .cf-cmd-hint {
+  color: var(--cf-paper);
+  opacity: 0.66;
+}
+.cf-cmd-empty {
+  padding: 22px 12px;
+  font-size: 14px;
+  color: var(--cf-muted);
+}
+.cf-cmd-foot {
+  display: flex;
+  gap: 18px;
+  padding: 10px 16px;
+  border-top: 2px solid var(--cf-ink);
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cf-muted);
+}

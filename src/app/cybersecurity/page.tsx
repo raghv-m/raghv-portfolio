@@ -125,15 +125,15 @@ const TOOL_GROUPS = [
  * Avatar-upgrade pass (item 0b): percentages out here too, same treatment
  * as CareerSection (forensic-fix item B). Each domain prints its one
  * evidence line, resolved VERBATIM from careerData's SKILLS — the single
- * source — never retyped. "GRC / Compliance" has no honest match among
- * the ten approved lines, so it keeps its self-assessed bar for now and
- * is flagged in the build report rather than given invented proof.
+ * source — never retyped. "GRC / Compliance" had no honest match among
+ * the ten approved lines; the owner ordered the row dropped entirely
+ * (Nov 2, 2026) rather than keep an unproven percentage, so the bar
+ * renderer went with it.
  */
 const evidenceFor = (careerName: string) => SKILLS.find((s) => s.name === careerName)?.evidence;
 
 const SKILL_DOMAINS: {
   name: string;
-  pct?: number;
   color: string;
   desc: string;
   evidence?: string;
@@ -144,7 +144,6 @@ const SKILL_DOMAINS: {
   { name: "Incident Response", color: "var(--blue)", desc: "IR lifecycle, documentation, escalation procedures", evidence: evidenceFor("Incident Response") },
   { name: "Linux Administration", color: "var(--blue)", desc: "Server hardening, service management, log analysis", evidence: evidenceFor("Linux Administration") },
   { name: "Python / Scripting", color: "var(--gold)", desc: "Security automation, log parsing, tool development", evidence: evidenceFor("Python & Scripting") },
-  { name: "GRC / Compliance", pct: 45, color: "var(--text-muted)", desc: "Risk frameworks, policy writing, audit documentation" },
   { name: "Web App Security", color: "var(--blue)", desc: "OWASP Top 10, secure SDLC, authentication patterns", evidence: evidenceFor("Web Application Security") },
 ];
 
@@ -359,8 +358,8 @@ export default function CybersecurityPage() {
         </section>
 
         {/* Skill domains: evidence lines in place of percentages
-            (item 0b). Only GRC / Compliance still renders its bar —
-            it has no approved evidence line; see SKILL_DOMAINS. */}
+            (item 0b). Every domain carries an approved evidence line;
+            see SKILL_DOMAINS. */}
         <Reveal>
           <section
             className="p-6 mb-12"
@@ -369,37 +368,13 @@ export default function CybersecurityPage() {
             <p className="cf-kicker" style={{ marginBottom: 8 }}>Skill Domains</p>
             <h2 className="cf-h2" style={{ marginBottom: 24 }}>Current Proficiency</h2>
             <div className="grid sm:grid-cols-2 gap-x-10 gap-y-5">
-              {SKILL_DOMAINS.map((skill, i) =>
-                skill.evidence ? (
-                  <div key={skill.name}>
-                    <span className="cf-display text-sm text-[var(--cf-ink)]">{skill.name}</span>
-                    <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-0.5">{skill.desc}</p>
-                    <p className="text-sm leading-relaxed mt-1.5" style={{ color: "var(--cf-ink-soft)" }}>{skill.evidence}</p>
-                  </div>
-                ) : (
-                  <div key={skill.name}>
-                    <div className="flex justify-between mb-1.5">
-                      <div>
-                        <span className="cf-display text-sm text-[var(--cf-ink)]">{skill.name}</span>
-                        <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-0.5">{skill.desc}</p>
-                      </div>
-                      <span className="cf-mono cf-fs-label shrink-0 ml-4" style={{ color: skill.color }}>{skill.pct}%</span>
-                    </div>
-                    <div className="h-1.5 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
-                      {/* U4 (upscale pass): scaleX from the left edge, not a
-                          width animation. */}
-                      <motion.div
-                        initial={{ scaleX: 0 }}
-                        whileInView={{ scaleX: (skill.pct ?? 0) / 100 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1.2, ease: EASE_OUT, delay: i * 0.05 }}
-                        className="h-full w-full progress-bar"
-                        style={{ transformOrigin: "left center" }}
-                      />
-                    </div>
-                  </div>
-                ),
-              )}
+              {SKILL_DOMAINS.map((skill) => (
+                <div key={skill.name}>
+                  <span className="cf-display text-sm text-[var(--cf-ink)]">{skill.name}</span>
+                  <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-0.5">{skill.desc}</p>
+                  <p className="text-sm leading-relaxed mt-1.5" style={{ color: "var(--cf-ink-soft)" }}>{skill.evidence}</p>
+                </div>
+              ))}
             </div>
           </section>
         </Reveal>

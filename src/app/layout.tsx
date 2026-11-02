@@ -11,6 +11,11 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 // new host a tag loads from must also be allowed in the CSP in src/proxy.ts.
 const GTM_ID = "GTM-MNDJBFV4";
 
+// GA4 property for www.raghv.dev, wired directly (not only via GTM) so pageviews are
+// guaranteed to reach the property. The CSP already allows googletagmanager.com scripts
+// and *.google-analytics.com / *.analytics.google.com beacons (see src/proxy.ts).
+const GA_ID = "G-70FNMH9P4X";
+
 if (process.env.NODE_ENV === "production") validateEnv();
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -131,6 +136,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
+        {/* GA4 (gtag.js), loaded after the page becomes interactive so it never competes
+            with first paint. Consent behaviour is unchanged: analytics loads regardless of
+            the banner choice, exactly as the privacy/cookies pages state. */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+        </Script>
         <SiteJsonLd />
         <PublicChrome>
           <Navbar />

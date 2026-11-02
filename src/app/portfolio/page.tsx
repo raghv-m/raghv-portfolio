@@ -272,9 +272,9 @@ function ProjectCard({ project, index }: { project: typeof PROJECTS[0]; index: n
                 {project.status}
               </Stamp>
             </div>
-            <h3 className="cf-display text-lg text-[var(--cf-ink)] group-hover:text-[var(--cf-red)] transition-colors">
+            <h2 className="cf-display text-lg text-[var(--cf-ink)] group-hover:text-[var(--cf-red)] transition-colors">
               {project.title}
-            </h3>
+            </h2>
             <p className="cf-mono text-[10px] text-[var(--cf-muted)]">{project.subtitle}</p>
             <p className="cf-mono text-[9px] text-[var(--cf-muted)] mt-1">
               CASE {String(project.id).padStart(2, "0")} · {project.category.toUpperCase()}

@@ -4,7 +4,7 @@ import { pageMetadata } from "@/config/site";
 
 export const metadata: Metadata = pageMetadata(
   "/certifications",
-  "Certifications",
+  "Certifications: Security+, ISC2 CC, Google and First Aid",
   "CompTIA Security+, ISC2 Certified in Cybersecurity and more: Raghav Mahajan's security certifications.",
 );
 

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LegalPage } from "@/components/legal/LegalPage";
 import { pageMetadata, site } from "@/config/site";
 
-export const metadata: Metadata = pageMetadata("/cookies", "Cookie policy", "Which cookies raghv.dev uses, why, and how to control them.");
+export const metadata: Metadata = pageMetadata("/cookies", "Cookie policy", "Which cookies raghv.dev uses, why they are set, how long they last, and how to control or delete them in your browser settings.");
 
 export default function CookiesPage() {
   return (

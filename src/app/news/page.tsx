@@ -89,15 +89,17 @@ export default async function NewsPage() {
                       {i + 1}
                     </span>
                     <div>
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="font-semibold hover:text-[var(--cf-red)]"
-                        style={{ color: "var(--cf-ink)", fontSize: "16.5px" }}
-                      >
-                        {item.title}
-                      </a>
+                      <h2 style={{ margin: 0, fontSize: "inherit", fontWeight: "inherit", lineHeight: "inherit" }}>
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer nofollow"
+                          className="font-semibold hover:text-[var(--cf-red)]"
+                          style={{ color: "var(--cf-ink)", fontSize: "16.5px" }}
+                        >
+                          {item.title}
+                        </a>
+                      </h2>
                       {item.summary && (
                         <p className="mt-1 text-sm leading-relaxed" style={{ color: "var(--cf-muted)" }}>
                           {item.summary}

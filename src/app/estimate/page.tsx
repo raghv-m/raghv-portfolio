@@ -12,7 +12,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 export const metadata: Metadata = pageMetadata(
   "/estimate",
   "Website cost estimate: instant price for your project",
-  "How much does a website cost in Edmonton and Canada? Pick your project type, pages, features and hosting to see the typical market price and my price, instantly.",
+  "How much does a website cost in Edmonton and Canada? Pick your project type, pages and features to see the market price and my price, instantly.",
 );
 
 // Prices change in the admin console; refresh the page's copy every few minutes.
@@ -30,6 +30,22 @@ export default async function EstimatePage() {
     }
   }
 
+  // AggregateOffer range comes from the live catalog itself (SEO Finding 9): how many priced
+  // items are on offer and the highest one-time price among them. The $400 low end is the
+  // published minimum project price. If the catalog did not load, keep the static floor only.
+  const pricedItems = catalog.filter((item) => item.price_cents > 0);
+  const offers =
+    pricedItems.length > 0
+      ? {
+          "@type": "AggregateOffer",
+          priceCurrency: "CAD",
+          lowPrice: "400",
+          highPrice: String(Math.round(Math.max(...pricedItems.map((item) => item.price_cents)) / 100)),
+          offerCount: pricedItems.length,
+          availability: "https://schema.org/InStock",
+        }
+      : { "@type": "AggregateOffer", priceCurrency: "CAD", lowPrice: "400", availability: "https://schema.org/InStock" };
+
   return (
     <div className="cf-wrap pb-24">
       <JsonLd
@@ -41,7 +57,7 @@ export default async function EstimatePage() {
           provider: { "@id": `${site.url}/#business` },
           areaServed: "Canada",
           url: `${site.url}/estimate`,
-          offers: { "@type": "AggregateOffer", priceCurrency: "CAD", lowPrice: "400", availability: "https://schema.org/InStock" },
+          offers,
         }}
       />
       <PageHead

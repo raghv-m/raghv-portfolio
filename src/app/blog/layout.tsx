@@ -4,7 +4,7 @@ import { pageMetadata } from "@/config/site";
 
 export const metadata: Metadata = pageMetadata(
   "/blog",
-  "Blog",
+  "Blog: web development and security writeups",
   "Writeups on web development, security labs, threat detection and building for the web, by Raghav Mahajan.",
 );
 

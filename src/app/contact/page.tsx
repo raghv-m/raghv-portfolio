@@ -99,7 +99,7 @@ export default function ContactPage() {
             className="lg:col-span-2 space-y-4"
           >
             <div className="p-6" style={{ border: "1.5px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
-              <p className="cf-mono text-[10px] font-bold tracking-wider mb-5" style={{ color: "var(--cf-red)" }}>CONTACT ENDPOINTS</p>
+              <h2 className="cf-mono text-[10px] font-bold tracking-wider mb-5" style={{ color: "var(--cf-red)" }}>CONTACT ENDPOINTS</h2>
               <div className="space-y-4">
                 {[
                   { icon: Mail, label: "Email", value: "hello@raghv.dev", href: "mailto:hello@raghv.dev", color: "var(--cf-gold)" },
@@ -169,7 +169,7 @@ export default function ContactPage() {
             <div style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
               {/* Dossier form header */}
               <div className="flex items-center gap-2 px-5 py-3" style={{ borderBottom: "3px double var(--cf-ink)" }}>
-                <span className="cf-mono text-[10px] font-bold" style={{ color: "var(--cf-ink)" }}>FILE A MESSAGE</span>
+                <h2 className="cf-mono text-[10px] font-bold" style={{ color: "var(--cf-ink)" }}>FILE A MESSAGE</h2>
                 <span className="cf-mono text-[10px]" style={{ color: "var(--cf-muted)" }}>secure-compose · raghv.dev</span>
                 <Lock className="w-3 h-3 ml-auto" style={{ color: "var(--cf-red)" }} />
               </div>

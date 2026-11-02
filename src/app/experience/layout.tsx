@@ -4,7 +4,7 @@ import { pageMetadata } from "@/config/site";
 
 export const metadata: Metadata = pageMetadata(
   "/experience",
-  "Experience",
+  "Experience: web development, security operations and IT",
   "Raghav Mahajan's experience in web development, security operations and IT: roles, responsibilities and results.",
 );
 

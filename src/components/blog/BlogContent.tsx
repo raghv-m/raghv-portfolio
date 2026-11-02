@@ -59,9 +59,9 @@ export default function BlogContent({ posts }: { posts: Post[] }) {
                     {new Date(post.createdAt).toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric" })}
                   </span>
                   <span>
-                    <span className="cf-arch-title" style={{ fontSize: "21px", lineHeight: 1.25 }}>
+                    <h2 className="cf-arch-title" style={{ fontSize: "21px", lineHeight: 1.25, fontWeight: "inherit" }}>
                       {post.title}
-                    </span>
+                    </h2>
                     {post.excerpt && (
                       <span className="block mt-1" style={{ fontSize: "14px", lineHeight: 1.6, color: "var(--cf-muted)", fontWeight: 400 }}>
                         {post.excerpt}

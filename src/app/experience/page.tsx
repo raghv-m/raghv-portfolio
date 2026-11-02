@@ -1,14 +1,13 @@
 import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
-import { CareerSection } from "@/components/sections/CareerSection";
-import { CinematicExperience } from "@/components/sections/CinematicExperience";
+import { ExperienceStory } from "@/components/sections/ExperienceStory";
 
 const STATS = [
-  { value: "3+", label: "Years in Security" },
-  { value: "9", label: "Roles Held" },
-  { value: "100+", label: "Incidents Documented" },
-  { value: "2026", label: "SOC Target" },
+  { value: "11", label: "Roles on Record" },
+  { value: "2022", label: "Building Since" },
+  { value: "50+", label: "Attack Simulations Documented" },
+  { value: "100+", label: "People Screened a Day, Covenant Health" },
 ];
 
 export default function ExperiencePage() {
@@ -16,16 +15,16 @@ export default function ExperiencePage() {
     <div className="pb-24">
       <div className="cf-wrap">
         <PageHead
-          kicker="Experience, work history"
+          kicker="Experience, the full record"
           title={
             <>
-              Operator <span className="cf-u-red">History</span>
+              Every job. <span className="cf-u-red">One record.</span>
             </>
           }
-          lede="One operator, four chapters, told as a film: scroll and watch the chef become the officer become the analyst. Every role, duty and date on this page is the real record."
+          lede="Eleven roles in six chapters, in the order the work actually happened, overlaps included. Duties, dates and proof, with nothing dressed up: the software, the kitchens, the security years, the lab, and where it is all pointed."
         />
 
-        {/* Stats: a mono ruled strip, with a stamp sitting on its top rule */}
+        {/* Honest numbers only: each one is backed by the record below */}
         <Reveal delay={0.08} className="relative mt-12">
           <Stamp
             tone="red"
@@ -56,15 +55,12 @@ export default function ExperiencePage() {
             ))}
           </div>
           <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-3">
-            100+ incidents documented — incident reports filed across his physical security roles since 2023.
+            Every number on this page comes from the record below it. No skill percentages, no padded counts.
           </p>
         </Reveal>
 
-        {/* The film: chef, loss prevention, security operations, cybersecurity */}
-        <CinematicExperience />
-
-        {/* Career roadmap (merged in from the old /career page, round 2) */}
-        <CareerSection />
+        {/* The documentary: six chapters, one continuous record */}
+        <ExperienceStory />
       </div>
     </div>
   );

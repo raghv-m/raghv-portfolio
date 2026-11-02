@@ -1,0 +1,523 @@
+{
+ "animationOrder": [
+  "idle",
+  "wave"
+ ],
+ "animations": {
+  "idle": {
+   "blink": {
+    "durationMs": 240,
+    "enabled": true,
+    "initialDelayMs": 1800,
+    "maxIntervalMs": 5400,
+    "minIntervalMs": 2600
+   },
+   "metadata": {
+    "description": "Attentive resting loop: slow glances, ambient drift, automatic blinking.",
+    "group": "Subject",
+    "label": "Idle"
+   },
+   "playbackMode": "loop",
+   "steps": [
+    {
+     "expression": "attentive",
+     "holdMs": 2800,
+     "transition": "smooth",
+     "transitionMs": 500
+    },
+    {
+     "expression": "glance-left",
+     "holdMs": 1900,
+     "transition": "smooth",
+     "transitionMs": 450
+    },
+    {
+     "expression": "attentive",
+     "holdMs": 2400,
+     "transition": "smooth",
+     "transitionMs": 450
+    },
+    {
+     "expression": "glance-right",
+     "holdMs": 1900,
+     "transition": "smooth",
+     "transitionMs": 450
+    }
+   ]
+  },
+  "wave": {
+   "blink": {
+    "durationMs": 220,
+    "enabled": true,
+    "initialDelayMs": 900,
+    "maxIntervalMs": 4200,
+    "minIntervalMs": 2400
+   },
+   "metadata": {
+    "description": "A greeting: the head tips side to side, then settles into a friendly look.",
+    "group": "Subject",
+    "label": "Wave"
+   },
+   "playbackMode": "once",
+   "steps": [
+    {
+     "expression": "wave-left",
+     "holdMs": 340,
+     "transition": "snappy",
+     "transitionMs": 170
+    },
+    {
+     "expression": "wave-right",
+     "holdMs": 340,
+     "transition": "snappy",
+     "transitionMs": 170
+    },
+    {
+     "expression": "wave-left",
+     "holdMs": 340,
+     "transition": "snappy",
+     "transitionMs": 170
+    },
+    {
+     "expression": "friendly",
+     "holdMs": 620,
+     "transition": "smooth",
+     "transitionMs": 200
+    }
+   ]
+  }
+ },
+ "body": {
+  "nodes": [
+   {
+    "position": [
+     -90,
+     -72,
+     -46
+    ],
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "surface": {
+     "depth": 56,
+     "height": 62,
+     "roundness": 1,
+     "type": "sphere",
+     "width": 62
+    }
+   },
+   {
+    "position": [
+     -62,
+     -97,
+     -46
+    ],
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "surface": {
+     "depth": 68,
+     "height": 74,
+     "roundness": 1,
+     "type": "sphere",
+     "width": 74
+    }
+   },
+   {
+    "position": [
+     -30,
+     -107,
+     -46
+    ],
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "surface": {
+     "depth": 62,
+     "height": 68,
+     "roundness": 1,
+     "type": "sphere",
+     "width": 68
+    }
+   },
+   {
+    "position": [
+     4,
+     -109,
+     -46
+    ],
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "surface": {
+     "depth": 70,
+     "height": 76,
+     "roundness": 1,
+     "type": "sphere",
+     "width": 76
+    }
+   },
+   {
+    "position": [
+     38,
+     -103,
+     -46
+    ],
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "surface": {
+     "depth": 62,
+     "height": 68,
+     "roundness": 1,
+     "type": "sphere",
+     "width": 68
+    }
+   },
+   {
+    "position": [
+     68,
+     -91,
+     -46
+    ],
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "surface": {
+     "depth": 68,
+     "height": 74,
+     "roundness": 1,
+     "type": "sphere",
+     "width": 74
+    }
+   },
+   {
+    "position": [
+     94,
+     -64,
+     -46
+    ],
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "surface": {
+     "depth": 54,
+     "height": 60,
+     "roundness": 1,
+     "type": "sphere",
+     "width": 60
+    }
+   },
+   {
+    "position": [
+     -45,
+     -6,
+     72
+    ],
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "surface": {
+     "depth": 30,
+     "height": 32,
+     "roundness": 1,
+     "type": "sphere",
+     "width": 32
+    }
+   },
+   {
+    "position": [
+     45,
+     -6,
+     72
+    ],
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "surface": {
+     "depth": 30,
+     "height": 32,
+     "roundness": 1,
+     "type": "sphere",
+     "width": 32
+    }
+   }
+  ],
+  "primary": {
+   "depth": 205,
+   "height": 248,
+   "roundness": 1,
+   "type": "sphere",
+   "width": 218
+  }
+ },
+ "colors": {
+  "body": "#f3efe6",
+  "eyes": "#16150f"
+ },
+ "expressionOrder": [
+  "neutral",
+  "attentive",
+  "glance-left",
+  "glance-right",
+  "friendly",
+  "eyes-closed",
+  "wave-left",
+  "wave-right"
+ ],
+ "expressions": {
+  "attentive": {
+   "eyes": {
+    "left": {
+     "angle": 0,
+     "height": 48,
+     "width": 44,
+     "x": 0,
+     "y": -6
+    },
+    "right": {
+     "angle": 0,
+     "height": 48,
+     "width": 44,
+     "x": 0,
+     "y": -6
+    },
+    "spacing": 90
+   },
+   "head": {
+    "x": 0,
+    "y": 5,
+    "z": 2
+   },
+   "motion": {
+    "body": "slowDrift",
+    "eyes": "microSaccades"
+   },
+   "perspective": 1
+  },
+  "eyes-closed": {
+   "eyes": {
+    "left": {
+     "angle": 0,
+     "height": 7,
+     "width": 42,
+     "x": 0,
+     "y": -4
+    },
+    "right": {
+     "angle": 0,
+     "height": 7,
+     "width": 42,
+     "x": 0,
+     "y": -4
+    },
+    "spacing": 90
+   },
+   "head": {
+    "x": -3,
+    "y": 0,
+    "z": 0
+   },
+   "motion": {
+    "body": "none",
+    "eyes": "none"
+   },
+   "perspective": 1
+  },
+  "friendly": {
+   "eyes": {
+    "left": {
+     "angle": 0,
+     "height": 44,
+     "width": 47,
+     "x": 0,
+     "y": -4
+    },
+    "right": {
+     "angle": 0,
+     "height": 44,
+     "width": 47,
+     "x": 0,
+     "y": -4
+    },
+    "spacing": 90
+   },
+   "head": {
+    "x": 2,
+    "y": 0,
+    "z": 3
+   },
+   "motion": {
+    "body": "slowDrift",
+    "eyes": "microSaccades"
+   },
+   "perspective": 1
+  },
+  "glance-left": {
+   "eyes": {
+    "left": {
+     "angle": 0,
+     "height": 46,
+     "width": 42,
+     "x": -3,
+     "y": -6
+    },
+    "right": {
+     "angle": 0,
+     "height": 46,
+     "width": 42,
+     "x": -3,
+     "y": -6
+    },
+    "spacing": 90
+   },
+   "head": {
+    "x": 0,
+    "y": 0,
+    "z": -2
+   },
+   "motion": {
+    "body": "slowDrift",
+    "eyes": "microSaccades"
+   },
+   "perspective": 1
+  },
+  "glance-right": {
+   "eyes": {
+    "left": {
+     "angle": 0,
+     "height": 46,
+     "width": 42,
+     "x": 3,
+     "y": -6
+    },
+    "right": {
+     "angle": 0,
+     "height": 46,
+     "width": 42,
+     "x": 3,
+     "y": -6
+    },
+    "spacing": 90
+   },
+   "head": {
+    "x": 0,
+    "y": 0,
+    "z": 2
+   },
+   "motion": {
+    "body": "slowDrift",
+    "eyes": "microSaccades"
+   },
+   "perspective": 1
+  },
+  "neutral": {
+   "eyes": {
+    "left": {
+     "angle": 0,
+     "height": 48,
+     "width": 44,
+     "x": 0,
+     "y": -6
+    },
+    "right": {
+     "angle": 0,
+     "height": 48,
+     "width": 44,
+     "x": 0,
+     "y": -6
+    },
+    "spacing": 90
+   },
+   "head": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+   },
+   "motion": {
+    "body": "none",
+    "eyes": "none"
+   },
+   "perspective": 1
+  },
+  "wave-left": {
+   "eyes": {
+    "left": {
+     "angle": 0,
+     "height": 44,
+     "width": 47,
+     "x": 0,
+     "y": -4
+    },
+    "right": {
+     "angle": 0,
+     "height": 44,
+     "width": 47,
+     "x": 0,
+     "y": -4
+    },
+    "spacing": 90
+   },
+   "head": {
+    "x": 0,
+    "y": 0,
+    "z": -11
+   },
+   "motion": {
+    "body": "none",
+    "eyes": "none"
+   },
+   "perspective": 1
+  },
+  "wave-right": {
+   "eyes": {
+    "left": {
+     "angle": 0,
+     "height": 44,
+     "width": 47,
+     "x": 0,
+     "y": -4
+    },
+    "right": {
+     "angle": 0,
+     "height": 44,
+     "width": 47,
+     "x": 0,
+     "y": -4
+    },
+    "spacing": 90
+   },
+   "head": {
+    "x": 0,
+    "y": 0,
+    "z": 11
+   },
+   "motion": {
+    "body": "none",
+    "eyes": "none"
+   },
+   "perspective": 1
+  }
+ },
+ "name": "Raghav",
+ "schema": "bible-strong/avatar-definition",
+ "schemaVersion": 1
+}

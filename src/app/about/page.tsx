@@ -6,6 +6,7 @@ import { Download } from "lucide-react";
 import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
+import { SubjectAvatar } from "@/components/casefile/SubjectAvatar";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/config/site";
 
@@ -261,6 +262,32 @@ export default function AboutPage() {
           }
           lede="From kitchen operations to security operations: five stages of a non-traditional path into cybersecurity, told in first person."
         />
+
+        {/* Filed likeness: the subject as a procedural portrait */}
+        <Reveal delay={0.12} className="mt-12">
+          <figure className="grid sm:grid-cols-[216px_minmax(0,26rem)] gap-10 items-center">
+            <SubjectAvatar />
+            <figcaption>
+              <p className="cf-caption">
+                <b>Filed likeness.</b> The subject, redrawn as a procedural portrait:
+                curls, glasses and all, generated in code with the Bible Strong Avatar
+                Lab and filed here in place of a second photograph. It blinks on its
+                own. Hover to get a wave back.
+              </p>
+              <Stamp
+                tone="red"
+                r={-4.2}
+                s={0.94}
+                o={0.9}
+                bw={2.4}
+                delay={350}
+                className="inline-block mt-5 text-[11px]"
+              >
+                Likeness verified
+              </Stamp>
+            </figcaption>
+          </figure>
+        </Reveal>
 
         {/* File contents: the stage nav, kept as index rows with the same anchors */}
         <Reveal delay={0.05} className="mt-12 mb-4">

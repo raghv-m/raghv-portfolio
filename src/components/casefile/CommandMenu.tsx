@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 
 /**
  * Site-wide command menu (Ctrl+K / Cmd+K, or the navbar button, which fires
@@ -140,8 +141,7 @@ export function CommandMenu() {
 
   let lastGroup = "";
 
-  return (
-    <div className="cf-scope">
+  return createPortal(
       <div
         className="cf-cmd-overlay"
         onClick={(e) => {
@@ -201,7 +201,7 @@ export function CommandMenu() {
             <span>esc close</span>
           </div>
         </div>
-      </div>
-    </div>
+      </div>,
+    document.body,
   );
 }

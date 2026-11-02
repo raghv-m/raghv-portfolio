@@ -16,7 +16,7 @@ export default function robots(): MetadataRoute.Robots {
       // wildcard's access — the site wants to be citable in AI answers, and
       // a named rule leaves no doubt the blanket Allow covers them.
       {
-        userAgent: ["GPTBot", "OAI-SearchBot", "ClaudeBot", "PerplexityBot", "Google-Extended"],
+        userAgent: ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "Google-Extended", "Meta-ExternalAgent", "Applebot-Extended", "CCBot"],
         allow: "/",
         disallow,
       },

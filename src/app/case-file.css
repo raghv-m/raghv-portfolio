@@ -28,24 +28,29 @@
   --cf-log-bg: #101208;
   --cf-log-head: #9fb27e;
   --cf-log-text: #d7e0c8;
-  --cf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Easing vocabulary per Emil Kowalski's design-engineering system
+     (github.com/emilkowalski/skills): strong custom curves, never the
+     weak built-ins, never ease-in on UI. ease-out for entrances/feedback,
+     ease-in-out for on-screen movement, drawer for iOS-style panels. */
+  --cf-ease: cubic-bezier(0.23, 1, 0.32, 1);
   --cf-ease-spring: cubic-bezier(0.34, 1.45, 0.46, 1);
-  --cf-ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --cf-ease-inout: cubic-bezier(0.77, 0, 0.175, 1);
+  --cf-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   /* Motion system, formalized. One vocabulary for every animation in the
      dossier scope; new code uses ONLY these tokens.
        feedback  150-250ms — direct manipulation response (hover, press, focus)
-       reveal    650ms     — scroll-triggered entrances (band: 400-700ms)
+       reveal    800ms     — scroll-triggered entrances, LARGE travel (48px)
        entrance  850ms     — first-paint choreography (hero, page heads)
        page      280ms     — route-to-route transition (never above 300ms)
-       ambient   38s+      — environmental loops, slow and low-contrast
+       ambient   16s       — environmental loop, perceptible within seconds
      Stagger rule: 75ms per item (band 60-90ms), capped at 450ms total,
      applied through the existing --cf-d delay channel. */
   --cf-dur-feedback: 180ms;
   --cf-dur-ui: 250ms;
-  --cf-dur-reveal: 650ms;
+  --cf-dur-reveal: 800ms;
   --cf-dur-entrance: 850ms;
   --cf-dur-page: 280ms;
-  --cf-dur-ambient: 38s;
+  --cf-dur-ambient: 16s;
   --cf-stagger: 75ms;
   --cf-display: var(--font-anton), "Arial Narrow", sans-serif;
   --cf-serif: Georgia, "Times New Roman", serif;
@@ -111,21 +116,23 @@ html[data-theme="dark"] {
   isolation: isolate;
 }
 /* Ambient paper drift: two oversized low-contrast paper-tone washes on a
-   fixed layer, sliding a few percent over ~60s. Transform-only (compositor),
-   no blobs, no glass, no gradient text: just uneven paper. Sits inside the
-   main content scope, so the header/footer chrome stays crisp. */
+   fixed layer, travelling several percent over a 16s cycle — slow, but with
+   enough range (~4px/s at mid-cycle) that the paper visibly breathes within
+   a few seconds of watching. Transform-only (compositor), no blobs, no
+   glass, no gradient text: just uneven paper. Sits inside the main content
+   scope, so the header/footer chrome stays crisp. */
 .cf-ambient {
   position: fixed; inset: -14%; z-index: -1;
   pointer-events: none;
   background:
     radial-gradient(46% 38% at 22% 10%, var(--cf-paper-3) 0%, transparent 70%),
     radial-gradient(42% 36% at 84% 90%, var(--cf-paper-2) 0%, transparent 72%);
-  opacity: 0.5;
-  animation: cf-drift calc(var(--cf-dur-ambient) * 1.6) ease-in-out infinite alternate;
+  opacity: 0.55;
+  animation: cf-drift var(--cf-dur-ambient) ease-in-out infinite alternate;
 }
 @keyframes cf-drift {
-  from { transform: translate3d(-1.6%, -1%, 0) scale(1); }
-  to { transform: translate3d(1.6%, 1.3%, 0) scale(1.045); }
+  from { transform: translate3d(-3.4%, -2.2%, 0) scale(1.02); }
+  to { transform: translate3d(3.4%, 2.6%, 0) scale(1.08); }
 }
 /* Working areas (portal, admin, auth): quieter dossier. Same tokens and
    button/input treatment, no theatrics. */
@@ -171,7 +178,12 @@ html[data-theme="dark"] .cf-app ::selection { background: rgba(224, 86, 75, 0.35
 .cf-scope .text-glow-gold, .cf-app .text-glow-gold { text-shadow: none; }
 .cf-scope .glow-gold, .cf-app .glow-gold, .cf-scope .glow-gold-sm, .cf-app .glow-gold-sm { box-shadow: none; }
 .cf-scope .card-lift { transition: transform 0.45s var(--cf-ease), box-shadow 0.45s var(--cf-ease), border-color 0.45s var(--cf-ease); }
-.cf-scope .card-lift:hover { transform: translateY(-4px); box-shadow: 0 16px 34px var(--cf-exhibit-shadow); }
+/* Hover motion only where hover is real (Emil's gating rule): touch taps
+   must not fire false hover lifts. */
+@media (hover: hover) and (pointer: fine) {
+  .cf-scope .card-lift:hover { transform: translateY(-4px); box-shadow: 0 16px 34px var(--cf-exhibit-shadow); }
+  .cf-docwall figure:hover { rotate: 0.2deg; }
+}
 .cf-app .card-lift { transition: transform 0.45s var(--cf-ease), border-color 0.45s var(--cf-ease); }
 .cf-app .card-lift:hover { transform: translateY(-3px); box-shadow: none; }
 .cf-scope .progress-bar, .cf-app .progress-bar { background: var(--cf-red); box-shadow: none; }
@@ -382,7 +394,6 @@ html[data-theme="dark"] .cf-btn::after {
 }
 @media (max-width: 720px) { .cf-docwall { grid-template-columns: 1fr; gap: 36px; } }
 .cf-docwall figure { margin: 0; rotate: var(--tilt, 0deg); transition: rotate 0.6s var(--cf-ease); }
-.cf-docwall figure:hover { rotate: 0.2deg; }
 .cf-docwall .cf-caption { margin-top: 14px; }
 /* Small real-document thumbnail that rides inside a credential row. */
 .cf-cred-thumb {
@@ -657,7 +668,7 @@ html[data-theme="dark"] .cf-btn::after {
 
 /* ── Entrance + scroll reveal machinery ──────────────────────────────────── */
 @keyframes cf-rise {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(36px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes cf-fade { from { opacity: 0; } to { opacity: 1; } }
@@ -670,11 +681,13 @@ html[data-theme="dark"] .cf-btn::after {
 }
 
 /* Scroll reveal: the pre-state is only applied by JS (data-cf="pre"), so
-   no-JS and SSR renders are fully visible. Variants share the reveal
-   duration token; only the pre-state pose differs. */
-.cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(18px); }
-.cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(10px) scale(0.965); }
-.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateX(-18px); }
+   no-JS and SSR renders are fully visible. Travel is LARGE by design
+   (48px + a scale settle) — the Apple-page feel: sections do not just
+   fade, they arrive. Variants share the reveal duration token; only the
+   pre-state pose differs. */
+.cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(48px) scale(0.96); }
+.cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(48px) scale(0.93); }
+.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateX(-48px); }
 .cf-rv[data-cf="in"] {
   opacity: 1; transform: translateY(0);
   transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease);
@@ -683,11 +696,12 @@ html[data-theme="dark"] .cf-btn::after {
 /* A scale-variant reveal ends at scale(1), not translateY(0) alone. */
 .cf-rv[data-variant="scale"][data-cf="in"] { transform: translateY(0) scale(1); }
 
-/* Route-to-route transition (template.tsx): a short rise, then done.
-   280ms per the motion system; entrance, never an exit that blocks. */
+/* Route-to-route transition (template.tsx): a short rise with a subtle
+   scale settle, then done. 280ms per the motion system; entrance, never
+   an exit that blocks. */
 @keyframes cf-page-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(14px) scale(0.994); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .cf-page-enter { animation: cf-page-in var(--cf-dur-page) var(--cf-ease) both; }
 
@@ -727,6 +741,43 @@ html[data-theme="dark"] .cf-spot::before {
 /* The current page's rule is a framer-motion span that SLIDES between links
    (layoutId in Navbar), so the CSS underline stands down for it. */
 .cf-navlink[aria-current="page"]::after { transform: scaleX(0); }
+
+/* ── Exhibit zoom frame: the photograph settles inside its frame ────────── */
+/* The frame keeps the border/shadow (.cf-exhibit-frame); the inner image
+   is oversized by its scroll-driven scale, cropped by the frame — the
+   Apple product-page Ken Burns settle, transform-only. */
+.cf-zoom-frame { overflow: hidden; }
+.cf-zoom-inner { will-change: transform; }
+.cf-zoom-inner img { display: block; width: 100%; height: auto; }
+
+/* ── Pinned examination sequence (Exhibit D, homepage) ───────────────────── */
+/* Enhanced mode only (desktop + motion allowed; the component renders a
+   static stack otherwise): a tall wrap scrolls while the stage pins, and
+   the filed documents crossfade/step through it. */
+.cf-pin-stage {
+  position: sticky; top: 0; height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.cf-pin-docs { position: relative; flex: none; height: min(52vh, 560px); margin-top: 26px; }
+.cf-pin-doc {
+  position: absolute; inset: 0; margin: 0;
+  display: flex; align-items: center; justify-content: center;
+  will-change: transform, opacity;
+}
+.cf-pin-doc img {
+  max-height: 100%; max-width: min(100%, 620px); width: auto; height: auto;
+  border: 1px solid var(--cf-doc-line);
+  box-shadow: 0 22px 48px var(--cf-exhibit-shadow);
+  background: #fff;
+}
+.cf-pin-caps { position: relative; height: 96px; margin-top: 22px; }
+.cf-pin-cap { position: absolute; inset: 0; will-change: transform, opacity; }
+.cf-pin-bars { display: flex; gap: 8px; margin-top: 6px; }
+.cf-pin-bar { position: relative; flex: 1; height: 3px; background: var(--cf-paper-3); overflow: hidden; }
+.cf-pin-bar i {
+  position: absolute; inset: 0; display: block; background: var(--cf-red);
+  transform-origin: left center;
+}
 
 /* ── Reduced motion: EVERYTHING off, content fully visible ───────────────── */
 @media (prefers-reduced-motion: reduce) {

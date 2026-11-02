@@ -93,9 +93,9 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-5 gap-10">
           {/* Info panel — 2 cols */}
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, x: -44, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-2 space-y-4"
           >
             <div className="p-6" style={{ border: "1.5px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
@@ -161,9 +161,9 @@ export default function ContactPage() {
 
           {/* Form — 3 cols */}
           <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, x: 44, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="lg:col-span-3"
           >
             <div style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>

@@ -1,68 +1,71 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { type ReactNode } from "react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 
 /**
- * Kinetic type for the hero name: the wrapped headline leans a few pixels
- * toward the pointer (with a whisper of skew) and drifts up slightly as the
- * page starts to scroll. Always readable — the whole effect lives inside
- * ±6px and half a degree. Mouse only; reduced motion leaves it static.
- * Transforms apply to this wrapper, never to the cf-load spans inside, so
- * the entrance choreography is untouched.
+ * Kinetic type for the hero name, Apple-page scale: the headline follows
+ * the pointer up to ±22px on real springs (overshoot, settle), and as the
+ * page starts scrolling it drifts up 64px and scales down to 0.95 over the
+ * first ~900px — the name visibly hands the stage over to the file below.
+ * Two nested wrappers keep the two motions independent: outer owns scroll,
+ * inner owns the pointer. Neither touches the cf-load spans inside, so the
+ * entrance choreography is untouched. Mouse only; reduced motion = static.
  */
 export function Kinetic({ children }: { children: ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const pos = useRef({ x: 0, y: 0, s: 0 });
-  const raf = useRef(0);
+  const reduce = useReducedMotion();
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // Scroll hand-off: drift + shrink across the first viewport of travel.
+  // Critically damped (damping ratio ≈ 1.0: stiffness 90 / damping 19):
+  // continuous tracking must not overshoot — Apple's default for
+  // repositioning motion. (Framer's duration-based spring form failed
+  // to track scroll-linked sources in this build — the parallax layers
+  // measured 0px of travel with it — so the stiffness form, same
+  // physics, carries all scroll tracking here.)
+  const { scrollY } = useScroll();
+  const driftRaw = useTransform(scrollY, [0, 900], [0, -64]);
+  const scaleRaw = useTransform(scrollY, [0, 900], [1, 0.95]);
+  const drift = useSpring(driftRaw, { stiffness: 90, damping: 19, mass: 1 });
+  const scale = useSpring(scaleRaw, { stiffness: 90, damping: 19, mass: 1 });
 
-    const apply = () => {
-      raf.current = 0;
-      const { x, y, s } = pos.current;
-      el.style.transform = `translate3d(${x.toFixed(1)}px, ${(y + s).toFixed(1)}px, 0) skewX(${(-x * 0.09).toFixed(2)}deg)`;
-    };
-    const queue = () => {
-      if (!raf.current) raf.current = requestAnimationFrame(apply);
-    };
-    const onScroll = () => {
-      pos.current.s = -Math.min(window.scrollY * 0.045, 18);
-      queue();
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (raf.current) cancelAnimationFrame(raf.current);
-    };
-  }, []);
+  // Pointer follow: same Apple-style spring as Magnetic (duration +
+  // bounce 0.2) — decorative tracking may overshoot a touch.
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const x = useSpring(mx, { duration: 0.5, bounce: 0.2 });
+  const y = useSpring(my, { duration: 0.5, bounce: 0.2 });
+  const skewRaw = useTransform(x, (v) => -v * 0.06);
+  const skew = useSpring(skewRaw, { duration: 0.5, bounce: 0.2 });
 
-  const onMove = (e: React.PointerEvent) => {
-    const el = ref.current;
-    if (!el || e.pointerType !== "mouse") return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const r = el.getBoundingClientRect();
-    pos.current.x = ((e.clientX - (r.left + r.width / 2)) / (r.width / 2)) * 5;
-    pos.current.y = ((e.clientY - (r.top + r.height / 2)) / (r.height / 2)) * 3.5;
-    el.style.transition = "transform 160ms var(--cf-ease)";
-    el.style.transform = `translate3d(${pos.current.x.toFixed(1)}px, ${(pos.current.y + pos.current.s).toFixed(1)}px, 0) skewX(${(-pos.current.x * 0.09).toFixed(2)}deg)`;
+  if (reduce) {
+    return <div>{children}</div>;
+  }
+
+  const onMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (e.pointerType !== "mouse") return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const dx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+    const dy = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+    mx.set(Math.max(-1, Math.min(1, dx)) * 22);
+    my.set(Math.max(-1, Math.min(1, dy)) * 10);
   };
-
   const onLeave = () => {
-    const el = ref.current;
-    if (!el) return;
-    pos.current.x = 0;
-    pos.current.y = 0;
-    el.style.transition = "transform 500ms var(--cf-ease-spring)";
-    el.style.transform = `translate3d(0px, ${pos.current.s.toFixed(1)}px, 0) skewX(0deg)`;
+    mx.set(0);
+    my.set(0);
   };
 
   return (
-    <div ref={ref} onPointerMove={onMove} onPointerLeave={onLeave}>
-      {children}
-    </div>
+    <motion.div style={{ y: drift, scale, transformOrigin: "0% 50%" }}>
+      <motion.div style={{ x, y, skewX: skew }} onPointerMove={onMove} onPointerLeave={onLeave}>
+        {children}
+      </motion.div>
+    </motion.div>
   );
 }

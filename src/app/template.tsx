@@ -7,8 +7,8 @@ import { isAppArea } from "@/components/layout/PublicChrome";
 
 /**
  * Page-to-page transition for the public site: every navigation re-mounts
- * this template, and the incoming page rises 10px and fades in over 280ms
- * (the --cf-dur-page token). Entrance only — App Router has no exit phase
+ * this template, and the incoming page rises 14px, settles from scale
+ * 0.994, and fades in over 280ms (the --cf-dur-page token). Entrance only — App Router has no exit phase
  * without the View Transitions API, and React's <ViewTransition> is not in
  * this install (checked: react 19.2.4 exports undefined), so a fast,
  * never-blocking entrance is the honest version of the effect.

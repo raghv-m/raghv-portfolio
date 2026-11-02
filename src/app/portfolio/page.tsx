@@ -383,7 +383,7 @@ export default function ProjectsPage() {
             <p className="cf-body" style={{ maxWidth: "52ch" }}>
               Want a site like one of these? The estimate takes two minutes and shows my price next to the market rate.
             </p>
-            <Magnetic strength={6}>
+            <Magnetic strength={18}>
               <Link href="/estimate" className="cf-btn">Start an estimate</Link>
             </Magnetic>
           </div>

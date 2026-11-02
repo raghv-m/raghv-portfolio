@@ -10,6 +10,8 @@ import { TypeLog } from "@/components/casefile/TypeLog";
 import { Kinetic } from "@/components/casefile/Kinetic";
 import { Magnetic } from "@/components/casefile/Magnetic";
 import { ParallaxLayer } from "@/components/casefile/ParallaxLayer";
+import { ExhibitZoom } from "@/components/casefile/ExhibitZoom";
+import { PinnedDocs } from "@/components/casefile/PinnedDocs";
 import { SpotWrap } from "@/components/casefile/SpotWrap";
 
 const LOG_LINES = [
@@ -132,7 +134,7 @@ export default function HomePage() {
           </div>
 
           <div className="cf-load flex flex-wrap items-center gap-6" style={{ marginTop: 30, "--cf-d": "0.45s" } as CSSProperties}>
-            <Magnetic strength={6}>
+            <Magnetic strength={18}>
               <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="cf-btn">
                 Download the resume
               </a>
@@ -148,17 +150,20 @@ export default function HomePage() {
 
         {/* Exhibit A */}
         <div className="cf-load" style={{ "--cf-d": "0.35s" } as CSSProperties}>
-          <ParallaxLayer speed={0.045}>
+          <ParallaxLayer range={34}>
             <div className="cf-exhibit rotate-[3.4deg] hover:rotate-[2.3deg]" style={{ transition: "rotate 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}>
               <Tape width={118} height={30} top={-15} left={24} rotate={-7} opacity={0.8} />
-              <Image
-                src="/images/newsletter/edition-04.webp"
-                alt="Blue Team Brief newsletter cover, Edition 4"
-                width={1200}
-                height={675}
-                priority
-                className="cf-exhibit-frame"
-              />
+              <div className="cf-exhibit-frame cf-zoom-frame">
+                <ExhibitZoom>
+                  <Image
+                    src="/images/newsletter/edition-04.webp"
+                    alt="Blue Team Brief newsletter cover, Edition 4"
+                    width={1200}
+                    height={675}
+                    priority
+                  />
+                </ExhibitZoom>
+              </div>
             </div>
           </ParallaxLayer>
           <p className="cf-caption" style={{ marginTop: 20 }}>
@@ -174,7 +179,7 @@ export default function HomePage() {
           className="grid sm:grid-cols-[104px_1fr] gap-6 items-center py-7 mt-6"
           style={{ borderTop: "2px solid var(--cf-ink)", borderBottom: "1px solid var(--cf-faint)" }}
         >
-          <ParallaxLayer speed={-0.04}>
+          <ParallaxLayer range={30} invert>
             <Image
               src="/images/subject-photo.jpg"
               alt="Raghav Mahajan"
@@ -207,7 +212,7 @@ export default function HomePage() {
 
       {/* ── Exhibit B: the captured log ───────────────────────────── */}
       <Reveal className="mt-12">
-        <ParallaxLayer speed={0.03}>
+        <ParallaxLayer range={30}>
           <TypeLog head="Exhibit B — Homelab, live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} />
         </ParallaxLayer>
       </Reveal>
@@ -250,7 +255,7 @@ export default function HomePage() {
           <div className="cf-sec-head">
             <h2 className="cf-h2">Exhibit C — The price machine</h2>
           </div>
-          <ParallaxLayer speed={0.025}>
+          <ParallaxLayer range={28}>
           <div className="cf-machine grid lg:grid-cols-[7fr_5fr] gap-10 items-center p-8 sm:p-11">
             <div>
               <Reveal>
@@ -270,7 +275,7 @@ export default function HomePage() {
                 and the quote goes straight into his pipeline, so a human answers fast.
               </p>
               <div className="mt-6">
-                <Magnetic strength={6}>
+                <Magnetic strength={18}>
                   <Link href="/estimate" className="cf-btn">
                     Run the estimator
                   </Link>
@@ -340,6 +345,9 @@ export default function HomePage() {
           </Reveal>
         </SpotWrap>
       </section>
+
+      {/* ── Exhibit D: the pinned document examination ────────────── */}
+      <PinnedDocs />
 
       {/* ── Contents of this file ─────────────────────────────────── */}
       <section className="pt-16 pb-20">

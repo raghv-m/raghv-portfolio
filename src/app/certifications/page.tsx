@@ -1,28 +1,71 @@
 "use client";
 import { motion } from "framer-motion";
-import { CheckCircle, Clock, Target, Award } from "lucide-react";
+import { CheckCircle, Clock, Award } from "lucide-react";
 import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { CertWall } from "@/components/casefile/CertWall";
 
 
+/**
+ * Credential rows. Earned entries mirror the documents in
+ * src/data/cert-docs.ts (the wall above) one for one, plus the Alberta
+ * Security Guard License, which is earned but not scanned. SC-200 is the
+ * one certification actually in progress. Training (TryHackMe) is listed
+ * separately below and is NOT a certification.
+ */
 const CERTS = [
+  {
+    name: "CompTIA Security+ SY0-701",
+    issuer: "CompTIA",
+    status: "EARNED",
+    date: "Jun 2026",
+    value: "Industry-standard security certification. Covers threats, vulnerabilities, architecture, identity management, risk management, and cryptography.",
+    color: "var(--green)",
+    glow: "rgba(0,255,136,0.2)",
+  },
   {
     name: "ISC2 Certified in Cybersecurity (CC)",
     issuer: "ISC2",
     status: "EARNED",
-    date: "2024",
+    date: "2026",
     value: "Entry-level cybersecurity credential and my first global cert. Validates security fundamentals, risk concepts, and incident response principles.",
     color: "var(--green)",
     glow: "rgba(0,255,136,0.2)",
   },
   {
-    name: "Google Cybersecurity Professional Certificate",
+    name: "Google — Foundations of Cybersecurity",
     issuer: "Google / Coursera",
     status: "EARNED",
-    date: "2024",
-    value: "8-course program covering threat detection, network security, Python automation for security, SIEM tools, and Linux for security analysts.",
+    date: "Jan 8, 2026",
+    value: "Opening course of the Google cybersecurity program: core security concepts, common threats, and how analysts protect organizations.",
+    color: "var(--green)",
+    glow: "rgba(0,255,136,0.2)",
+  },
+  {
+    name: "Google — Play It Safe: Manage Security Risks",
+    issuer: "Google / Coursera",
+    status: "EARNED",
+    date: "Jan 18, 2026",
+    value: "Risk management course: security frameworks and controls, and how organizations identify and manage security risk.",
+    color: "var(--green)",
+    glow: "rgba(0,255,136,0.2)",
+  },
+  {
+    name: "Google — Connect and Protect: Networks and Network Security",
+    issuer: "Google / Coursera",
+    status: "EARNED",
+    date: "Jan 28, 2026",
+    value: "Network security course: network architecture and protocols, and defending networks against intrusion.",
+    color: "var(--green)",
+    glow: "rgba(0,255,136,0.2)",
+  },
+  {
+    name: "Intermediate First Aid",
+    issuer: "APEX",
+    status: "EARNED",
+    date: "Oct 2026",
+    value: "Intermediate First Aid under CSA Standard Z1210-17: injury assessment, bleeding control, and emergency response. Valid to Oct 2029.",
     color: "var(--green)",
     glow: "rgba(0,255,136,0.2)",
   },
@@ -36,69 +79,29 @@ const CERTS = [
     glow: "rgba(0,255,136,0.2)",
   },
   {
-    name: "TryHackMe SOC Level 1",
-    issuer: "TryHackMe",
+    name: "Microsoft SC-200: Security Operations Analyst",
+    issuer: "Microsoft",
     status: "IN PROGRESS",
-    date: "50+ labs",
-    progress: 65,
-    value: "Hands-on SOC analyst training covering alert triage, SIEM operations, network analysis, threat intelligence, and incident response.",
+    date: "Ongoing",
+    value: "Security operations certification covering threat detection and response with Microsoft Sentinel and Microsoft Defender. Currently studying.",
     color: "var(--gold)",
     glow: "rgba(212,160,23,0.15)",
-  },
-  {
-    name: "CompTIA Security+ SY0-701",
-    issuer: "CompTIA",
-    status: "EARNED",
-    date: "Jun 2026",
-    value: "Industry-standard security certification. Covers threats, vulnerabilities, architecture, identity management, risk management, and cryptography.",
-    color: "var(--green)",
-    glow: "rgba(0,255,136,0.2)",
-  },
-  {
-    name: "CompTIA CySA+ CS0-003",
-    issuer: "CompTIA",
-    status: "PLANNED",
-    date: "2026 Target",
-    value: "Cybersecurity Analyst certification covering threat detection, analysis, and response. Direct path to SOC Tier 2 readiness.",
-    color: "var(--text-muted)",
-    glow: "rgba(136,136,136,0.1)",
-  },
-  {
-    name: "CompTIA CASP+ / CSAP",
-    issuer: "CompTIA",
-    status: "PLANNED",
-    date: "Long-term",
-    value: "Advanced security practitioner: security architecture, risk management, enterprise operations. Aligns with Security Engineer target role.",
-    color: "var(--text-muted)",
-    glow: "rgba(136,136,136,0.1)",
-  },
-  {
-    name: "CISSP",
-    issuer: "(ISC)²",
-    status: "PLANNED",
-    date: "5-year goal",
-    value: "Gold standard security certification. Requires 5 years experience. Aligns with Security Architect long-term target.",
-    color: "var(--text-muted)",
-    glow: "rgba(136,136,136,0.1)",
   },
 ];
 
 const STATUS_ICON = {
   EARNED: CheckCircle,
   "IN PROGRESS": Clock,
-  PLANNED: Target,
 };
 
 const STATUS_COLOR = {
   EARNED: "var(--green)",
   "IN PROGRESS": "var(--gold)",
-  PLANNED: "var(--text-muted)",
 };
 
 const STATUS_TONE: Record<string, "red" | "gold" | "green" | "ink"> = {
   EARNED: "green",
   "IN PROGRESS": "gold",
-  PLANNED: "ink",
 };
 
 const STAMP_R = [-4.2, -1.8, 2.4, -5.6, 0.8, -3.1, 1.9, -6];
@@ -113,7 +116,7 @@ export default function CertificationsPage() {
         <PageHead
           kicker="Certifications"
           title={<>Credential <span className="cf-u-red">Arsenal</span></>}
-          lede="A structured certification path from foundational credentials to expert-level recognition."
+          lede="Every earned credential below matches a document on file. One more is in progress, and training is labelled as training, not dressed up as a certification."
         >
           <div style={{ marginTop: 26, position: "relative" }}>
             <Stamp tone="red" r={-5.2} s={1.04} o={0.88} bw={3.1} delay={250}>
@@ -125,9 +128,8 @@ export default function CertificationsPage() {
           <Reveal delay={0.1}>
             <div className="flex flex-wrap gap-4 mt-8">
               {[
-                { icon: Award, label: "4 Certs Earned", color: "var(--green)" },
+                { icon: Award, label: "7 Credentials Earned", color: "var(--green)" },
                 { icon: Clock, label: "1 In Progress", color: "var(--gold)" },
-                { icon: Target, label: "3 Planned", color: "var(--text-muted)" },
               ].map(({ icon: Icon, label, color }) => (
                 <div key={label} className="flex items-center gap-2.5 px-4 py-2.5"
                   style={{ background: "var(--cf-paper-2)", border: "1.5px solid var(--cf-ink)" }}>
@@ -188,23 +190,6 @@ export default function CertificationsPage() {
                     <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed" style={{ marginTop: 8, maxWidth: 560 }}>
                       {cert.value}
                     </p>
-                    {cert.progress !== undefined && (
-                      <div style={{ marginTop: 12, maxWidth: 560 }}>
-                        <div className="flex justify-between mb-1">
-                          <span className="cf-mono text-[9px] text-[var(--cf-muted)]">PROGRESS</span>
-                          <span className="cf-mono text-[9px]" style={{ color: "var(--cf-gold)" }}>{cert.progress}%</span>
-                        </div>
-                        <div className="h-1 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${cert.progress}%` }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-                            className="h-full progress-bar"
-                          />
-                        </div>
-                      </div>
-                    )}
                   </div>
                   <span className="cf-cred-code">{cert.date}</span>
                   <Stamp
@@ -224,6 +209,20 @@ export default function CertificationsPage() {
             })}
           </div>
         </Reveal>
+
+        {/* Training — plainly labelled, not a certification */}
+        <section style={{ marginTop: 56 }}>
+          <Reveal>
+            <div className="cf-sec-head">
+              <h2 className="cf-h2">Training, not a credential</h2>
+              <p className="cf-note" style={{ marginTop: 10, maxWidth: 620 }}>
+                TryHackMe SOC Level 1 is a hands-on training path I am working through: alert triage,
+                SIEM operations, network analysis, threat intelligence, and incident response. It is
+                practice, not a certification, so it does not sit in the credential list above.
+              </p>
+            </div>
+          </Reveal>
+        </section>
       </div>
     </div>
   );

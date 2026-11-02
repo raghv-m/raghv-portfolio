@@ -6,7 +6,10 @@ import { AlertTriangle, CheckCircle2, X } from "lucide-react";
 /**
  * Site-wide replacements for window.confirm() and alert():
  *  - useConfirm(): an accessible <dialog> that resolves to true/false.
- *  - useToast():   a short success or error message after an action.
+ *  - useToast():   a short success or error message after an action. A toast
+ *    can carry one action button (Undo on a delete, say): pass
+ *    { action: { label, onClick }, duration } and it stays up for `duration`
+ *    ms instead of the default five seconds.
  */
 
 type ConfirmOptions = {
@@ -19,10 +22,12 @@ type ConfirmOptions = {
   destructive?: boolean;
 };
 
-type Toast = { id: number; text: string; tone: "success" | "error" };
+type ToastAction = { label: string; onClick: () => void };
+type ToastOptions = { action?: ToastAction; duration?: number };
+type Toast = { id: number; text: string; tone: "success" | "error"; action?: ToastAction };
 
 const ConfirmContext = createContext<((o: ConfirmOptions) => Promise<boolean>) | null>(null);
-const ToastContext = createContext<((text: string, tone?: Toast["tone"]) => void) | null>(null);
+const ToastContext = createContext<((text: string, tone?: Toast["tone"], options?: ToastOptions) => void) | null>(null);
 
 export function useConfirm() {
   const ctx = useContext(ConfirmContext);
@@ -45,10 +50,15 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const toast = useCallback((text: string, tone: Toast["tone"] = "success") => {
+  const dismissToast = useCallback((id: number) => {
+    setToasts((t) => t.filter((x) => x.id !== id));
+  }, []);
+
+  const toast = useCallback((text: string, tone: Toast["tone"] = "success", options?: ToastOptions) => {
     const id = Date.now() + Math.random();
-    setToasts((t) => [...t, { id, text, tone }]);
-    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), tone === "error" ? 8000 : 5000);
+    setToasts((t) => [...t, { id, text, tone, action: options?.action }]);
+    const duration = options?.duration ?? (tone === "error" ? 8000 : 5000);
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), duration);
   }, []);
 
   return (
@@ -74,7 +84,19 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
             >
               {t.tone === "error" ? <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-[var(--red)]" /> : <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-[var(--green)]" />}
               <span className="flex-1">{t.text}</span>
-              <button type="button" aria-label="Dismiss" onClick={() => setToasts((all) => all.filter((x) => x.id !== t.id))} className="text-[var(--text-muted)] hover:text-[var(--text)]">
+              {t.action && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    t.action?.onClick();
+                    dismissToast(t.id);
+                  }}
+                  className="shrink-0 min-h-[28px] px-1 font-semibold underline underline-offset-4 hover:opacity-75"
+                >
+                  {t.action.label}
+                </button>
+              )}
+              <button type="button" aria-label="Dismiss" onClick={() => dismissToast(t.id)} className="text-[var(--text-muted)] hover:text-[var(--text)]">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>

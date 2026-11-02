@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 
 import { Shield, Eye, Zap, Lock } from "lucide-react";
 import { PageHead } from "@/components/casefile/PageHead";
@@ -27,52 +27,58 @@ const ATTACK_MATRIX = [
   { tactic: "Impact", id: "TA0040", techniques: ["T1486", "T1490", "T1489"], coverage: 0.5 },
 ];
 
-// Security tools, grouped
+// Security tools, grouped. `use` is the one-line duty summary printed on the
+// card face; `desc` is the full file, shown on the flip side.
 const TOOL_GROUPS = [
   {
     group: "SIEM & Detection",
+    code: "DET",
     color: "var(--gold)",
     tools: [
-      { name: "Wazuh", desc: "Open-source SIEM/XDR. Running agents on DC-01, WEB01, KALI01. Custom detection rules for SSH brute force, port scans, file integrity." },
-      { name: "Elastic SIEM", desc: "ELK stack experience: log ingestion, KQL queries, detection rules, and dashboard building for security events." },
-      { name: "Splunk", desc: "SPL query fundamentals via TryHackMe SOC L1 training. Alert creation, saved searches, and incident investigation workflows." },
+      { name: "Wazuh", tag: "SIEM / XDR", use: "Agents on DC-01, WEB01, KALI01. Custom rules for brute force, scans, FIM.", desc: "Open-source SIEM/XDR. Running agents on DC-01, WEB01, KALI01. Custom detection rules for SSH brute force, port scans, file integrity." },
+      { name: "Elastic SIEM", tag: "ELK STACK", use: "Log ingestion, KQL queries, detection rules, event dashboards.", desc: "ELK stack experience: log ingestion, KQL queries, detection rules, and dashboard building for security events." },
+      { name: "Splunk", tag: "SPL / SOC L1", use: "SPL fundamentals via TryHackMe SOC L1: alerts, saved searches, investigations.", desc: "SPL query fundamentals via TryHackMe SOC L1 training. Alert creation, saved searches, and incident investigation workflows." },
     ],
   },
   {
     group: "Network Analysis",
+    code: "NET",
     color: "var(--blue)",
     tools: [
-      { name: "Wireshark", desc: "Packet capture analysis: identifying C2 traffic patterns, credential harvesting in plaintext, DNS tunneling indicators." },
-      { name: "Nmap", desc: "Network discovery and port scanning. Running scans against lab network from KALI01 to verify Wazuh detection rules trigger correctly." },
-      { name: "tcpdump", desc: "CLI packet capture on Linux endpoints. Used for real-time traffic analysis during active lab exercises." },
-      { name: "LAN Setup (Home Lab)", desc: "Built and runs the lab LAN himself: IP addressing and subnetting, DHCP and DNS on the domain controller, NAT, and firewall rules across all four nodes." },
+      { name: "Wireshark", tag: "PCAP ANALYSIS", use: "Hunting C2 patterns, plaintext credentials, DNS tunneling indicators.", desc: "Packet capture analysis: identifying C2 traffic patterns, credential harvesting in plaintext, DNS tunneling indicators." },
+      { name: "Nmap", tag: "DISCOVERY / SCAN", use: "Scans from KALI01 to prove Wazuh rules fire correctly.", desc: "Network discovery and port scanning. Running scans against lab network from KALI01 to verify Wazuh detection rules trigger correctly." },
+      { name: "tcpdump", tag: "CLI CAPTURE", use: "Real-time traffic capture on Linux endpoints during lab exercises.", desc: "CLI packet capture on Linux endpoints. Used for real-time traffic analysis during active lab exercises." },
+      { name: "LAN Setup (Home Lab)", tag: "LAB NETWORK", use: "Addressing, subnetting, DHCP, DNS, NAT, firewall rules across four nodes.", desc: "Built and runs the lab LAN himself: IP addressing and subnetting, DHCP and DNS on the domain controller, NAT, and firewall rules across all four nodes." },
     ],
   },
   {
     group: "Offensive / Red Team",
+    code: "OFF",
     color: "var(--red)",
     tools: [
-      { name: "Hydra", desc: "Password brute force tool. Used offensively in lab to test SSH and RDP rate limiting, and defensively to tune Wazuh rules." },
-      { name: "Gobuster", desc: "Web directory enumeration. Used to understand what attackers see, and to test web server security configurations on WEB01." },
-      { name: "Metasploit", desc: "Exploitation framework for TryHackMe labs and controlled home lab usage. Generates real attack telemetry for SIEM testing." },
+      { name: "Hydra", tag: "BRUTE FORCE", use: "Tests SSH/RDP rate limiting; results feed back into Wazuh rule tuning.", desc: "Password brute force tool. Used offensively in lab to test SSH and RDP rate limiting, and defensively to tune Wazuh rules." },
+      { name: "Gobuster", tag: "WEB ENUM", use: "Directory enumeration to see the attacker's view of WEB01.", desc: "Web directory enumeration. Used to understand what attackers see, and to test web server security configurations on WEB01." },
+      { name: "Metasploit", tag: "EXPLOITATION", use: "Generates real attack telemetry for SIEM testing, TryHackMe and home lab.", desc: "Exploitation framework for TryHackMe labs and controlled home lab usage. Generates real attack telemetry for SIEM testing." },
     ],
   },
   {
     group: "Operating Systems",
-    color: "var(--green)",
+    code: "OS",
+    color: "var(--cf-ink)",
     tools: [
-      { name: "Kali Linux", desc: "Primary attack platform (KALI01). Running full Kali 2024 on dedicated hardware for ethical hacking lab exercises." },
-      { name: "Windows Server 2022", desc: "Domain Controller (DC-01) running Active Directory. GPO management, user/group administration, event log forwarding to Wazuh." },
-      { name: "Ubuntu Server 22", desc: "WEB01 and WAZUH01 run on Ubuntu. UFW firewall rules, SSH hardening, Nginx reverse proxy, systemd service management." },
+      { name: "Kali Linux", tag: "KALI01", use: "Primary attack platform, full Kali 2024 on dedicated hardware.", desc: "Primary attack platform (KALI01). Running full Kali 2024 on dedicated hardware for ethical hacking lab exercises." },
+      { name: "Windows Server 2022", tag: "DC-01", use: "Domain controller: Active Directory, GPO, event forwarding to Wazuh.", desc: "Domain Controller (DC-01) running Active Directory. GPO management, user/group administration, event log forwarding to Wazuh." },
+      { name: "Ubuntu Server 22", tag: "WEB01 / WAZUH01", use: "UFW, SSH hardening, Nginx reverse proxy, systemd services.", desc: "WEB01 and WAZUH01 run on Ubuntu. UFW firewall rules, SSH hardening, Nginx reverse proxy, systemd service management." },
     ],
   },
   {
     group: "Scripting & Dev",
+    code: "SCR",
     color: "var(--blue)",
     tools: [
-      { name: "Python 3", desc: "Log parsing scripts, API integrations, threat intel automation. Building custom scripts to extend Wazuh detection capabilities." },
-      { name: "Bash / PowerShell", desc: "System administration automation, log parsing, and scheduled tasks across both Linux and Windows endpoints in the lab." },
-      { name: "SQL / Queries", desc: "Database query experience from dev background. Parameterized queries, RBAC schema design, and security log querying (KQL/SPL)." },
+      { name: "Python 3", tag: "AUTOMATION", use: "Log parsing, API integrations, scripts that extend Wazuh detection.", desc: "Log parsing scripts, API integrations, threat intel automation. Building custom scripts to extend Wazuh detection capabilities." },
+      { name: "Bash / PowerShell", tag: "ADMIN", use: "Admin automation and log parsing across Linux and Windows endpoints.", desc: "System administration automation, log parsing, and scheduled tasks across both Linux and Windows endpoints in the lab." },
+      { name: "SQL / Queries", tag: "KQL / SPL", use: "Parameterized queries, RBAC schema design, security log querying.", desc: "Database query experience from dev background. Parameterized queries, RBAC schema design, and security log querying (KQL/SPL)." },
     ],
   },
 ];
@@ -82,19 +88,27 @@ const SKILL_DOMAINS = [
   { name: "Network Security", pct: 65, color: "var(--blue)", desc: "Packet analysis, firewall rules, port scanning; home-lab LAN: subnetting, DHCP, DNS, NAT" },
   { name: "Active Directory", pct: 60, color: "var(--gold)", desc: "Domain management, GPO, authentication protocols" },
   { name: "Incident Response", pct: 50, color: "var(--blue)", desc: "IR lifecycle, documentation, escalation procedures" },
-  { name: "Linux Administration", pct: 70, color: "var(--green)", desc: "Server hardening, service management, log analysis" },
-  { name: "Python / Scripting", pct: 72, color: "var(--green)", desc: "Security automation, log parsing, tool development" },
+  { name: "Linux Administration", pct: 70, color: "var(--blue)", desc: "Server hardening, service management, log analysis" },
+  { name: "Python / Scripting", pct: 72, color: "var(--gold)", desc: "Security automation, log parsing, tool development" },
   { name: "GRC / Compliance", pct: 45, color: "var(--text-muted)", desc: "Risk frameworks, policy writing, audit documentation" },
   { name: "Web App Security", pct: 62, color: "var(--blue)", desc: "OWASP Top 10, secure SDLC, authentication patterns" },
 ];
 
-function ToolCard({ tool, color }: { tool: { name: string; desc: string }; color: string }) {
+function ToolCard({ tool, color, code, index }: {
+  tool: { name: string; tag: string; use: string; desc: string };
+  color: string;
+  code: string;
+  index: number;
+}) {
   const [flipped, setFlipped] = useState(false);
   return (
     <div
-      className="relative h-28 cursor-pointer"
+      className="relative h-36 cursor-pointer"
       style={{ perspective: "800px" }}
       onClick={() => setFlipped(!flipped)}
+      role="button"
+      aria-pressed={flipped}
+      aria-label={`${tool.name}: flip for full detail`}
     >
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
@@ -102,19 +116,34 @@ function ToolCard({ tool, color }: { tool: { name: string; desc: string }; color
         className="relative w-full h-full"
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Front */}
+        {/* Front: HUD readout — name, data tag, and the usage line on the face */}
         <div
-          className="absolute inset-0 flex items-center justify-center"
-          style={{ backfaceVisibility: "hidden", background: "var(--cf-paper-2)", border: `1.5px solid ${color}` }}
+          className="absolute inset-0 flex"
+          style={{ backfaceVisibility: "hidden", background: "var(--cf-paper-2)", border: "2px solid var(--cf-ink)" }}
         >
-          <span className="cf-display text-sm" style={{ color }}>{tool.name}</span>
+          <div style={{ width: 5, background: color, flexShrink: 0 }} />
+          <div className="flex flex-col p-3 min-w-0">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="cf-display text-[13px] leading-tight text-[var(--cf-ink)]">{tool.name}</span>
+              <span className="cf-mono text-[8px] shrink-0" style={{ color }}>
+                {code}-{String(index + 1).padStart(2, "0")}
+              </span>
+            </div>
+            <p className="cf-mono text-[8px] tracking-widest mt-1" style={{ color }}>{tool.tag}</p>
+            <p className="text-[var(--cf-ink-soft)] text-[10px] leading-snug mt-2">{tool.use}</p>
+            <p className="cf-mono text-[8px] text-[var(--cf-muted)] mt-auto">▸ TAP — FULL FILE</p>
+          </div>
         </div>
-        {/* Back */}
+        {/* Back: the full file */}
         <div
-          className="absolute inset-0 flex items-center p-3"
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)", background: "var(--cf-paper)", border: `1.5px solid ${color}` }}
+          className="absolute inset-0 flex"
+          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)", background: "var(--cf-paper)", border: "2px solid var(--cf-ink)" }}
         >
-          <p className="text-[var(--cf-ink-soft)] text-[10px] leading-relaxed">{tool.desc}</p>
+          <div style={{ width: 5, background: color, flexShrink: 0 }} />
+          <div className="p-3 overflow-hidden">
+            <p className="cf-mono text-[8px] tracking-widest mb-1.5" style={{ color }}>{tool.tag} — FILE</p>
+            <p className="text-[var(--cf-ink-soft)] text-[10px] leading-relaxed">{tool.desc}</p>
+          </div>
         </div>
       </motion.div>
     </div>
@@ -124,6 +153,11 @@ function ToolCard({ tool, color }: { tool: { name: string; desc: string }; color
 export default function CybersecurityPage() {
   const matrixRef = useRef(null);
   const matrixInView = useInView(matrixRef, { once: true, margin: "-80px" });
+  const reduce = useReducedMotion();
+  // Heatmap readout: the selected tactic's file opens under the grid.
+  // Defaults to the strongest coverage on the board (Discovery, 80%).
+  const [selected, setSelected] = useState(8);
+  const sel = ATTACK_MATRIX[selected];
 
   return (
     <div className="pb-32">
@@ -142,9 +176,9 @@ export default function CybersecurityPage() {
 
         {/* Quick stats */}
         <Reveal delay={0.05}>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16" style={{ marginTop: 40 }}>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12" style={{ marginTop: 40 }}>
             {[
-              { icon: Shield, label: "Certs Earned", value: "3", color: "var(--green)" },
+              { icon: Shield, label: "Certs Earned", value: "3", color: "var(--gold)" },
               { icon: Eye, label: "THM Labs", value: "50+", color: "var(--gold)" },
               { icon: Zap, label: "Wazuh Rules", value: "12+", color: "var(--blue)" },
               { icon: Lock, label: "MITRE Tactics", value: "14", color: "var(--text-muted)" },
@@ -163,7 +197,7 @@ export default function CybersecurityPage() {
         </Reveal>
 
         {/* MITRE ATT&CK Heatmap */}
-        <section ref={matrixRef} className="mb-16">
+        <section ref={matrixRef} className="mb-12">
           <Reveal>
             <div className="cf-sec-head flex items-end justify-between flex-wrap gap-4">
               <div>
@@ -181,18 +215,25 @@ export default function CybersecurityPage() {
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2" role="group" aria-label="MITRE ATT&CK tactics — select one for its coverage readout">
             {ATTACK_MATRIX.map((tactic, i) => (
-              <motion.div
+              <motion.button
                 key={tactic.id}
+                type="button"
+                onClick={() => setSelected(i)}
+                onMouseEnter={() => setSelected(i)}
+                onFocus={() => setSelected(i)}
+                aria-pressed={selected === i}
+                aria-label={`${tactic.tactic}: ${Math.round(tactic.coverage * 100)}% detection coverage`}
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={matrixInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                className="relative overflow-hidden group cursor-default"
+                className="relative overflow-hidden text-left cursor-pointer"
                 style={{
                   minHeight: 80,
                   padding: 12,
-                  border: "1px solid var(--cf-faint)",
+                  border: selected === i ? "2px solid var(--cf-ink)" : "1px solid var(--cf-faint)",
+                  boxShadow: selected === i ? "4px 4px 0 var(--cf-shadow)" : undefined,
                   background: tactic.coverage >= 0.65
                     ? `rgba(154,116,16,${tactic.coverage * 0.28})`
                     : `rgba(46,107,30,${tactic.coverage * 0.3})`,
@@ -205,19 +246,62 @@ export default function CybersecurityPage() {
                     {Math.round(tactic.coverage * 100)}%
                   </p>
                 </div>
-              </motion.div>
+              </motion.button>
             ))}
           </div>
+
+          {/* Readout: the selected tactic's file. Keyed by tactic so a new
+              selection swaps instantly — no exit animation, no input lock;
+              hover, focus and tap all drive it. */}
+          <div
+            className="mt-3"
+            style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)", boxShadow: "6px 6px 0 var(--cf-shadow)" }}
+          >
+            <motion.div
+              key={sel.id}
+              initial={reduce ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduce ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="p-5 flex flex-wrap items-center gap-x-10 gap-y-4"
+              aria-live="polite"
+            >
+              <div>
+                <p className="cf-mono text-[9px] tracking-widest" style={{ color: "var(--cf-red)" }}>{sel.id} · TACTIC</p>
+                <p className="cf-display text-xl mt-1" style={{ color: "var(--cf-ink)" }}>{sel.tactic}</p>
+              </div>
+              <div style={{ flex: "1 1 220px", maxWidth: 340, minWidth: 180 }}>
+                <div className="flex justify-between items-baseline gap-4">
+                  <p className="cf-mono text-[9px] tracking-widest text-[var(--cf-muted)]">DETECTION COVERAGE</p>
+                  <p className="cf-display text-2xl" style={{ color: "var(--cf-red)" }}>{Math.round(sel.coverage * 100)}%</p>
+                </div>
+                <div className="h-2 mt-2" style={{ background: "var(--cf-paper-3)" }}>
+                  <div
+                    className="h-full"
+                    style={{ background: "var(--cf-red)", width: `${sel.coverage * 100}%`, transition: "width 0.3s cubic-bezier(0.22, 1, 0.36, 1)" }}
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="cf-mono text-[9px] tracking-widest text-[var(--cf-muted)] mb-2">TECHNIQUES TRACKED · {sel.techniques.length}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {sel.techniques.map((t) => (
+                    <span key={t} className="cf-mono text-[10px] px-2 py-1" style={{ border: "1px solid var(--cf-faint)", color: "var(--cf-ink)" }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+          <p className="cf-mono text-[9px] text-[var(--cf-muted)] mt-3">Select any cell — its file opens here.</p>
         </section>
 
         {/* Skill bars */}
         <Reveal>
           <section
-            className="p-8 mb-16"
+            className="p-6 mb-12"
             style={{ border: "2px solid var(--cf-ink)", background: "transparent" }}
           >
             <p className="cf-kicker" style={{ marginBottom: 8 }}>Skill Domains</p>
-            <h2 className="cf-h2" style={{ marginBottom: 32 }}>Current Proficiency</h2>
+            <h2 className="cf-h2" style={{ marginBottom: 24 }}>Current Proficiency</h2>
             <div className="grid sm:grid-cols-2 gap-x-10 gap-y-5">
               {SKILL_DOMAINS.map((skill, i) => (
                 <div key={skill.name}>
@@ -243,26 +327,27 @@ export default function CybersecurityPage() {
           </section>
         </Reveal>
 
-        {/* Tool flip cards */}
-        <section className="mb-16">
+        {/* Tool flip cards: usage on the face, full file on the flip */}
+        <section className="mb-12">
           <Reveal>
             <div className="cf-sec-head">
               <p className="cf-kicker" style={{ marginBottom: 8 }}>Toolstack</p>
               <h2 className="cf-h2">Click any card to flip</h2>
-              <p className="cf-mono text-[10px] text-[var(--cf-muted)]" style={{ marginTop: 10 }}>Hover/tap to reveal usage context from the home lab</p>
+              <p className="cf-mono text-[10px] text-[var(--cf-muted)]" style={{ marginTop: 10 }}>The duty line is on the face of every card — flip for the full file</p>
             </div>
           </Reveal>
 
           {TOOL_GROUPS.map((group, gi) => (
             <Reveal key={group.group} delay={gi * 0.04}>
-              <div className="mb-8">
+              <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1.5 h-4" style={{ background: group.color }} />
                   <p className="cf-mono text-[10px] tracking-wider" style={{ color: group.color }}>{group.group}</p>
+                  <span className="cf-mono text-[9px] text-[var(--cf-muted)]">· {group.tools.length} UNITS</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {group.tools.map((tool) => (
-                    <ToolCard key={tool.name} tool={tool} color={group.color} />
+                <div className="grid grid-cols-1 min-[520px]:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {group.tools.map((tool, ti) => (
+                    <ToolCard key={tool.name} tool={tool} color={group.color} code={group.code} index={ti} />
                   ))}
                 </div>
               </div>
@@ -296,7 +381,7 @@ export default function CybersecurityPage() {
         </Reveal>
 
         {/* Home Lab (merged in from the old /homelab page, round 2) */}
-        <div className="mt-20">
+        <div className="mt-14">
           <HomeLabSection />
         </div>
       </div>

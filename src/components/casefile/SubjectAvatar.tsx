@@ -5,14 +5,16 @@ import { validateAvatarDefinition, type AvatarDefinition } from "@/lib/avatar-en
 
 import avatarJson from "@/data/avatar.json";
 import { AvatarPlayer, type AvatarController } from "./AvatarPlayer";
-import { Tape } from "./Tape";
 
 /**
- * The subject's filed likeness: a procedural portrait built with the Bible
- * Strong Avatar Lab. The definition (src/data/avatar.json) is rendered as
- * inline SVG by AvatarPlayer on the lab's engine (vendored CSP-safe in
- * src/lib/avatar-engine): a paper-toned head on an ink stage, a curly-hair
- * silhouette, round glasses.
+ * The subject's likeness as an exhibit: a procedural portrait built with
+ * the Bible Strong Avatar Lab. The definition (src/data/avatar.json) is
+ * rendered as inline SVG by AvatarPlayer on the lab's engine (vendored
+ * CSP-safe in src/lib/avatar-engine): a paper-toned head on an ink stage,
+ * a curly-hair silhouette, round glasses. The frame is the brutalist
+ * standard (thick ink border, hard offset shadow) and a red block label
+ * names the medium; the same avatar also rides every page as the fixed
+ * companion (AvatarCompanion).
  *
  * Behaviour: the "idle" animation loops gentle glances with ambient drift
  * and automatic blinking. Hovering (or tapping) plays the "wave" greeting
@@ -47,11 +49,10 @@ export function SubjectAvatar() {
   };
 
   return (
-    <div className="cf-exhibit rotate-[-1.6deg]" style={{ maxWidth: 216 }}>
-      <Tape width={96} height={26} top={-13} left={30} rotate={5} opacity={0.85} />
+    <div className="cf-exhibit" style={{ maxWidth: 216 }}>
       <div
         className="cf-exhibit-frame"
-        style={{ background: "#16150f", padding: "9%" }}
+        style={{ background: "#141414", padding: "9%" }}
         onMouseEnter={wave}
         onClick={wave}
       >
@@ -74,6 +75,21 @@ export function SubjectAvatar() {
             }}
           />
         )}
+      </div>
+      <div
+        className="cf-mono"
+        style={{
+          background: "var(--cf-red)",
+          color: "#F4F1EC",
+          fontSize: 9.5,
+          fontWeight: 700,
+          letterSpacing: "0.16em",
+          textTransform: "uppercase",
+          padding: "5px 9px",
+          marginTop: 12,
+        }}
+      >
+        Procedural portrait — generated in code
       </div>
     </div>
   );

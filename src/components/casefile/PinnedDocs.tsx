@@ -34,7 +34,7 @@ const DOCS: Doc[] = [
     alt: "Google Foundations of Cybersecurity certificate issued to Raghav Mahajan, January 8, 2026",
     name: "Google Foundations of Cybersecurity",
     detail: "Issued Jan 8, 2026 · Verify code RMT26QI2LCT7, printed on the document",
-    rot: -0.8,
+    rot: 0,
   },
   {
     src: "/images/certs/security-plus-1.jpg",
@@ -43,7 +43,7 @@ const DOCS: Doc[] = [
     alt: "CompTIA Security+ certificate, SY0-701",
     name: "CompTIA Security+ · SY0-701",
     detail: "Certified Jun 15, 2026 · Expires Jun 15, 2029",
-    rot: 0.7,
+    rot: 0,
   },
   {
     src: "/images/certs/isc2-cc-1.jpg",
@@ -52,7 +52,7 @@ const DOCS: Doc[] = [
     alt: "ISC2 Certified in Cybersecurity certificate, number 4332427",
     name: "ISC2 Certified in Cybersecurity (CC)",
     detail: "Certification 4332427 · Cycle Jul 2026 to Jun 2029",
-    rot: -0.6,
+    rot: 0,
   },
 ];
 
@@ -210,7 +210,7 @@ export function PinnedDocs() {
 
   const head = (
     <div className="cf-sec-head">
-      <h2 className="cf-h2">Exhibit IV — The documents, examined</h2>
+      <h2 className="cf-h2">The documents, examined</h2>
     </div>
   );
 

@@ -1,6 +1,6 @@
 "use client";
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useSpring, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { Download } from "lucide-react";
 import { PageHead } from "@/components/casefile/PageHead";
@@ -147,19 +147,42 @@ I'm ready. This portfolio is the proof.`,
   },
 ];
 
-function StageSection({ stage, index }: { stage: typeof STAGES[0]; index: number }) {
+function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; index: number; nextTitle?: string }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
+  const reduce = useReducedMotion();
+  // The journey rail is scroll-linked: this stage's span of the rail paints
+  // red in proportion to how far the reader has travelled through the
+  // stage, spring-damped, and it drains again on the way back up.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.92", "end 0.55"] });
+  const segScale = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.4 });
 
   return (
     <motion.section
       ref={ref}
       className="relative py-14 sm:py-16"
-      style={{ borderTop: "2px solid var(--cf-ink)" }}
+      style={{ borderTop: "3px solid var(--cf-ink)" }}
       initial={{ opacity: 0 }}
       animate={inView ? { opacity: 1 } : {}}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
+      {/* Journey rail (desktop): this stage's span of the rail paints red
+          as the reader scrolls through it, and its number pops on the line. */}
+      <motion.span
+        className="cf-journey-seg"
+        aria-hidden="true"
+        style={{ scaleY: reduce ? 1 : segScale }}
+      />
+      <motion.span
+        className="cf-journey-node cf-mono"
+        data-final={stage.id === STAGES.length ? "true" : undefined}
+        aria-hidden="true"
+        initial={reduce ? false : { scale: 0.4, opacity: 0 }}
+        animate={inView ? { scale: 1, opacity: 1 } : {}}
+        transition={{ type: "spring", stiffness: 420, damping: 18, delay: 0.1 }}
+      >
+        {String(stage.id).padStart(2, "0")}
+      </motion.span>
       {/* Grid-breaker: the target stamp sits on the section rule itself. */}
       {stage.id === 5 && (
         <Stamp
@@ -209,6 +232,11 @@ function StageSection({ stage, index }: { stage: typeof STAGES[0]; index: number
               </span>
             ))}
           </div>
+
+          {/* Transition to the next leg of the journey */}
+          <p className="cf-mono text-[9px] tracking-widest" style={{ color: "var(--cf-red)" }}>
+            {nextTitle ? `▼ NEXT LEG — ${nextTitle.toUpperCase()}` : "■ FINAL LEG — TARGET LOCKED"}
+          </p>
         </motion.div>
 
         {/* Narrative */}
@@ -217,9 +245,24 @@ function StageSection({ stage, index }: { stage: typeof STAGES[0]; index: number
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="cf-kicker">
-            {stage.label} · {stage.period}
-          </p>
+          <div className="flex items-center gap-3">
+            {/* Number chip: the rail node, in flow, below the lg breakpoint */}
+            <span
+              className="cf-mono lg:hidden flex items-center justify-center shrink-0"
+              style={{
+                width: 34, height: 34, fontSize: 12, fontWeight: 700,
+                background: stage.id === STAGES.length ? "var(--cf-red)" : "var(--cf-paper)",
+                color: stage.id === STAGES.length ? "var(--cf-paper)" : "var(--cf-ink)",
+                border: "2.5px solid var(--cf-ink)",
+              }}
+              aria-hidden="true"
+            >
+              {String(stage.id).padStart(2, "0")}
+            </span>
+            <p className="cf-kicker">
+              {stage.label} · {stage.period}
+            </p>
+          </div>
           <h2 className="cf-h2 mt-3 mb-6">{stage.title}</h2>
           <div className="space-y-4 max-w-3xl">
             {stage.narrative.split("\n\n").map((para, i) => (
@@ -234,7 +277,7 @@ function StageSection({ stage, index }: { stage: typeof STAGES[0]; index: number
               </motion.p>
             ))}
           </div>
-          <p className="cf-note mt-6">File section {index + 1} of {STAGES.length}</p>
+          <p className="cf-note mt-6">Section {index + 1} of {STAGES.length}</p>
         </motion.div>
       </div>
     </motion.section>
@@ -253,7 +296,7 @@ export default function AboutPage() {
       />
       <div className="cf-wrap">
         <PageHead
-          kicker="About, subject history"
+          kicker="About — the path in"
           title={
             <>
               The Story Behind<br />
@@ -269,9 +312,9 @@ export default function AboutPage() {
             <SubjectAvatar />
             <figcaption>
               <p className="cf-caption">
-                <b>Filed likeness.</b> The subject, redrawn as a procedural portrait:
+                <b>The likeness.</b> The subject, redrawn as a procedural portrait:
                 curls, glasses and all, generated in code with the Bible Strong Avatar
-                Lab and filed here in place of a second photograph. It blinks on its
+                Lab, shown here in place of a second photograph. It blinks on its
                 own. Hover to get a wave back.
               </p>
               <Stamp
@@ -292,7 +335,7 @@ export default function AboutPage() {
         {/* File contents: the stage nav, kept as index rows with the same anchors */}
         <Reveal delay={0.05} className="mt-12 mb-4">
           <div className="cf-sec-head relative">
-            <p className="cf-kicker">File contents</p>
+            <p className="cf-kicker">Contents</p>
             <h2 className="cf-h2 mt-2">Five Stages</h2>
             <Stamp
               tone="ink"
@@ -303,7 +346,7 @@ export default function AboutPage() {
               delay={300}
               className="absolute -top-5 right-2 sm:right-8 text-[11px]"
             >
-              Subject history
+              The path in
             </Stamp>
           </div>
           <div>
@@ -320,16 +363,18 @@ export default function AboutPage() {
           </div>
         </Reveal>
 
-        {/* Stages */}
-        {STAGES.map((stage, i) => (
-          <div key={stage.id} id={`stage-${stage.id}`}>
-            <StageSection stage={stage} index={i} />
-          </div>
-        ))}
+        {/* Stages, tied together by the journey rail */}
+        <div className="cf-journey">
+          {STAGES.map((stage, i) => (
+            <div key={stage.id} id={`stage-${stage.id}`}>
+              <StageSection stage={stage} index={i} nextTitle={STAGES[i + 1]?.title} />
+            </div>
+          ))}
+        </div>
 
         {/* CTA */}
         <Reveal delay={0.05}>
-          <section className="py-16" style={{ borderTop: "2px solid var(--cf-ink)" }}>
+          <section className="py-16" style={{ borderTop: "3px solid var(--cf-ink)" }}>
             <p className="cf-kicker">What&apos;s next</p>
             <h2 className="cf-h2 mt-4 mb-4">
               Ready to see the <span className="cf-u-red">work</span>?

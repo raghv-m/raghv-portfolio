@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { prisma } from "@/lib/prisma";
 import { sendMailBatch } from "@/lib/mail";
+import { site } from "@/config/site";
 import { z } from "zod";
 import { apiError, withApiErrors, zodMessage } from "@/lib/api";
 
@@ -23,11 +24,9 @@ async function handlePOST(req: NextRequest) {
   const subscribers = await prisma.subscriber.findMany({ where: { active: true }, select: { email: true, name: true, unsubscribeToken: true } });
   if (subscribers.length === 0) return NextResponse.json({ ok: true, sent: 0 });
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "";
-
   const items = subscribers.map((sub) => {
-    const unsubLink = `${baseUrl}/unsubscribe?token=${sub.unsubscribeToken}`;
-    const footer = `<p style="font-size:11px;color:#555;margin-top:32px;border-top:1px solid #222;padding-top:16px">You're receiving this because you subscribed to Raghav's Cyber Daily. <a href="${unsubLink}" style="color:#d4a017">Unsubscribe</a></p>`;
+    const unsubLink = `${site.url}/unsubscribe?token=${sub.unsubscribeToken}`;
+    const footer = `<p style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;line-height:1.6;color:#57544C;margin-top:32px;border-top:2px solid #141414;padding-top:16px;">You're receiving this because you subscribed to Blue Team Brief. <a href="${unsubLink}" style="color:#AD0117;">Unsubscribe</a></p>`;
     return { to: sub.email, subject: parsed.data.subject, html: parsed.data.html + footer };
   });
 

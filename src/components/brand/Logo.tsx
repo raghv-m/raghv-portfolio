@@ -1,61 +1,58 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 /**
- * The site mark: a case-file folder with RM initials and the red YEG tag.
- * Single source of truth for the logo on the web. The folder and initials use
- * currentColor, so the mark follows the theme (ink on paper, cream on
- * charcoal); the tag stays brand red. The same artwork lives in
- * public/logo.svg (favicon, manifest, OG image, email PNGs derive from it).
- * To change the logo site-wide, replace this artwork and public/logo.svg.
+ * The site mark: "RM BLOCK" (picked by the owner, Nov 2026). An ink block
+ * carrying paper RM letters, with a red block offset behind it as a hard
+ * shadow. The artwork lives in public/logo.svg (static) and
+ * public/logo-animated.svg (the red shadow jumps between offsets in hard
+ * steps, a 2.4s stepped loop, no easing); this component only chooses
+ * which file to show, so swapping the mark site-wide means replacing
+ * those two assets.
+ *
+ * The header passes `animated` and gets the moving mark, except under
+ * prefers-reduced-motion, where it falls back to the static file.
+ * Everywhere else (footer, and any non-header use) is static. The same
+ * static artwork feeds the OG image and email headers via /logo.svg.
  */
 export function Logo({
   size = 28,
   className = "",
   style,
+  animated = false,
 }: {
   size?: number;
   className?: string;
   style?: React.CSSProperties;
+  animated?: boolean;
 }) {
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    if (!animated) return;
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setReducedMotion(query.matches);
+    const onChange = (event: MediaQueryListEvent) => setReducedMotion(event.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, [animated]);
+
+  const src = animated && !reducedMotion ? "/logo-animated.svg" : "/logo.svg";
+
   return (
-    <svg
+    // Plain img on purpose: the animated mark's motion lives inside the
+    // SVG file itself, which only runs when loaded as an image.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
       width={size}
       height={size}
-      viewBox="0 0 150 150"
-      role="img"
-      aria-label="Raghav Mahajan, case file logo"
+      alt=""
+      aria-hidden="true"
       className={className}
       style={style}
-    >
-      <path
-        d="M14 42 L58 42 L70 58 L136 58 L136 128 L14 128 Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="7"
-        strokeLinejoin="round"
-      />
-      <text
-        x="34"
-        y="112"
-        fontFamily="var(--font-jetbrains), 'JetBrains Mono', ui-monospace, monospace"
-        fontWeight="700"
-        fontSize="40"
-        fill="currentColor"
-      >
-        RM
-      </text>
-      <g transform="rotate(3 115 30)">
-        <rect x="92" y="20" width="46" height="20" fill="#2C3480" />
-        <text
-          x="115"
-          y="35"
-          textAnchor="middle"
-          fontFamily="var(--font-jetbrains), 'JetBrains Mono', ui-monospace, monospace"
-          fontWeight="700"
-          fontSize="13"
-          fill="#ffffff"
-        >
-          YEG
-        </text>
-      </g>
-    </svg>
+    />
   );
 }

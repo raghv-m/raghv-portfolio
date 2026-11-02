@@ -21,7 +21,7 @@ export const invoicing = {
   /** The legal party on contracts and invoices. A sole proprietor contracts in their own name. */
   legalName: tradeNameRegistered ? `Raghav Mahajan, operating as ${tradeName}` : "Raghav Mahajan (sole proprietor)",
   tagline: "Web Development & Cybersecurity",
-  addressLines: ["Unit 303, 107 Watt Common SW", "Edmonton, AB T6X 3C6", "Canada"],
+  addressLines: ["Unit 303, 107 Watt Common SW", "Edmonton, AB T6X 2C6", "Canada"],
   phone: "825-343-1168",
   /** Contact address printed on invoices and contracts (forwarded to the owner's inbox). */
   email: "billing@raghv.dev",

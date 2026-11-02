@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
+import { motion, useInView, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
-import { Briefcase, Shield, Code2, ChevronDown, MapPin, Calendar, ArrowRight } from "lucide-react";
+import { Briefcase, Shield, Code2, ChevronDown, ArrowRight } from "lucide-react";
 import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
+import { RailFill } from "@/components/casefile/RailFill";
 import { CareerSection } from "@/components/sections/CareerSection";
 
 
@@ -17,8 +18,9 @@ const ROLES = [
     clients: "ADESA Auction & Covenant Health",
     location: "Nisku & Edmonton, AB",
     period: "Apr 2023 – Present",
+    startKey: "2023-04-b",
     color: "var(--gold)",
-    accentHex: "#2C3480",
+    accentHex: "#AD0117",
     type: "SECURITY OPS",
     active: true,
     summary: "Front-line physical security operations at high-volume commercial and healthcare facilities. Built the operational mindset I bring to cybersecurity: alert monitoring, incident escalation, and documentation under pressure.",
@@ -44,8 +46,9 @@ const ROLES = [
     clients: "Retail Locations",
     location: "Edmonton, AB",
     period: "Apr 2023 – Present",
+    startKey: "2023-04-a",
     color: "var(--gold)",
-    accentHex: "#2C3480",
+    accentHex: "#AD0117",
     type: "SECURITY OPS",
     active: true,
     summary: "Loss prevention and real-time surveillance at retail environments: constant threat assessment, behavioral analysis, and rapid response.",
@@ -69,8 +72,9 @@ const ROLES = [
     clients: "Multiple Clients",
     location: "Edmonton, AB",
     period: "Aug 2022 – Present",
+    startKey: "2022-08",
     color: "var(--blue)",
-    accentHex: "#4488ff",
+    accentHex: "#141414",
     type: "SECURE DEV",
     active: true,
     summary: "Full-stack development with a security-conscious approach. This is where I learned secure development practices, Linux server administration, and applied OWASP principles to production systems.",
@@ -97,6 +101,7 @@ const ROLES = [
     clients: "Restaurant Operations",
     location: "Edmonton, AB",
     period: "Feb 2025 – Jul 2025",
+    startKey: "2025-02",
     color: "var(--text-muted)",
     accentHex: "#666",
     type: "LEADERSHIP",
@@ -122,6 +127,7 @@ const ROLES = [
     clients: "Restaurant Operations",
     location: "Edmonton, AB",
     period: "Sep 2022 – Dec 2025",
+    startKey: "2022-09",
     color: "var(--text-muted)",
     accentHex: "#555",
     type: "OPERATIONS",
@@ -140,6 +146,10 @@ const ROLES = [
   },
 ];
 
+/* Storyboard order: chronological by start date, earliest frame first. The
+   story runs forward to the present, then closes on the target frame. */
+const FRAMES = [...ROLES].sort((a, b) => a.startKey.localeCompare(b.startKey));
+
 const STATS = [
   { value: "3+", label: "Years in Security" },
   { value: "5", label: "Roles Held" },
@@ -153,34 +163,63 @@ const STAMP_S = [1.04, 0.95, 1.07];
 const STAMP_O = [0.93, 0.86, 0.96];
 const STAMP_BW = [2.4, 3.2, 2.9];
 
-function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
+function startYear(period: string) {
+  const m = period.match(/\d{4}/);
+  return m ? m[0] : "";
+}
+
+function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: number; total: number }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
+  const reduce = useReducedMotion();
 
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+      className="cf-tl-item"
+      style={{ paddingBottom: 34 }}
     >
+      {/* Node on the rail: red while the role is still running; it pops
+          in with a spring as its frame arrives */}
+      <motion.span
+        className="cf-tl-node"
+        data-hot={role.active ? "true" : undefined}
+        aria-hidden="true"
+        initial={reduce ? false : { scale: 0.3 }}
+        animate={inView ? { scale: 1 } : {}}
+        transition={{ type: "spring", stiffness: 480, damping: 19, delay: 0.12 }}
+      />
+
+      {/* Date block: left of the rail on desktop, stacked on mobile */}
+      <div className="cf-tl-date">
+        <p className="cf-display" style={{ fontSize: 30, lineHeight: 1, color: "var(--cf-ink)" }}>
+          {startYear(role.period)}
+        </p>
+        <p className="cf-mono text-[10px] mt-2" style={{ color: "var(--cf-red)" }}>
+          FRAME {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+        </p>
+        <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">{role.period}</p>
+        <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">{role.location}</p>
+      </div>
+
+      {/* Storyboard panel */}
       <div
-        className="overflow-hidden cursor-pointer group"
-        onClick={() => setOpen(!open)}
+        className="cf-panel"
+        data-hot={role.active ? "true" : undefined}
         style={{
-          border: "1.5px solid var(--cf-ink)",
-          background: open ? "var(--cf-paper-2)" : "transparent",
+          border: "2px solid var(--cf-ink)",
+          background: "var(--cf-paper-2)",
         }}
       >
-        {/* Top file rule */}
         <div className="h-[3px] w-full" style={{ background: "var(--cf-ink)" }} />
 
-        {/* Card header */}
         <div className="p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-4">
-              {/* Icon in a bordered square */}
               <div
                 className="w-11 h-11 flex items-center justify-center shrink-0 mt-0.5"
                 style={{ background: "transparent", border: "1.5px solid var(--cf-ink)" }}
@@ -189,7 +228,6 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
               </div>
 
               <div>
-                {/* Badges row */}
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <span
                     className="cf-mono text-[9px] tracking-[0.2em] px-2 py-0.5"
@@ -199,7 +237,7 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
                   </span>
                   {role.active && (
                     <Stamp
-                      tone="green"
+                      tone="red"
                       r={STAMP_R[index % STAMP_R.length]}
                       s={STAMP_S[index % STAMP_S.length]}
                       o={STAMP_O[index % STAMP_O.length]}
@@ -221,34 +259,33 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
                 )}
               </div>
             </div>
-
-            <ChevronDown
-              className="w-4 h-4 text-[var(--cf-muted)] shrink-0 mt-1 transition-transform duration-300"
-              style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
-            />
           </div>
 
-          {/* Meta row */}
-          <div className="flex flex-wrap gap-4 mt-4 pl-[60px]">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-3 h-3 text-[var(--cf-muted)]" />
-              <span className="cf-mono text-[10px] text-[var(--cf-muted)]">{role.location}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-3 h-3 text-[var(--cf-muted)]" />
-              <span className="cf-mono text-[10px] text-[var(--cf-muted)]">{role.period}</span>
-            </div>
-          </div>
+          {/* The story of the frame, always on the board */}
+          <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed mt-4">{role.summary}</p>
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 mt-4 pl-[60px]">
+          {/* Evidence chips */}
+          <div className="flex flex-wrap gap-1.5 mt-4">
             {role.tags.map((t) => (
               <span key={t} className="tag text-[9px]">{t}</span>
             ))}
           </div>
+
+          {/* Expand the full frame */}
+          <button
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            className="cf-mono text-[10px] tracking-widest mt-5 flex items-center gap-2"
+            style={{ color: "var(--cf-red)" }}
+          >
+            {open ? "CLOSE FRAME" : "FULL FRAME — DUTIES + SKILL TRANSFER"}
+            <ChevronDown
+              className="w-3.5 h-3.5 transition-transform duration-300"
+              style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+            />
+          </button>
         </div>
 
-        {/* Expanded content */}
         <AnimatePresence>
           {open && (
             <motion.div
@@ -262,9 +299,6 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
                 className="px-6 pb-6 pt-5 space-y-6"
                 style={{ borderTop: "1px solid var(--cf-faint)" }}
               >
-                <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed">{role.summary}</p>
-
-                {/* Bullets */}
                 <div>
                   <p className="cf-mono text-[10px] tracking-[0.2em] mb-3" style={{ color: "var(--cf-ink)" }}>
                     RESPONSIBILITIES
@@ -288,10 +322,9 @@ function RoleCard({ role, index }: { role: typeof ROLES[0]; index: number }) {
                   </ul>
                 </div>
 
-                {/* Skill transfer grid */}
                 <div
                   className="p-4"
-                  style={{ background: "var(--cf-paper-2)", border: "1px solid var(--cf-faint)" }}
+                  style={{ background: "var(--cf-paper)", border: "1px solid var(--cf-faint)" }}
                 >
                   <p className="cf-mono text-[10px] tracking-[0.2em] mb-3" style={{ color: "var(--cf-ink)" }}>
                     CYBERSECURITY SKILL TRANSFER
@@ -326,7 +359,7 @@ export default function ExperiencePage() {
               Operator <span className="cf-u-red">History</span>
             </>
           }
-          lede="Every role has built the mindset of a security professional, from physical access control to secure software development. Click any card to expand."
+          lede="The work history as a storyboard: five frames on one rail, in the order they happened. Each frame carries the story, the evidence chips, and the full duty list one click down."
         />
 
         {/* Stats: a mono ruled strip, with a stamp sitting on its top rule */}
@@ -361,12 +394,56 @@ export default function ExperiencePage() {
           </div>
         </Reveal>
 
-        {/* Role entries */}
-        <Reveal delay={0.05} className="mt-12">
-          <div className="space-y-5">
-            {ROLES.map((role, i) => (
-              <RoleCard key={i} role={role} index={i} />
+        {/* Storyboard rail */}
+        <Reveal delay={0.05} className="mt-16">
+          <div className="cf-tl">
+            <RailFill />
+            {FRAMES.map((role, i) => (
+              <FramePanel key={role.startKey} role={role} index={i} total={FRAMES.length + 1} />
             ))}
+
+            {/* Closing frame: the target the whole board points at */}
+            <div className="cf-tl-item">
+              <motion.span
+                className="cf-tl-node"
+                data-hot="true"
+                aria-hidden="true"
+                initial={{ scale: 0.3 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 480, damping: 19, delay: 0.12 }}
+              />
+              <div className="cf-tl-date">
+                <p className="cf-display" style={{ fontSize: 30, lineHeight: 1, color: "var(--cf-red)" }}>
+                  2026
+                </p>
+                <p className="cf-mono text-[10px] mt-2" style={{ color: "var(--cf-red)" }}>
+                  FRAME {String(FRAMES.length + 1).padStart(2, "0")} / {String(FRAMES.length + 1).padStart(2, "0")}
+                </p>
+                <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">Target: 2025–2026</p>
+              </div>
+              <div
+                className="cf-panel"
+                data-hot="true"
+                style={{
+                  border: "3px solid var(--cf-ink)",
+                  background: "transparent",
+                }}
+              >
+                <div className="h-[4px] w-full" style={{ background: "var(--cf-red)" }} />
+                <div className="p-6">
+                <p className="cf-mono text-[9px] tracking-[0.2em] mb-2" style={{ color: "var(--cf-red)" }}>
+                  NEXT FRAME — NOT YET SHOT
+                </p>
+                <h3 className="cf-display text-xl text-[var(--cf-ink)]">SOC Analyst, Tier 1</h3>
+                <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed mt-2" style={{ maxWidth: "62ch" }}>
+                  The role every frame on this rail is aimed at. The lab, the certs, and the
+                  incident mindset that started in a kitchen and a guard booth, pointed at a
+                  SOC desk in Edmonton or remote.
+                </p>
+                </div>
+              </div>
+            </div>
           </div>
         </Reveal>
 

@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Shield, Code2, Server, Brain } from "lucide-react";
 import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
-import { Tape } from "@/components/casefile/Tape";
 import { Magnetic } from "@/components/casefile/Magnetic";
+import { RailFill } from "@/components/casefile/RailFill";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
@@ -103,7 +103,7 @@ const PROJECTS: {
     color: "var(--blue)",
     description: "Real-time messaging application with end-to-end encrypted channels, file sharing, and presence indicators. WebSocket server with Redis pub/sub for horizontal scaling. Security-first implementation: no message content logged on the server, ephemeral session keys.",
     impact: ["WebSocket authentication with JWT rotation", "Redis pub/sub for scalable real-time events", "No plaintext message storage, forward secrecy design"],
-    github: "https://github.com/HomeLab-Raghav",
+    github: "https://github.com/raghv-m/social_media_app",
     icon: Code2,
   },
   {
@@ -117,7 +117,7 @@ const PROJECTS: {
     color: "var(--gold)",
     description: "Library of custom Wazuh detection rules authored for the home lab environment. Covers SSH brute force detection, Nmap scan detection, Hydra credential attack identification, web application attack patterns (Gobuster, Dirb), and Windows event log rules for domain controller anomalies.",
     impact: ["SSH brute force: detect after 5 failed attempts in 60s", "Nmap SYN scan detection via iptables integration", "Wazuh active response: automatic IP block on trigger"],
-    github: "https://github.com/HomeLab-Raghav",
+    github: "https://github.com/HomeLab-Raghav/docker-soc-lab",
     icon: Shield,
   },
   {
@@ -131,7 +131,8 @@ const PROJECTS: {
     color: "var(--text-muted)",
     description: "Browser-based 3D chess game built with Three.js. Full chess rules with check/checkmate detection via chess.js. Smooth piece animations, interactive camera rotation, and legal move highlighting. Used as a deep-dive into 3D graphics and WebGL rendering, directly applicable to security visualization work.",
     impact: ["Custom 3D piece models in WebGL", "Full legal move validation engine", "Animated camera and piece movement system"],
-    github: "https://github.com/HomeLab-Raghav",
+    github: "https://github.com/raghv-m/chess",
+    live: "https://chess-six-virid.vercel.app",
     icon: Brain,
   },
   {
@@ -172,9 +173,9 @@ const PROJECTS: {
     statusColor: "var(--green)",
     stack: ["Next.js 15", "React Three Fiber", "Framer Motion", "Prisma", "NextAuth"],
     color: "var(--gold)",
-    description: "This portfolio, built with security and premium UX as primary requirements. Full security hardening: CSP headers, CSRF protection on forms, rate limiting (3 contacts/hour), IP hashing before storage, honeypot field, no raw IPs ever stored. R3F 3D particle field, custom gold cursor and animated terminal.",
+    description: "This portfolio, built with security as the primary requirement. Full security hardening: CSP headers, CSRF protection on forms, rate limiting (3 contacts/hour), IP hashing before storage, honeypot field, no raw IPs ever stored. The current design is a brutalist system in paper, ink and red, with an animated terminal HUD hero, scroll-driven reveals, and a procedural avatar that follows the reader across every page.",
     impact: ["CSP + HSTS + X-Frame-Options security headers", "CSRF tokens + Zod validation on all API routes", "Rate limiting with RateLimiterMemory (3/hour contact)", "IP hashing via salted hash, never raw IPs in DB"],
-    github: "https://github.com/HomeLab-Raghav",
+    github: "https://github.com/raghv-m/raghv-portfolio",
     icon: Shield,
   },
   {
@@ -209,8 +210,12 @@ const PROJECTS: {
 
 const CATEGORIES: Category[] = ["All", "Security", "Development", "Infrastructure"];
 
-const STATUS_TONE: Record<string, "red" | "gold" | "green" | "ink"> = {
-  ACTIVE: "green",
+/* Status stamps stay inside the poster palette: red for live/active work,
+   the muted stamp tone for in-progress, ink for shipped. The label text
+   carries the meaning, never a green. */
+const STATUS_TONE: Record<string, "red" | "gold" | "ink"> = {
+  ACTIVE: "red",
+  LIVE: "red",
   "IN PROGRESS": "gold",
   SHIPPED: "ink",
 };
@@ -220,114 +225,216 @@ const STAMP_S = [0.97, 1.05, 0.93, 1.02, 0.95, 1.08, 0.94, 1.0, 1.04, 0.92, 1.06
 const STAMP_O = [0.9, 0.85, 0.94, 0.83, 0.92, 0.88, 0.96, 0.84, 0.91, 0.87, 0.93];
 const STAMP_BW = [2.5, 3.1, 2.1, 3.4, 2.3, 2.8, 3.3, 2.0, 2.7, 3.0, 2.4];
 
-function ProjectCard({ project, index }: { project: typeof PROJECTS[0]; index: number }) {
-  const tilt = index % 2 === 1 ? 0.7 : -0.5;
+function LinkRow({ project, big = false }: { project: typeof PROJECTS[0]; big?: boolean }) {
+  const cls = big ? "cf-mono text-[11px]" : "cf-mono text-[9px]";
+  return (
+    <>
+      {project.live && (
+        <a href={project.live} target="_blank" rel="noopener noreferrer" className={`cf-ulink ${cls}`}>
+          ↗ Live site
+        </a>
+      )}
+      {project.github && (
+        <a href={project.github} target="_blank" rel="noopener noreferrer" className={`cf-ulink flex items-center gap-1.5 ${cls}`}>
+          <GithubIcon /> GitHub
+        </a>
+      )}
+    </>
+  );
+}
+
+/* Vic Cameleers, pulled off the rail and given the featured panel: the one
+   client site that is live on the public internet, with its link loud. */
+function FeaturedVic({ project }: { project: typeof PROJECTS[0] }) {
   return (
     <motion.article
-      layout
-      initial={{ opacity: 0, y: 20, rotate: tilt }}
-      whileInView={{ opacity: 1, y: 0, rotate: tilt }}
-      exit={{ opacity: 0, scale: 0.96, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }}
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: (index % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
-      className="card-lift group relative"
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
       style={{
+        border: "3px solid var(--cf-ink)",
         background: "var(--cf-paper-2)",
-        border: project.featured ? "2px solid var(--cf-ink)" : "1px solid var(--cf-ink)",
+        boxShadow: "10px 10px 0 var(--cf-shadow)",
       }}
     >
-      {project.featured && (
-        <Tape
-          width={92 + index * 9}
-          height={26}
-          top={-13}
-          left={26 + index * 31}
-          rotate={-7 + index * 3.5}
-          opacity={0.78 + index * 0.05}
-        />
-      )}
-
-      {/* Card header stripe */}
-      <div style={{ height: 4, background: project.color }} />
-
-      <div className="p-6">
-        <div className="flex items-start justify-between gap-2 mb-3">
-          <div>
-            <div className="flex items-center gap-2 mb-2 flex-wrap">
-              {project.featured && (
-                <span className="cf-mono text-[8px] tracking-widest px-1.5 py-0.5"
-                  style={{ color: "var(--cf-gold)", border: "1px solid var(--cf-gold)" }}>
-                  FEATURED
-                </span>
-              )}
-              <Stamp
-                tone={STATUS_TONE[project.status] ?? "ink"}
-                r={STAMP_R[index % STAMP_R.length]}
-                s={STAMP_S[index % STAMP_S.length]}
-                o={STAMP_O[index % STAMP_O.length]}
-                bw={STAMP_BW[index % STAMP_BW.length]}
-                delay={index * 60}
-                className="text-[8px]"
-              >
-                {project.status}
-              </Stamp>
-            </div>
-            <h2 className="cf-display text-lg text-[var(--cf-ink)] group-hover:text-[var(--cf-red)] transition-colors">
-              {project.title}
-            </h2>
-            <p className="cf-mono text-[10px] text-[var(--cf-muted)]">{project.subtitle}</p>
-            <p className="cf-mono text-[9px] text-[var(--cf-muted)] mt-1">
-              CASE {String(project.id).padStart(2, "0")} · {project.category.toUpperCase()}
-            </p>
+      <div style={{ height: 5, background: "var(--cf-red)" }} />
+      <div className="p-6 sm:p-8 grid lg:grid-cols-[1fr_320px] gap-8">
+        <div>
+          <div className="flex flex-wrap items-center gap-3 mb-3">
+            <span
+              className="cf-mono text-[9px] tracking-widest px-2 py-0.5"
+              style={{ background: "var(--cf-red)", color: "var(--cf-paper)" }}
+            >
+              FEATURED — CLIENT WORK
+            </span>
+            <Stamp tone="red" r={-2.7} s={1.0} o={0.92} bw={2.7} delay={150} className="text-[9px]">
+              {project.status}
+            </Stamp>
           </div>
-          <div
-            className="w-9 h-9 flex items-center justify-center shrink-0"
-            style={{ background: "var(--cf-paper)", border: "1px solid var(--cf-ink)" }}
+          <h2 className="cf-display text-3xl sm:text-4xl text-[var(--cf-ink)] leading-none">
+            {project.title}
+          </h2>
+          <p className="cf-mono text-[11px] text-[var(--cf-muted)] mt-2">{project.subtitle}</p>
+          <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed mt-4" style={{ maxWidth: "62ch" }}>
+            {project.description}
+          </p>
+          <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2 mt-5">
+            {project.impact.map((i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 mt-1.5 shrink-0" style={{ background: "var(--cf-red)" }} />
+                <p className="cf-mono text-[10px] text-[var(--cf-ink-soft)]">{i}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-1 mt-5">
+            {project.stack.map((s) => <span key={s} className="tag">{s}</span>)}
+          </div>
+        </div>
+
+        {/* The live link, set as a red block the size of a billboard corner */}
+        <div className="flex flex-col justify-center gap-4">
+          <a
+            href={project.live}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block p-5 group"
+            style={{ background: "var(--cf-red)", boxShadow: "6px 6px 0 var(--cf-ink)" }}
           >
-            <project.icon className="w-4 h-4" style={{ color: project.color }} />
-          </div>
-        </div>
-
-        <p className="text-[var(--cf-ink-soft)] text-xs leading-relaxed mb-4">{project.description}</p>
-
-        <div className="space-y-2 mb-4">
-          {project.impact.slice(0, 3).map((i) => (
-            <div key={i} className="flex items-start gap-2">
-              <span className="w-1.5 h-1.5 mt-1.5 shrink-0" style={{ background: "var(--cf-red)" }} />
-              <p className="cf-mono text-[9px] text-[var(--cf-ink-soft)]">{i}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-wrap gap-1 mb-4">
-          {project.stack.map((s) => <span key={s} className="tag">{s}</span>)}
-        </div>
-
-        <div className="flex items-center gap-3 pt-3" style={{ borderTop: "1px solid var(--cf-faint)" }}>
-          {project.live && (
-            <a href={project.live} target="_blank" rel="noopener noreferrer"
-              className="cf-ulink cf-mono text-[9px]">
-              ↗ Live site
-            </a>
-          )}
-          {project.github && (
-            <a href={project.github} target="_blank" rel="noopener noreferrer"
-              className="cf-ulink flex items-center gap-1.5 cf-mono text-[9px]">
-              <GithubIcon /> GitHub
-            </a>
-          )}
-          <div className="flex-1" />
-          <span className="cf-mono text-[9px]" style={{ color: "var(--cf-red)" }}># {String(project.id).padStart(2, "0")}</span>
+            <span className="cf-mono text-[9px] tracking-widest block" style={{ color: "var(--cf-paper)", opacity: 0.8 }}>
+              LIVE PREVIEW
+            </span>
+            <span className="cf-display text-2xl block mt-1 group-hover:underline" style={{ color: "var(--cf-paper)" }}>
+              viccameleers.com ↗
+            </span>
+            <span className="cf-mono text-[9px] block mt-2" style={{ color: "var(--cf-paper)", opacity: 0.8 }}>
+              REMOVALS · CRANBOURNE / MELBOURNE, AU
+            </span>
+          </a>
+          <p className="cf-mono text-[9px] text-[var(--cf-muted)] leading-relaxed">
+            First international client. Designed, built and shipped solo from
+            Edmonton, still live and taking enquiries.
+          </p>
         </div>
       </div>
     </motion.article>
   );
 }
 
+/* One project on the storyboard rail. The project data carries no dates, so
+   the rail column keys on the case number instead of inventing years. */
+function ProjectFrame({ project, index }: { project: typeof PROJECTS[0]; index: number }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="cf-tl-item"
+      style={{ paddingBottom: 30 }}
+    >
+      <motion.span
+        className="cf-tl-node"
+        data-hot={project.featured ? "true" : undefined}
+        aria-hidden="true"
+        initial={reduce ? false : { scale: 0.3 }}
+        whileInView={{ scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ type: "spring", stiffness: 480, damping: 19, delay: 0.12 }}
+      />
+
+      <div className="cf-tl-date">
+        <p className="cf-display" style={{ fontSize: 30, lineHeight: 1, color: "var(--cf-ink)" }}>
+          {String(project.id).padStart(2, "0")}
+        </p>
+        <p className="cf-mono text-[10px] mt-2" style={{ color: "var(--cf-red)" }}>
+          CASE {String(project.id).padStart(2, "0")}
+        </p>
+        <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">{project.category.toUpperCase()}</p>
+        <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">{project.status}</p>
+      </div>
+
+      <article
+        className="cf-panel group relative"
+        data-hot={project.featured ? "true" : undefined}
+        style={{
+          background: "var(--cf-paper-2)",
+          border: project.featured ? "3px solid var(--cf-ink)" : "2px solid var(--cf-ink)",
+        }}
+      >
+        <div style={{ height: 4, background: project.color }} />
+        <div className="p-6">
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <div>
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                {project.featured && (
+                  <span className="cf-mono text-[8px] tracking-widest px-1.5 py-0.5"
+                    style={{ color: "var(--cf-gold)", border: "1px solid var(--cf-gold)" }}>
+                    FEATURED
+                  </span>
+                )}
+                <Stamp
+                  tone={STATUS_TONE[project.status] ?? "ink"}
+                  r={STAMP_R[index % STAMP_R.length]}
+                  s={STAMP_S[index % STAMP_S.length]}
+                  o={STAMP_O[index % STAMP_O.length]}
+                  bw={STAMP_BW[index % STAMP_BW.length]}
+                  delay={index * 60}
+                  className="text-[8px]"
+                >
+                  {project.status}
+                </Stamp>
+              </div>
+              <h2 className="cf-display text-xl text-[var(--cf-ink)] group-hover:text-[var(--cf-red)] transition-colors">
+                {project.title}
+              </h2>
+              <p className="cf-mono text-[10px] text-[var(--cf-muted)]">{project.subtitle}</p>
+            </div>
+            <div
+              className="w-9 h-9 flex items-center justify-center shrink-0"
+              style={{ background: "var(--cf-paper)", border: "1px solid var(--cf-ink)" }}
+            >
+              <project.icon className="w-4 h-4" style={{ color: project.color }} />
+            </div>
+          </div>
+
+          <p className="text-[var(--cf-ink-soft)] text-xs leading-relaxed mb-4" style={{ maxWidth: "78ch" }}>
+            {project.description}
+          </p>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-2 mb-4">
+            {project.impact.map((i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 mt-1.5 shrink-0" style={{ background: "var(--cf-red)" }} />
+                <p className="cf-mono text-[9px] text-[var(--cf-ink-soft)]">{i}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-1 mb-4">
+            {project.stack.map((s) => <span key={s} className="tag">{s}</span>)}
+          </div>
+
+          <div className="flex items-center gap-3 pt-3" style={{ borderTop: "1px solid var(--cf-faint)" }}>
+            <LinkRow project={project} />
+            <div className="flex-1" />
+            <span className="cf-mono text-[9px]" style={{ color: "var(--cf-red)" }}>
+              # {String(project.id).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
+      </article>
+    </motion.div>
+  );
+}
+
 export default function ProjectsPage() {
   const [filter, setFilter] = useState<Category>("All");
 
-  const filtered = filter === "All" ? PROJECTS : PROJECTS.filter((p) => p.category === filter);
+  const vic = PROJECTS.find((p) => p.title === "Vic Cameleers")!;
+  const showVic = filter === "All" || filter === vic.category;
+  const rail = PROJECTS.filter((p) => p.id !== vic.id && (filter === "All" || p.category === filter));
 
   return (
     <div className="pb-32">
@@ -335,7 +442,7 @@ export default function ProjectsPage() {
         <PageHead
           kicker="Projects"
           title={<>Operational <span className="cf-u-red">Evidence</span></>}
-          lede="12 projects spanning security engineering, full-stack development, and infrastructure operations. Built in the home lab, shipped to production, and documented in detail."
+          lede="12 projects spanning security engineering, full-stack development, and infrastructure operations, laid out as a storyboard: the live client site up top, then every case on one rail. Every project carries a working link out — live preview where one exists, source code where it does not."
         >
           <div style={{ marginTop: 26 }}>
             <Stamp tone="red" r={-4.8} s={1.03} o={0.9} bw={2.9} delay={250}>
@@ -366,17 +473,20 @@ export default function ProjectsPage() {
           </div>
         </Reveal>
 
-        {/* Grid: filter changes animate — leaving cards fade/shrink while the
-            rest lay out into their new slots instead of snapping. */}
-        <Reveal delay={0.1}>
-          <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <AnimatePresence initial={false}>
-              {filtered.map((project, i) => (
-                <ProjectCard key={project.id} project={project} index={i} />
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        </Reveal>
+        {/* Featured: the live client site */}
+        {showVic && (
+          <Reveal delay={0.05} className="mb-14">
+            <FeaturedVic project={vic} />
+          </Reveal>
+        )}
+
+        {/* Storyboard rail: every remaining case on one line, in file order */}
+        <div className="cf-tl" key={filter}>
+          <RailFill />
+          {rail.map((project, i) => (
+            <ProjectFrame key={project.id} project={project} index={i} />
+          ))}
+        </div>
 
         <Reveal className="mt-14">
           <div className="flex flex-wrap items-center justify-between gap-4 p-6" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>

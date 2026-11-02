@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 130">
+  <style>
+    .shadow { animation: blk 2.4s steps(1,end) infinite; }
+    @keyframes blk {
+      0% { transform: translate(0px,0px); }
+      25% { transform: translate(10px,10px); }
+      50% { transform: translate(0px,10px); }
+      75% { transform: translate(10px,0px); }
+      100% { transform: translate(0px,0px); }
+    }
+  </style>
+  <rect class="shadow" x="24" y="24" width="88" height="88" fill="#AD0117"/>
+  <rect x="14" y="14" width="88" height="88" fill="#141414"/>
+  <text x="58" y="76" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="46" fill="#F4F1EC" text-anchor="middle">RM</text>
+</svg>

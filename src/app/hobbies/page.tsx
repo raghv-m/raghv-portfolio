@@ -19,16 +19,16 @@ import { Stamp } from "@/components/casefile/Stamp";
 const ZOO_PHOTOS = [1, 2, 3].map((n) => {
   const rel = `/images/hobbies/zoo-${n}.jpg`;
   const filed = existsSync(path.join(process.cwd(), "public", rel));
-  return { n, rel, filed, rotate: [-1.3, 0.8, -0.5][n - 1] };
+  return { n, rel, filed, rotate: [0, 0, 0][n - 1] };
 });
 
 const GALLERY_PHOTOS = [
-  { n: 1, caption: "Cabin at last light", w: 1206, h: 2144, rotate: -0.8 },
-  { n: 2, caption: "Overlook, golden hour", w: 1206, h: 2144, rotate: 1.1 },
-  { n: 3, caption: "House in the snow, dusk", w: 1206, h: 2144, rotate: -0.5 },
-  { n: 4, caption: "Peak above the treeline", w: 1168, h: 776, rotate: 0.9 },
-  { n: 5, caption: "Clouds on fire", w: 1206, h: 2144, rotate: -1.2 },
-  { n: 6, caption: "Mountain town, sunset", w: 1206, h: 2144, rotate: 0.6 },
+  { n: 1, caption: "Cabin at last light", w: 1206, h: 2144, rotate: 0 },
+  { n: 2, caption: "Overlook, golden hour", w: 1206, h: 2144, rotate: 0 },
+  { n: 3, caption: "House in the snow, dusk", w: 1206, h: 2144, rotate: 0 },
+  { n: 4, caption: "Peak above the treeline", w: 1168, h: 776, rotate: 0 },
+  { n: 5, caption: "Clouds on fire", w: 1206, h: 2144, rotate: 0 },
+  { n: 6, caption: "Mountain town, sunset", w: 1206, h: 2144, rotate: 0 },
 ];
 
 export default function HobbiesPage() {
@@ -123,8 +123,8 @@ export default function HobbiesPage() {
                     <Image
                       src={photo.rel}
                       alt={`Photograph by Raghav Mahajan, taken at the Edmonton Valley Zoo (featured frame ${photo.n})`}
-                      width={1206}
-                      height={1809}
+                      width={842}
+                      height={1264}
                       sizes="(max-width: 820px) 100vw, 380px"
                     />
                   ) : (

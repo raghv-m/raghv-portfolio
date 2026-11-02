@@ -3,7 +3,6 @@ import SubscribeWidget from "@/components/newsletter/SubscribeWidget";
 import { Logo } from "@/components/brand/Logo";
 import { PrivacyChoicesButton } from "@/components/layout/ConsentBanner";
 import { Reveal } from "@/components/casefile/Reveal";
-import { MeanderBand } from "@/components/casefile/Ornaments";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
@@ -47,8 +46,7 @@ const LEGAL = [
 
 export default function Footer() {
   return (
-    <footer className="cf-scope" style={{ borderTop: "3px double var(--cf-ink)" }}>
-      <MeanderBand />
+    <footer className="cf-scope" style={{ borderTop: "3px solid var(--cf-ink)" }}>
       <div className="cf-wrap pt-12 pb-8">
         <div className="grid lg:grid-cols-2 gap-12 mb-12">
           {/* Talk block */}
@@ -93,9 +91,9 @@ export default function Footer() {
         </div>
 
         {/* Link columns */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10 pt-8" style={{ borderTop: "1px solid var(--cf-faint)" }}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10 pt-8" style={{ borderTop: "2px solid var(--cf-ink)" }}>
           <p className="cf-mono text-[11px] uppercase leading-loose" style={{ letterSpacing: "0.09em", color: "var(--cf-muted)" }}>
-            Filed under:
+            Index:
             <br />
             Work, proof,
             <br />
@@ -112,14 +110,13 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* The file closes here: this line is the dossier element that
-            survives to the very bottom of every page. */}
-        <div className="pt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3" style={{ borderTop: "2px solid var(--cf-ink)" }}>
+        {/* The bottom line: the mark, the name, the city. Nothing else. */}
+        <div className="pt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3" style={{ borderTop: "3px solid var(--cf-ink)" }}>
           <p className="cf-mono text-[10.5px] uppercase flex items-center gap-3" style={{ letterSpacing: "0.09em", color: "var(--cf-muted)" }}>
-            <span className="cf-medallion" style={{ color: "var(--cf-muted)" }}>
+            <span style={{ color: "var(--cf-muted)", display: "inline-flex" }}>
               <Logo size={17} />
             </span>
-            <span>File No. YEG-2026-001 · © {new Date().getFullYear()} Raghav Mahajan · Page 1 of 1 · End of file</span>
+            <span>© {new Date().getFullYear()} Raghav Mahajan · Edmonton, Alberta · raghv.dev</span>
           </p>
           <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-4 gap-y-1">
             {LEGAL.map((link) => (

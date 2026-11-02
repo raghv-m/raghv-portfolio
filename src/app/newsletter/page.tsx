@@ -5,7 +5,6 @@ import editionsData from "@/data/newsletter-editions.json";
 import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
-import { Tape } from "@/components/casefile/Tape";
 import SubscribeWidget from "@/components/newsletter/SubscribeWidget";
 
 type Edition = { number: number | null; date: string; title: string; linkedinUrl: string };
@@ -34,7 +33,7 @@ export default function NewsletterPage() {
   return (
     <div className="cf-wrap pb-24">
       <PageHead
-        kicker="Newsletter · Filed dispatches"
+        kicker="Newsletter — Blue Team Brief"
         title="Blue Team Brief"
         lede="The week's real attacks in plain English. What happened, why it matters, what to hunt for. One edition most weeks, written from Edmonton, read by defenders across Canada and beyond."
       />
@@ -44,7 +43,7 @@ export default function NewsletterPage() {
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <div className="relative">
               {latest.number != null && COVERS[latest.number] ? (
-                <div className="cf-exhibit" style={{ transform: "rotate(2.6deg)" }}>
+                <div className="cf-exhibit">
                   <figure style={{ position: "relative", zIndex: 1, margin: 0 }}>
                     <Image
                       src={COVERS[latest.number]}
@@ -55,15 +54,14 @@ export default function NewsletterPage() {
                       priority
                     />
                     <figcaption className="cf-caption" style={{ marginTop: 14 }}>
-                      <b>Exhibit N</b> · Cover art, {edLabel(latest.number).toLowerCase()}
+                      <b>Cover art</b> · {edLabel(latest.number)}
                     </figcaption>
                   </figure>
-                  <Tape width={118} height={30} top={-15} left={24} rotate={-7} opacity={0.8} />
                 </div>
               ) : (
                 <div
                   className="flex aspect-[1200/627] flex-col items-center justify-center gap-2 p-8 text-center"
-                  style={{ background: "var(--cf-ink)", color: "var(--cf-paper)", transform: "rotate(1.8deg)" }}
+                  style={{ background: "var(--cf-ink)", color: "var(--cf-paper)" }}
                 >
                   <span className="cf-display text-[clamp(2rem,5vw,3.4rem)] leading-none">BLUE TEAM BRIEF</span>
                   <span className="cf-mono text-[11px] tracking-widest" style={{ color: "var(--cf-gold)" }}>
@@ -75,7 +73,7 @@ export default function NewsletterPage() {
             <div>
               <div className="flex flex-wrap items-center gap-4">
                 <p className="cf-mono text-[11px] font-bold tracking-widest" style={{ color: "var(--cf-red)" }}>
-                  LATEST DISPATCH
+                  LATEST EDITION
                 </p>
                 <Stamp r={-3.4} s={1.02} o={0.93} bw={3}>Latest</Stamp>
               </div>
@@ -83,7 +81,7 @@ export default function NewsletterPage() {
                 {latest.title}
               </h2>
               <p className="cf-mono mt-4 text-[11px] tracking-wider" style={{ color: "var(--cf-muted)" }}>
-                {edLabel(latest.number).toUpperCase()} · FILED {fmtDate(latest.date).toUpperCase()}
+                {edLabel(latest.number).toUpperCase()} · PUBLISHED {fmtDate(latest.date).toUpperCase()}
               </p>
               <p className="mt-4 max-w-[52ch] leading-relaxed" style={{ color: "var(--cf-ink-soft)" }}>
                 The newest edition of the Brief. Real incidents, plain language, and the one thing worth

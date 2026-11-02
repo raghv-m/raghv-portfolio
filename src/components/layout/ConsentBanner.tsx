@@ -78,12 +78,12 @@ export function ConsentBanner() {
       aria-label="Privacy choices"
       className="cf-scope fixed z-[80]"
       style={{
-        right: 16,
-        bottom: 16,
+        right: "calc(16px + env(safe-area-inset-right, 0px))",
+        bottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
         width: "min(348px, calc(100vw - 32px))",
-        border: "1px solid var(--cf-faint)",
+        border: "2.5px solid var(--cf-ink)",
         background: "var(--cf-paper-2)",
-        boxShadow: "0 14px 34px rgba(0, 0, 0, 0.22)",
+        boxShadow: "7px 7px 0 var(--cf-shadow)",
         padding: "14px 16px",
       }}
     >
@@ -96,10 +96,10 @@ export function ConsentBanner() {
         regardless. <Link href="/cookies" className="cf-ulink">Cookie policy</Link>
       </p>
       <div className="flex items-center gap-2.5 mt-3">
-        <button type="button" onClick={() => choose("accepted")} className="cf-btn" style={{ padding: "9px 16px", fontSize: 12.5, minHeight: 40 }}>
+        <button type="button" onClick={() => choose("accepted")} className="cf-btn" style={{ padding: "9px 16px", fontSize: 12.5, minHeight: 44 }}>
           Accept
         </button>
-        <button type="button" onClick={() => choose("declined")} className="cf-btn-ghost" style={{ padding: "9px 16px", fontSize: 12.5, minHeight: 40 }}>
+        <button type="button" onClick={() => choose("declined")} className="cf-btn-ghost" style={{ padding: "9px 16px", fontSize: 12.5, minHeight: 44 }}>
           Decline
         </button>
       </div>

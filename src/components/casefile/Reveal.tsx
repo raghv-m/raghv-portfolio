@@ -7,16 +7,18 @@ import { useEffect, useRef, type ReactNode } from "react";
 export { staggerDelay } from "./stagger";
 
 /**
- * Scroll reveal: content rises 48px, settles from scale 0.96, and fades in
- * with the shared Apple easing when it enters the viewport — large travel,
- * deliberately visible. The hidden pre-state is applied from JS only
- * (data-cf="pre"), so server renders and no-JS visits stay fully visible, and
- * a safety timer guarantees nothing can stay hidden. Reduced motion shows
- * everything immediately.
+ * Scroll reveal: content travels 56px, settles from scale 0.96, and fades
+ * in with the shared easing when it enters the viewport — large travel,
+ * deliberately visible (the owner has rejected invisible animation twice).
+ * The hidden pre-state is applied from JS only (data-cf="pre"), so server
+ * renders and no-JS visits stay fully visible, and a safety timer
+ * guarantees nothing can stay hidden. Reduced motion shows everything
+ * immediately.
  *
  * Variants change only the pre-state pose: "rise" (default), "scale"
- * (deeper settle, from 0.93), "left" (slides from -48px, the index-row
- * direction).
+ * (deeper settle, from 0.92), "left" (slides from -56px on the x axis,
+ * the index-row direction), "wipe" (clip-path uncover left-to-right with
+ * a -40px slide, for section heads).
  */
 export function Reveal({
   children,
@@ -29,7 +31,7 @@ export function Reveal({
   delay?: number;
   className?: string;
   id?: string;
-  variant?: "rise" | "scale" | "left";
+  variant?: "rise" | "scale" | "left" | "wipe";
 }) {
   const ref = useRef<HTMLDivElement>(null);
 

@@ -70,21 +70,18 @@ export function friendlyMailError(error: unknown): string {
   return raw || "The email couldn't be sent.";
 }
 
-// ─── Design tokens (case file: paper, ink, red) ────────────────────────────
+// ─── Design tokens (site system: paper, ink, red — exact palette) ──────────
 const C = {
-  page: "#e7e1cf",
-  card: "#f3efe6",
-  panel: "#ece7d9",
-  border: "#d5cfba",
-  text: "#16150f",
-  body: "#3c3a31",
-  muted: "#6f6a5c",
-  faint: "#8a8474",
-  gold: "#9a7410",
-  goldSoft: "#f0e6c8",
-  green: "#2e6b1e",
-  red: "#b3231b",
-  link: "#7d5e0c",
+  page: "#E9E5DC",
+  card: "#F4F1EC",
+  panel: "#ECE8DD",
+  border: "#CFC9B8",
+  text: "#141414",
+  body: "#33322E",
+  muted: "#57544C",
+  faint: "#8A867E",
+  red: "#AD0117",
+  link: "#AD0117",
 };
 // Always the production URL: an email can be opened years later, from any device.
 const LOGO_URL = "https://www.raghv.dev/logo-email.png";
@@ -95,7 +92,7 @@ const MONO = "'SFMono-Regular',Menlo,Consolas,'Courier New',monospace";
 const eyebrow = (t: string) =>
   `<p style="margin:0 0 10px;font-family:${MONO};font-size:11px;line-height:1.4;color:${C.red};letter-spacing:0.14em;text-transform:uppercase;">${t}</p>`;
 const heading = (t: string) =>
-  `<h1 style="margin:0 0 14px;font-family:${SANS};font-size:24px;line-height:1.3;font-weight:700;color:${C.text};">${t}</h1>`;
+  `<h1 style="margin:0 0 14px;font-family:${SANS};font-size:27px;line-height:1.28;font-weight:700;color:${C.text};">${t}</h1>`;
 const para = (t: string, last = false) =>
   `<p style="margin:0 0 ${last ? 0 : 18}px;font-family:${SANS};font-size:15px;line-height:1.7;color:${C.body};">${t}</p>`;
 const small = (t: string) =>
@@ -103,25 +100,32 @@ const small = (t: string) =>
 const strong = (t: string) => `<span style="color:${C.text};font-weight:600;">${t}</span>`;
 const link = (url: string, t: string) => `<a href="${url}" style="color:${C.link};text-decoration:underline;">${t}</a>`;
 
-/** Bulletproof button: a table cell with padding, so it stays clickable even when CSS is stripped. */
+/** Bulletproof button: a table cell with padding, so it stays clickable even when CSS is stripped.
+    The primary button sits in a red cell offset by padding, which reads as the site's hard shadow. */
 function button(url: string, label: string, variant: "primary" | "secondary" = "primary") {
   const primary = variant === "primary";
-  return `
+  const inner = `
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:6px 0 4px;">
     <tr><td bgcolor="${primary ? C.text : C.card}" style="border:2px solid ${C.text};">
       <a href="${url}" target="_blank" style="display:inline-block;padding:13px 26px;font-family:${SANS};font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;color:${primary ? C.card : C.text};">${label} &rarr;</a>
     </td></tr>
   </table>`;
+  if (!primary) return inner;
+  return `
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+    <tr><td bgcolor="${C.red}" style="padding:0 5px 5px 0;">${inner}
+    </td></tr>
+  </table>`;
 }
 
 /** Key/value summary, e.g. amount and due date. */
-function facts(rows: [string, string][], accent = C.gold) {
+function facts(rows: [string, string][], accent = C.red) {
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:4px 0 22px;background:${C.panel};border:1px solid ${C.border};border-left:3px solid ${accent};">
     ${rows.map(([k, v], i) => `
     <tr><td style="padding:${i ? 4 : 16}px 18px ${i === rows.length - 1 ? 16 : 4}px;">
       <p style="margin:0;font-family:${MONO};font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:${C.muted};">${k}</p>
-      <p style="margin:3px 0 0;font-family:${SANS};font-size:${i === 0 ? 20 : 15}px;font-weight:${i === 0 ? 700 : 500};color:${C.text};">${v}</p>
+      <p style="margin:3px 0 0;font-family:${SANS};font-size:${i === 0 ? 20 : 15}px;font-weight:${i === 0 ? 700 : 500};color:${C.text};font-variant-numeric:tabular-nums lining-nums;">${v}</p>
     </td></tr>`).join("")}
   </table>`;
 }
@@ -158,7 +162,7 @@ function layout(content: string, preview: string) {
   <title>${esc(preview)}</title>
   <style>
     :root { color-scheme: light; supported-color-schemes: light; }
-    @media (max-width:600px) { .px { padding-left:22px !important; padding-right:22px !important; } }
+    @media (max-width:600px) { .px { padding-left:22px !important; padding-right:22px !important; } .hdr-meta { display:none !important; } }
   </style>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
 </head>
@@ -166,21 +170,37 @@ function layout(content: string, preview: string) {
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${C.page};">${esc(preview)}&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.page}" style="background:${C.page};">
     <tr><td align="center" style="padding:36px 12px;">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:592px;">
         <tr><td style="padding:0 6px 18px;">
-          <!-- PNG, not SVG: most email clients don't render SVG. The case-file
-               folder lockup, ink on transparent, made for the paper card. -->
-          <a href="${site.url}" style="text-decoration:none;"><img src="${LOGO_URL}" width="200" height="80" alt="RAGHV.DEV" style="display:block;width:200px;height:80px;border:0;outline:none;color:${C.text};font-family:${MONO};font-size:14px;font-weight:700;letter-spacing:0.12em;"/></a>
-        </td></tr>
-        <tr><td bgcolor="${C.card}" style="background:${C.card};border:2px solid ${C.text};">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr><td height="4" style="height:4px;line-height:4px;font-size:0;background:${C.red};">&nbsp;</td></tr>
-            <tr><td class="px" style="padding:34px 34px 32px;">${content}</td></tr>
+            <tr>
+              <td align="left" valign="middle">
+                <!-- PNG, not SVG: most email clients don't render SVG. The RM BLOCK
+                     lockup, ink on transparent, made for the paper card. -->
+                <a href="${site.url}" style="text-decoration:none;"><img src="${LOGO_URL}" width="200" height="80" alt="RAGHV.DEV" style="display:block;width:200px;height:80px;border:0;outline:none;color:${C.text};font-family:${MONO};font-size:14px;font-weight:700;letter-spacing:0.12em;"/></a>
+              </td>
+              <td class="hdr-meta" align="right" valign="middle" style="font-family:${MONO};font-size:10px;line-height:1.7;letter-spacing:0.14em;color:${C.muted};text-transform:uppercase;">
+                Web design &amp; security<br/>Edmonton, Alberta
+              </td>
+            </tr>
+          </table>
+        </td></tr>
+        <tr><td>
+          <!-- Ink wrapper offset by padding: the card's hard shadow. -->
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.text}">
+            <tr><td style="padding:0 6px 6px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.card}" style="border:2px solid ${C.text};">
+                <tr><td height="6" style="height:6px;line-height:6px;font-size:0;background:${C.red};">&nbsp;</td></tr>
+                <tr><td class="px" style="padding:38px 36px 36px;">${content}</td></tr>
+              </table>
+            </td></tr>
           </table>
         </td></tr>
         <tr><td style="padding:20px 6px 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.muted};">
-          Raghav Mahajan &middot; Web design &amp; security &middot; Edmonton, Alberta &middot; File No. YEG-2026-001<br/>
-          Reply to this email and it comes straight to me. &middot; <a href="${site.url}" style="color:${C.link};text-decoration:none;">raghv.dev</a>
+          Raghav Mahajan &middot; raghv.dev<br/>
+          Unit 303, 107 Watt Common SW, Edmonton, AB T6X 2C6<br/>
+          <a href="mailto:hello@raghv.dev" style="color:${C.link};text-decoration:none;">hello@raghv.dev</a> &middot; <a href="${site.url}" style="color:${C.link};text-decoration:none;">raghv.dev</a><br/>
+          Reply to this email and it comes straight to me.
         </td></tr>
       </table>
     </td></tr>
@@ -547,9 +567,9 @@ export async function sendWelcomeEmail(to: string, name: string | null, unsubscr
     <div style="height:22px;line-height:22px;">&nbsp;</div>
     ${button(`${site.url}/blog`, "Browse the blog", "secondary")}
     ${small(`Don't want these emails? ${link(unsubLink, "Unsubscribe")}.`)}
-  `, "Welcome to Raghav's Cyber Daily");
+  `, "Welcome to Blue Team Brief");
 
-  await sendMail({ to, subject: "Welcome to Raghav's Cyber Daily", html });
+  await sendMail({ to, subject: "Welcome to Blue Team Brief", html });
 }
 
 // ─── Newsletter issue template (paste into admin compose) ─────────────────

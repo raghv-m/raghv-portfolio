@@ -86,7 +86,7 @@ export default function ContactPage() {
             AVAILABLE FOR OPPORTUNITIES · 2025/2026
           </span>
         </span>
-        <Stamp tone="green" r={-2.3} s={0.97} o={0.9} bw={2.5}>Open to work</Stamp>
+        <Stamp tone="red" r={-2.3} s={0.97} o={0.9} bw={2.5}>Open to work</Stamp>
       </div>
 
       <div className="mt-12">

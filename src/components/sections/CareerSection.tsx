@@ -106,11 +106,11 @@ const CERTS = [
 ];
 
 const STATUS_STYLE = {
-  CURRENT: { border: "rgba(0,255,136,0.5)", bg: "rgba(0,255,136,0.06)", text: "var(--green)", dot: "var(--green)" },
-  NEXT: { border: "rgba(212,160,23,0.5)", bg: "rgba(212,160,23,0.06)", text: "var(--gold)", dot: "var(--gold)" },
-  PLANNED: { border: "rgba(68,136,255,0.35)", bg: "rgba(68,136,255,0.04)", text: "var(--blue)", dot: "var(--blue)" },
-  GOAL: { border: "rgba(212,160,23,0.6)", bg: "rgba(212,160,23,0.08)", text: "var(--gold)", dot: "var(--gold)" },
-  VISION: { border: "rgba(138,105,20,0.3)", bg: "rgba(138,105,20,0.04)", text: "var(--gold-muted)", dot: "var(--gold-muted)" },
+  CURRENT: { border: "rgba(173,1,23,0.55)", bg: "rgba(173,1,23,0.06)", text: "var(--gold)", dot: "var(--gold)" },
+  NEXT: { border: "rgba(20,20,20,0.5)", bg: "rgba(20,20,20,0.05)", text: "var(--cf-ink)", dot: "var(--cf-ink)" },
+  PLANNED: { border: "rgba(107,103,94,0.4)", bg: "rgba(107,103,94,0.04)", text: "var(--blue)", dot: "var(--blue)" },
+  GOAL: { border: "rgba(173,1,23,0.6)", bg: "rgba(173,1,23,0.08)", text: "var(--gold)", dot: "var(--gold)" },
+  VISION: { border: "rgba(126,1,17,0.3)", bg: "rgba(126,1,17,0.04)", text: "var(--gold-muted)", dot: "var(--gold-muted)" },
 };
 
 /* Status stamps: each node that earns one gets its own rotation, scale,
@@ -120,7 +120,7 @@ const STAMP_S = [1.05, 0.97, 1.0, 1.08, 0.94];
 const STAMP_O = [0.94, 0.88, 0.9, 0.92, 0.85];
 const STAMP_BW = [2.5, 3.0, 2.2, 3.4, 2.8];
 const STAMP_TONE: Record<string, "red" | "gold" | "green" | "ink"> = {
-  CURRENT: "green",
+  CURRENT: "red",
   NEXT: "gold",
   GOAL: "red",
 };

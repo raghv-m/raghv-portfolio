@@ -1,21 +1,20 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/casefile/ThemeToggle";
 import { Magnetic } from "@/components/casefile/Magnetic";
-import { MeanderBand } from "@/components/casefile/Ornaments";
 
 /**
- * One slim bar (Nov 2026 rebuild). Logo left in a medallion seal, six
- * primary links in letterspaced Roman capitals, one cobalt CTA right.
- * Hairline rule under the bar, meander entablature strip under that.
- * The dossier strip, clock, resume link and availability beacon moved out;
- * the file data lives in the footer now. Active page = cobalt underline
- * only, and it slides between links (framer layoutId).
+ * One raw bar (Nov 2026 brutalist rebuild). Bare logo left, six primary
+ * links in letterspaced grotesque capitals, one red CTA block right, and a
+ * 3px ink rule under the whole bar: the structure is the decoration.
+ * Active page = red underline only, and it slides between links (framer
+ * layoutId). The mobile panel is a full ink block in both themes, its
+ * active link carried on a red block, poster-style.
  */
 const LINKS = [
   { href: "/about", label: "About" },
@@ -25,6 +24,33 @@ const LINKS = [
   { href: "/blog", label: "Blog" },
   { href: "/newsletter", label: "Newsletter" },
 ];
+
+/**
+ * Reading progress: a 3px red line under the navbar rule, transform-origin
+ * left, spring-damped from the page scroll position. It tracks scroll, so
+ * it reverses freely; reduced motion gets the raw position with no spring.
+ */
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const smooth = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
+  const reduce = useReducedMotion();
+  return (
+    <motion.span
+      aria-hidden="true"
+      style={{
+        scaleX: reduce ? scrollYProgress : smooth,
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: -3,
+        height: 3,
+        background: "var(--cf-red)",
+        transformOrigin: "left center",
+        pointerEvents: "none",
+      }}
+    />
+  );
+}
 
 /** Everything the mobile panel lists: the six primaries, then the rest of the file. */
 const PANEL_LINKS = [
@@ -62,14 +88,12 @@ export default function Navbar() {
     <>
       <header className="cf-scope cf-load-fade">
         <div className="cf-wrap">
-          <div className="flex items-center gap-6 h-[68px]" style={{ borderBottom: "1px solid var(--cf-doc-line)" }}>
-            <Link href="/" aria-label="raghv.dev home" className="flex items-center gap-3.5 shrink-0 min-h-[44px]">
-              <span className="cf-medallion" style={{ color: "var(--cf-ink)" }}>
-                <Logo size={21} />
-              </span>
+          <div className="relative flex items-center gap-6 h-[64px]" style={{ borderBottom: "3px solid var(--cf-ink)" }}>
+            <Link href="/" aria-label="raghv.dev home" className="flex items-center gap-3.5 shrink-0 min-h-[44px]" style={{ color: "var(--cf-ink)" }}>
+              <Logo size={27} animated />
               <span
                 className="hidden sm:block"
-                style={{ fontFamily: "var(--cf-caps)", fontSize: 13.5, fontWeight: 600, letterSpacing: "0.22em", color: "var(--cf-ink)" }}
+                style={{ fontFamily: "var(--cf-display)", fontSize: 19, letterSpacing: "0.03em", textTransform: "uppercase", color: "var(--cf-ink)" }}
               >
                 Raghav Mahajan
               </span>
@@ -107,7 +131,7 @@ export default function Navbar() {
                           left: 0,
                           right: 0,
                           bottom: -2,
-                          height: 2,
+                          height: 3,
                           background: "var(--cf-red)",
                         }}
                       />
@@ -131,10 +155,13 @@ export default function Navbar() {
                     fontWeight: 700,
                     letterSpacing: "0.18em",
                     textTransform: "uppercase",
-                    background: "#2c3480",
-                    color: "#ffffff",
+                    background: "var(--cf-red)",
+                    color: "#F4F1EC",
                     padding: "11px 20px",
-                    border: "1px solid #2c3480",
+                    minHeight: 44,
+                    alignItems: "center",
+                    border: "2px solid var(--cf-ink)",
+                    boxShadow: "4px 4px 0 var(--cf-shadow)",
                   }}
                 >
                   Contact
@@ -151,13 +178,13 @@ export default function Navbar() {
                 {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
+            <ScrollProgress />
           </div>
         </div>
-        <MeanderBand />
       </header>
 
-      {/* Mobile menu: a full-screen black panel. Big Didone links, cobalt
-          active state, in both themes — the VELARA field, taken whole. */}
+      {/* Mobile menu: a full-screen ink block in both themes. Giant
+          condensed links; the active one sits on a red block. */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -170,19 +197,26 @@ export default function Navbar() {
             exit={{ opacity: 0 }}
             transition={{ duration: reduceMotion ? 0 : 0.26, ease: [0.23, 1, 0.32, 1] }}
             className="fixed inset-0 z-50 flex flex-col"
-            style={{ background: "#000000", color: "#f4f4f7" }}
+            style={{
+              background: "#141414",
+              color: "#F4F1EC",
+              paddingTop: "env(safe-area-inset-top, 0px)",
+              paddingRight: "env(safe-area-inset-right, 0px)",
+              paddingBottom: "env(safe-area-inset-bottom, 0px)",
+              paddingLeft: "env(safe-area-inset-left, 0px)",
+            }}
           >
             <div className="cf-wrap w-full">
-              <div className="flex items-center justify-between h-[68px]" style={{ borderBottom: "1px solid #33333d" }}>
-                <span style={{ fontFamily: "var(--cf-caps)", fontSize: 12, letterSpacing: "0.22em", color: "#a7a7b3" }}>
-                  File No. YEG-2026-001
+              <div className="flex items-center justify-between h-[64px]" style={{ borderBottom: "3px solid var(--cf-red)" }}>
+                <span style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: 12, fontWeight: 700, letterSpacing: "0.22em", color: "#F4F1EC" }}>
+                  RAGHV.DEV — MENU
                 </span>
                 <button
                   onClick={() => setOpen(false)}
                   aria-label="Close menu"
                   autoFocus
                   className="min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2"
-                  style={{ color: "#f4f4f7" }}
+                  style={{ color: "#F4F1EC" }}
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -206,14 +240,16 @@ export default function Navbar() {
                         style={{
                           fontFamily: "var(--cf-display)",
                           fontSize: 31,
-                          fontWeight: 600,
                           textTransform: "uppercase",
                           letterSpacing: "0.01em",
-                          color: active ? "#8b94e0" : "#f4f4f7",
+                          color: "#F4F1EC",
+                          ...(active
+                            ? { background: "var(--cf-red)", paddingLeft: 12, paddingRight: 12, marginLeft: -12 }
+                            : {}),
                         }}
                       >
-                        <span style={{ fontFamily: "var(--cf-caps)", fontSize: 11, letterSpacing: "0.2em", color: active ? "#8b94e0" : "#55555f" }}>
-                          {["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"][i]}
+                        <span style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: active ? "#F4F1EC" : "#8A867E" }}>
+                          {["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"][i]}
                         </span>
                         {link.label}
                       </Link>
@@ -222,9 +258,9 @@ export default function Navbar() {
                 })}
               </div>
             </nav>
-            <div className="cf-wrap w-full pb-9 pt-4 flex items-center justify-between" style={{ borderTop: "1px solid #33333d" }}>
-              <span style={{ fontFamily: "var(--cf-caps)", fontSize: 11, letterSpacing: "0.2em", color: "#a7a7b3" }}>
-                Edmonton, AB — Public
+            <div className="cf-wrap w-full pb-9 pt-4 flex items-center justify-between" style={{ borderTop: "3px solid var(--cf-red)" }}>
+              <span style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: "#F4F1EC" }}>
+                Edmonton, Alberta
               </span>
               <ThemeToggle />
             </div>

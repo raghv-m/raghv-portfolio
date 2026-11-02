@@ -82,7 +82,7 @@ const NODES = [
     os: "Ubuntu 22.04 LTS",
     ip: "192.168.10.40",
     icon: Shield,
-    color: "var(--green)",
+    color: "var(--gold)",
     status: "ONLINE",
     services: ["Wazuh Manager", "Wazuh Dashboard", "Elasticsearch", "Filebeat", "Active Response"],
     specs: "Core i7 · 32GB RAM · 1TB SSD",
@@ -245,7 +245,7 @@ export function HomeLabSection() {
             SIEM, generating authentic blue team experience.
           </p>
           <span className="absolute -top-5 right-2 sm:right-8">
-            <Stamp tone="green" r={-3.4} s={1.06} o={0.94} bw={2.2} delay={250} className="text-[11px]">
+            <Stamp tone="red" r={-3.4} s={1.06} o={0.94} bw={2.2} delay={250} className="text-[11px]">
               4 nodes online
             </Stamp>
           </span>
@@ -270,8 +270,8 @@ export function HomeLabSection() {
               }}
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: node.status === "CONTROLLED" ? "var(--red)" : "var(--green)" }} />
-                <span className="cf-mono text-[8px]" style={{ color: node.status === "CONTROLLED" ? "var(--red)" : "var(--green)" }}>
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: node.status === "CONTROLLED" ? "var(--red)" : "var(--cf-ink)" }} />
+                <span className="cf-mono text-[8px]" style={{ color: node.status === "CONTROLLED" ? "var(--red)" : "var(--cf-ink)" }}>
                   {node.status}
                 </span>
               </div>
@@ -293,8 +293,8 @@ export function HomeLabSection() {
                 <h3 className="cf-display text-sm text-[var(--cf-ink)]">HOMELAB.CORP · 192.168.10.0/24</h3>
               </div>
               <div className="flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5" style={{ color: "var(--cf-green, #2e6b1e)" }} />
-                <span className="cf-mono text-[9px]" style={{ color: "var(--cf-green, #2e6b1e)" }}>LIVE</span>
+                <Activity className="w-3.5 h-3.5" style={{ color: "var(--cf-red)" }} />
+                <span className="cf-mono text-[9px]" style={{ color: "var(--cf-red)" }}>LIVE</span>
               </div>
             </div>
             <NetworkDiagram selected={selected} onSelect={setSelected} />
@@ -345,7 +345,7 @@ export function HomeLabSection() {
                   <div className="space-y-1.5">
                     {activeNode.details.map((d) => (
                       <div key={d} className="flex items-start gap-1.5">
-                        <CheckCircle className="w-2.5 h-2.5 mt-0.5 shrink-0" style={{ color: "var(--cf-green, #2e6b1e)" }} />
+                        <CheckCircle className="w-2.5 h-2.5 mt-0.5 shrink-0" style={{ color: "var(--cf-ink)" }} />
                         <p className="cf-mono text-[9px] text-[var(--cf-ink-soft)]">{d}</p>
                       </div>
                     ))}

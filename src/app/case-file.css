@@ -1,44 +1,49 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   THE ARCHIVE design system (public pages only).
+   THE RAW SYSTEM (public pages only).
    Everything is either a --cf-* token or a .cf-* class, so the admin console,
    client portal and auth screens, which never use these names, are untouched.
    Applied by wrapping public chrome + page content in .cf-scope.
 
-   Nov 2026 — VELARA neoclassical pass. The case file, presented as a
-   classical archive: black / white / cobalt (#2C3480) ONLY, in the reel's
-   proportions (dark fields dominant, white panels, cobalt ~5% and precious).
-   Token NAMES are unchanged from the dossier era; their VALUES moved:
-   --cf-red now holds the cobalt stamp ink (stamps are blue-ink archival
-   stamps now), --cf-gold and --cf-green fold into the cobalt family too.
-   Type: Playfair Display (Didone) for display, Cinzel for Roman capitals
-   and labels, Cormorant Garamond for body serif, JetBrains Mono only for
-   file data and the terminal exhibits.
+   Nov 2026 — BRUTALIST pass, anchored on the "WHERE ARE YOU GOING?" poster
+   (style #4 of the 29-styles reel). The palette is sampled off that poster
+   and nothing else is admitted: paper #F4F1EC, ink #141414, red #AD0117.
+   Dark theme inverts paper and ink; the red does not move.
+   Token NAMES are unchanged from earlier systems; their VALUES moved:
+   --cf-red is back to being an actual red (the poster's headline ink),
+   --cf-gold is now a warm stone gray (the old gold stamps read as gray
+   ink), --cf-green survives only as a functional status tone.
+   Rules of the system: thick ink borders (2-3px), hard offset shadows
+   with zero blur, square corners everywhere, no gradients, no washes,
+   no ornament. Structure stays visible: bordered strips, exposed grids.
+   Type: Anton (condensed grotesque) for headlines, Space Grotesk for
+   labels and buttons, Inter for body text, JetBrains Mono for data.
 
-   Motion rules: one easing vocabulary (Apple-style cubic-bezier(0.22,1,0.36,1)),
+   Motion rules: one easing vocabulary (cubic-bezier(0.22,1,0.36,1)),
    transform/opacity only, and a hard reduced-motion kill switch at the bottom.
    ════════════════════════════════════════════════════════════════════════════ */
 
 :root {
   color-scheme: light;
-  /* Light theme: the inverse reading of the same system. White ground,
-     black ink, cobalt accent. (Dark is the primary presentation.) */
-  --cf-paper: #ffffff;
-  --cf-paper-2: #f2f2f4;
-  --cf-paper-3: #e3e3e9;
-  --cf-ink: #0b0b0e;
-  --cf-ink-soft: #33333c;
-  --cf-muted: #5c5c66;
-  --cf-faint: #a7a7b3;
-  --cf-red: #2c3480;
-  --cf-red-ink: rgba(44, 52, 128, 0.92);
-  --cf-gold: #2c3480;
-  --cf-green: #2c3480;
-  --cf-shadow: rgba(11, 11, 14, 0.9);
-  --cf-exhibit-shadow: rgba(11, 11, 14, 0.22);
-  --cf-doc-line: #d5d5dd;
-  --cf-log-bg: #07070c;
-  --cf-log-head: #9aa5e8;
-  --cf-log-text: #d9dbe4;
+  /* Light theme: the poster itself. Off-white paper, near-black ink,
+     one red. Fills, rules and headline words carry the red; small red
+     text on this paper sits at ~7:1, so it can work at label sizes. */
+  --cf-paper: #F4F1EC;
+  --cf-paper-2: #E9E5DC;
+  --cf-paper-3: #DAD4C6;
+  --cf-ink: #141414;
+  --cf-ink-soft: #33322E;
+  --cf-muted: #5A574E;
+  --cf-faint: #A39E92;
+  --cf-red: #AD0117;
+  --cf-red-ink: rgba(173, 1, 23, 0.92);
+  --cf-gold: #6B675E;
+  --cf-green: #2F7D1E;
+  --cf-shadow: #141414;
+  --cf-exhibit-shadow: #141414;
+  --cf-doc-line: #C9C3B4;
+  --cf-log-bg: #141414;
+  --cf-log-head: #F4F1EC;
+  --cf-log-text: #EDE9E0;
   /* Easing vocabulary per Emil Kowalski's design-engineering system
      (github.com/emilkowalski/skills): strong custom curves, never the
      weak built-ins, never ease-in on UI. ease-out for entrances/feedback,
@@ -63,62 +68,72 @@
   --cf-dur-page: 280ms;
   --cf-dur-ambient: 16s;
   --cf-stagger: 75ms;
-  --cf-display: var(--font-playfair), "Didot", "Bodoni MT", serif;
-  --cf-caps: var(--font-cinzel), "Trajan Pro", serif;
-  --cf-serif: var(--font-cormorant), Georgia, "Times New Roman", serif;
+  --cf-display: var(--font-anton), "Arial Narrow", "Impact", sans-serif;
+  --cf-caps: var(--font-space-grotesk), "Helvetica Neue", sans-serif;
+  /* The body token keeps its historic name; the brutalist body is a
+     grotesque (Inter), not a serif. */
+  --cf-serif: var(--font-inter), system-ui, sans-serif;
 
   /* The legacy theme vars (used across portal, admin and auth) follow the
-     same palette, so the whole site themes from these two blocks. */
-  --bg: #ffffff;
-  --surface: #f2f2f4;
-  --card: #f2f2f4;
-  --border: #cfcfd8;
-  --gold: #2c3480;
-  --gold-light: #232a6b;
-  --gold-muted: #2c3480;
-  --text: #0b0b0e;
-  --text-muted: #4c4c55;
-  --green: #2c3480;
-  --red: #2c3480;
-  --blue: #2c3480;
-  --cyan: #3d478f;
+     same palette, so the whole site themes from these two blocks. The
+     accents land on the poster's three colours plus functional tones:
+     gold-named vars carry the red (the app's accent role), blue/cyan
+     fold to stone gray, green stays a working status green. */
+  --bg: #F4F1EC;
+  --surface: #E9E5DC;
+  --card: #F4F1EC;
+  --border: #B9B3A4;
+  --gold: #AD0117;
+  --gold-light: #C8102E;
+  --gold-muted: #7E0111;
+  --text: #141414;
+  --text-muted: #4E4B44;
+  --green: #2F7D1E;
+  --red: #AD0117;
+  --blue: #6B675E;
+  --cyan: #6B675E;
 }
 
-/* Dark theme: the primary presentation. The VELARA field: pure black
-   ground, white ink and panels, cobalt lifted one register (#8b94e0) only
-   where it must read as small text on black; fills and rules keep the
-   deep #2C3480 gem tone. */
+/* Dark theme: the poster inverted. Ink ground, paper text, and the
+   red stays exactly #AD0117: it works here as blocks, rules, borders
+   and headline words (the loud roles), while small accent text switches
+   to paper-with-a-red-marker (see .cf-kicker) so nothing small has to
+   be read in red on black. Hard shadows turn red so offset blocks stay
+   visible against the ink ground. */
 html[data-theme="dark"] {
   color-scheme: dark;
-  --cf-paper: #000000;
-  --cf-paper-2: #101014;
-  --cf-paper-3: #1d1d24;
-  --cf-ink: #f4f4f7;
-  --cf-ink-soft: #cfcfd8;
-  --cf-muted: #a7a7b3;
-  --cf-faint: #55555f;
-  --cf-red: #8b94e0;
-  --cf-red-ink: rgba(139, 148, 224, 0.92);
-  --cf-gold: #8b94e0;
-  --cf-green: #8b94e0;
-  --cf-shadow: rgba(0, 0, 0, 0.65);
-  --cf-exhibit-shadow: rgba(0, 0, 0, 0.55);
-  --cf-doc-line: #33333d;
-  --cf-log-bg: #050508;
+  --cf-paper: #141414;
+  --cf-paper-2: #1D1D1B;
+  --cf-paper-3: #2A2A27;
+  --cf-ink: #F4F1EC;
+  --cf-ink-soft: #D8D3C6;
+  --cf-muted: #A39E92;
+  --cf-faint: #57544C;
+  --cf-red: #AD0117;
+  --cf-red-ink: rgba(173, 1, 23, 0.9);
+  --cf-gold: #A39E92;
+  --cf-green: #6FA84F;
+  --cf-shadow: #AD0117;
+  --cf-exhibit-shadow: #000000;
+  --cf-doc-line: #3A382F;
+  --cf-log-bg: #141414;
 
-  --bg: #000000;
-  --surface: #101014;
-  --card: #121218;
-  --border: #33333d;
-  --gold: #8b94e0;
-  --gold-light: #aab1ea;
-  --gold-muted: #6d76c4;
-  --text: #f4f4f7;
-  --text-muted: #a7a7b3;
-  --green: #8b94e0;
-  --red: #8b94e0;
-  --blue: #8b94e0;
-  --cyan: #9aa5e8;
+  --bg: #141414;
+  --surface: #1D1D1B;
+  --card: #1D1D1B;
+  --border: #3A382F;
+  /* App surfaces (portal/admin) get one lifted red register so dense
+     small text stays legible on ink; the public --cf-red above is the
+     poster's exact red. */
+  --gold: #D7263D;
+  --gold-light: #E5484D;
+  --gold-muted: #8E0E1E;
+  --text: #F4F1EC;
+  --text-muted: #A39E92;
+  --green: #6FA84F;
+  --red: #D7263D;
+  --blue: #A39E92;
+  --cyan: #A39E92;
 }
 
 /* ── Scope roots ─────────────────────────────────────────────────────────── */
@@ -129,21 +144,10 @@ html[data-theme="dark"] {
      paper behind the content without ever painting over it. */
   isolation: isolate;
 }
-/* Ambient paper drift: two oversized low-contrast paper-tone washes on a
-   fixed layer, travelling several percent over a 16s cycle — slow, but with
-   enough range (~4px/s at mid-cycle) that the paper visibly breathes within
-   a few seconds of watching. Transform-only (compositor), no blobs, no
-   glass, no gradient text: just uneven paper. Sits inside the main content
-   scope, so the header/footer chrome stays crisp. */
-.cf-ambient {
-  position: fixed; inset: -14%; z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(46% 38% at 22% 10%, var(--cf-paper-3) 0%, transparent 70%),
-    radial-gradient(42% 36% at 84% 90%, var(--cf-paper-2) 0%, transparent 72%);
-  opacity: 0.55;
-  animation: cf-drift var(--cf-dur-ambient) ease-in-out infinite alternate;
-}
+/* The ambient layer is OFF in the brutalist system: the poster ground is
+   flat print, no washes, no drift, no gradients of any kind. The component
+   still mounts (motion system unchanged); it simply paints nothing. */
+.cf-ambient { display: none; }
 @keyframes cf-drift {
   from { transform: translate3d(-3.4%, -2.2%, 0) scale(1.02); }
   to { transform: translate3d(3.4%, 2.6%, 0) scale(1.08); }
@@ -153,9 +157,7 @@ html[data-theme="dark"] {
 .cf-app {
   color: var(--text);
 }
-.cf-scope ::selection, .cf-app ::selection { background: rgba(44, 52, 128, 0.22); }
-html[data-theme="dark"] .cf-scope ::selection,
-html[data-theme="dark"] .cf-app ::selection { background: rgba(139, 148, 224, 0.35); }
+.cf-scope ::selection, .cf-app ::selection { background: var(--cf-red); color: #F4F1EC; }
 .cf-scope :focus-visible, .cf-app :focus-visible {
   outline: 2px solid var(--cf-red); outline-offset: 2px;
   animation: cf-focus-in var(--cf-dur-ui) var(--cf-ease);
@@ -195,8 +197,7 @@ html[data-theme="dark"] .cf-app ::selection { background: rgba(139, 148, 224, 0.
 /* Hover motion only where hover is real (Emil's gating rule): touch taps
    must not fire false hover lifts. */
 @media (hover: hover) and (pointer: fine) {
-  .cf-scope .card-lift:hover { transform: translateY(-4px); box-shadow: 0 16px 34px var(--cf-exhibit-shadow); }
-  .cf-docwall figure:hover { rotate: 0.2deg; }
+  .cf-scope .card-lift:hover { transform: translate(-3px, -3px); box-shadow: 7px 7px 0 var(--cf-shadow); }
 }
 .cf-app .card-lift { transition: transform 0.45s var(--cf-ease), border-color 0.45s var(--cf-ease); }
 .cf-app .card-lift:hover { transform: translateY(-3px); box-shadow: none; }
@@ -242,27 +243,35 @@ html[data-theme="dark"] .cf-app ::selection { background: rgba(139, 148, 224, 0.
 .cf-wrap { max-width: 1240px; margin-inline: auto; padding-inline: 32px; }
 @media (max-width: 640px) { .cf-wrap { padding-inline: 20px; } }
 
-.cf-display { font-family: var(--cf-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em; }
+.cf-display { font-family: var(--cf-display); font-weight: 400; text-transform: uppercase; letter-spacing: 0.015em; }
 .cf-mono { font-family: var(--font-jetbrains), ui-monospace, monospace; }
+/* Kicker: a grotesque label with a red block parked in front of it, the
+   poster's small-print gesture. Light theme reads it in red; dark theme
+   reads it in paper (red #AD0117 is a block colour on black, not a
+   small-text colour), the block carries the accent in both. */
 .cf-kicker {
   font-family: var(--cf-caps);
-  font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--cf-muted);
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--cf-red);
 }
+.cf-kicker::before {
+  content: ""; display: inline-block; width: 8px; height: 8px;
+  background: var(--cf-red); margin-right: 9px; vertical-align: 0;
+}
+html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
 .cf-h2 {
   font-family: var(--cf-display);
-  font-size: clamp(27px, 4.5vw, 44px);
-  line-height: 1.08;
+  font-size: clamp(30px, 4.8vw, 52px);
+  line-height: 1.02;
   text-transform: uppercase;
-  letter-spacing: 0.01em;
-  font-weight: 600;
+  letter-spacing: 0.015em;
+  font-weight: 400;
   text-wrap: balance;
 }
-/* Section head: an entablature band. Double rule above, the title set as an
-   inscription, generous but bounded air below (spacing scale: 96px max). */
-.cf-sec-head { border-top: 3px double var(--cf-ink); padding-top: 16px; margin-bottom: 32px; }
-.cf-sec-head .cf-roman { display: block; margin-bottom: 8px; }
-.cf-lede { font-family: var(--cf-serif); font-weight: 500; font-size: 23px; line-height: 1.5; }
-.cf-body { font-family: var(--cf-serif); font-weight: 500; font-size: 19px; line-height: 1.6; color: var(--cf-ink-soft); }
+/* Section head: one raw 3px rule above the headline. The rule is the
+   ornament; nothing else is admitted. */
+.cf-sec-head { border-top: 3px solid var(--cf-ink); padding-top: 16px; margin-bottom: 32px; }
+.cf-lede { font-family: var(--cf-serif); font-weight: 500; font-size: 21px; line-height: 1.55; }
+.cf-body { font-family: var(--cf-serif); font-weight: 450; font-size: 17.5px; line-height: 1.65; color: var(--cf-ink-soft); }
 .cf-note {
   font-family: var(--font-jetbrains), monospace;
   font-size: 12px; color: var(--cf-muted); letter-spacing: 0.04em; line-height: 1.7;
@@ -274,69 +283,65 @@ html[data-theme="dark"] .cf-app ::selection { background: rgba(139, 148, 224, 0.
 }
 .cf-rule-double { border-top: 3px double var(--cf-ink); }
 
-/* Page head for inner pages: kicker, huge title, lede, all under a file rule. */
-.cf-pagehead { padding: 44px 0 8px; }
+/* Page head for inner pages: kicker, poster-scale title, lede, and a 3px
+   ink rule closing the block. The head is a stacked block, not a banner. */
+.cf-pagehead { padding: 44px 0 30px; border-bottom: 3px solid var(--cf-ink); }
 .cf-pagehead h1 {
   font-family: var(--cf-display);
-  font-size: clamp(44px, 7.5vw, 84px);
-  line-height: 0.98;
+  font-weight: 400;
+  font-size: clamp(46px, 8vw, 96px);
+  line-height: 0.95;
   text-transform: uppercase;
+  letter-spacing: 0.015em;
   margin-top: 16px;
 }
 .cf-pagehead .cf-lede { margin-top: 22px; max-width: 640px; color: var(--cf-ink-soft); }
 
 /* ── Buttons and links ───────────────────────────────────────────────────── */
-/* The flat offset shadow lives HERE and nowhere else (primary actions). */
+/* The hard offset shadow lives HERE and on the framed blocks: zero blur,
+   full ink (red in the dark theme), always the same offset language. */
 .cf-btn {
-  position: relative; overflow: hidden;
+  position: relative;
   display: inline-flex; align-items: center; gap: 10px;
   background: var(--cf-ink); color: var(--cf-paper);
   border: 2px solid var(--cf-ink);
   padding: 15px 26px;
-  font-weight: 700; font-size: 16px; line-height: 1.2; text-decoration: none;
+  font-family: var(--cf-caps); text-transform: uppercase; letter-spacing: 0.05em;
+  font-weight: 700; font-size: 15px; line-height: 1.2; text-decoration: none;
   box-shadow: 5px 5px 0 var(--cf-shadow);
   transition: transform var(--cf-dur-feedback) var(--cf-ease), box-shadow var(--cf-dur-feedback) var(--cf-ease), background-color var(--cf-dur-ui) var(--cf-ease);
   cursor: pointer;
 }
-/* Shimmer sweep: one pass of light across the ink on hover, then gone. */
-.cf-btn::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.16) 50%, transparent 58%);
-  transform: translateX(-130%);
-  transition: transform 0.6s var(--cf-ease);
-}
-.cf-btn:hover::after { transform: translateX(130%); }
-html[data-theme="dark"] .cf-btn::after {
-  background: linear-gradient(105deg, transparent 42%, rgba(22, 20, 15, 0.16) 50%, transparent 58%);
-}
-.cf-btn:hover { background: var(--cf-ink-soft); border-color: var(--cf-ink-soft); }
-.cf-btn:active { transform: scale(0.97); box-shadow: 2px 2px 0 var(--cf-shadow); }
+.cf-btn:hover { background: var(--cf-red); border-color: var(--cf-ink); color: #F4F1EC; transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--cf-shadow); }
+.cf-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--cf-shadow); }
 .cf-btn-ghost {
   display: inline-flex; align-items: center; gap: 10px;
   background: transparent; color: var(--cf-ink);
   border: 2px solid var(--cf-ink);
-  padding: 15px 26px; font-weight: 700; font-size: 16px; line-height: 1.2; text-decoration: none;
-  transition: transform var(--cf-dur-feedback) var(--cf-ease), background-color var(--cf-dur-ui) var(--cf-ease);
+  padding: 15px 26px;
+  font-family: var(--cf-caps); text-transform: uppercase; letter-spacing: 0.05em;
+  font-weight: 700; font-size: 15px; line-height: 1.2; text-decoration: none;
+  transition: transform var(--cf-dur-feedback) var(--cf-ease), box-shadow var(--cf-dur-feedback) var(--cf-ease), background-color var(--cf-dur-ui) var(--cf-ease), color var(--cf-dur-ui) var(--cf-ease);
   cursor: pointer;
 }
-.cf-btn-ghost:hover { background: var(--cf-paper-2); }
-.cf-btn-ghost:active { transform: scale(0.97); }
+.cf-btn-ghost:hover { background: var(--cf-ink); color: var(--cf-paper); transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--cf-shadow); }
+.cf-btn-ghost:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--cf-shadow); }
 
 .cf-ulink {
-  color: var(--cf-ink); font-weight: 700; text-decoration: none;
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 100% 2px; background-position: 0 100%; background-repeat: no-repeat;
-  padding-bottom: 3px;
-  transition: background-size 0.45s var(--cf-ease), color 0.25s var(--cf-ease);
+  color: var(--cf-ink); font-weight: 700;
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px;
+  transition: color 0.25s var(--cf-ease), text-decoration-thickness 0.25s var(--cf-ease);
 }
-.cf-ulink:hover { background-size: 0% 2px; color: var(--cf-red); }
+.cf-ulink:hover { color: var(--cf-red); text-decoration-thickness: 3px; }
 
-/* Red underline emphasis (replaces the old highlighter wash). */
+/* Red block emphasis: the poster's move. A word picked out of the line
+   and printed on a red block, paper text on top, in both themes. */
 .cf-u-red {
-  text-decoration: underline;
-  text-decoration-color: var(--cf-red);
-  text-decoration-thickness: 3px;
-  text-underline-offset: 5px;
+  background: var(--cf-red);
+  color: #F4F1EC;
+  padding: 0 0.14em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   font-weight: 700;
 }
 
@@ -349,7 +354,7 @@ html[data-theme="dark"] .cf-btn::after {
   font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
   padding: 6px 13px;
   border: var(--bw, 2.5px) solid currentColor;
-  border-radius: 3px;
+  border-radius: 0;
   width: max-content;
   transform: rotate(var(--r, -3deg)) scale(var(--s, 1));
   /* Opacity floor 0.9: per-instance softness stops where legibility does
@@ -358,17 +363,19 @@ html[data-theme="dark"] .cf-btn::after {
   text-shadow: 0 0 1px currentColor;
   white-space: nowrap;
 }
-.cf-stamp-red { color: var(--cf-red); background: rgba(44, 52, 128, 0.06); }
+.cf-stamp-red { color: var(--cf-red); background: rgba(173, 1, 23, 0.07); }
 /* The hero stamp is the one grid-breaking gesture: full ink, never washed. */
 .cf-stamp-hero {
-  background: rgba(44, 52, 128, 0.10);
+  background: rgba(173, 1, 23, 0.12);
   text-shadow: 0 0 1.5px currentColor;
   font-weight: 800;
 }
-[data-theme="dark"] .cf-stamp-hero { background: rgba(139, 148, 224, 0.16); }
-.cf-stamp-gold { color: var(--cf-gold); background: rgba(44, 52, 128, 0.05); }
-.cf-stamp-green { color: var(--cf-green); background: rgba(44, 52, 128, 0.04); }
-.cf-stamp-ink { color: var(--cf-ink); background: rgba(11, 11, 14, 0.04); }
+[data-theme="dark"] .cf-stamp-hero { background: rgba(173, 1, 23, 0.2); }
+.cf-stamp-gold { color: var(--cf-gold); background: rgba(20, 20, 20, 0.05); }
+.cf-stamp-green { color: var(--cf-green); background: rgba(47, 125, 30, 0.07); }
+.cf-stamp-ink { color: var(--cf-ink); background: rgba(20, 20, 20, 0.05); }
+[data-theme="dark"] .cf-stamp-gold, [data-theme="dark"] .cf-stamp-ink { background: rgba(244, 241, 236, 0.07); }
+[data-theme="dark"] .cf-stamp-green { background: rgba(111, 168, 79, 0.1); }
 @keyframes cf-stamp-in {
   0% { transform: rotate(calc(var(--r, -3deg) - 7deg)) scale(1.7); opacity: 0; }
   55% { opacity: max(var(--o, 0.9), 0.9); }
@@ -381,80 +388,70 @@ html[data-theme="dark"] .cf-btn::after {
 /* ── Exhibits, tape, documents ───────────────────────────────────────────── */
 .cf-exhibit { position: relative; }
 .cf-exhibit-frame {
-  border: 1px solid var(--cf-doc-line);
-  box-shadow: 0 18px 40px var(--cf-exhibit-shadow);
-  background: #fff;
+  border: 3px solid var(--cf-ink);
+  box-shadow: 10px 10px 0 var(--cf-shadow);
+  background: var(--cf-paper);
   display: block; width: 100%;
   transition: transform 0.6s var(--cf-ease);
 }
-/* ONE tape strip per exhibit. Torn edges from a jagged clip-path polygon. */
+/* The tape strip survives only as a component on pages that still pin
+   paper; the brutalist exhibits do not use it. Its colours are warmed to
+   the poster paper so any remaining use sits in the palette. */
 .cf-tape {
   position: absolute; z-index: 4;
-  background: rgba(206, 208, 218, 0.85);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.14);
+  background: rgba(218, 212, 198, 0.88);
+  box-shadow: 0 2px 0 rgba(20, 20, 20, 0.35);
   clip-path: polygon(2% 12%, 9% 0%, 24% 8%, 41% 2%, 58% 10%, 74% 3%, 89% 9%, 99% 0%, 100% 88%, 93% 100%, 77% 91%, 60% 99%, 43% 92%, 27% 100%, 12% 93%, 0% 100%, 1% 55%);
   pointer-events: none;
 }
-.cf-caption { font-size: 13px; color: var(--cf-muted); line-height: 1.55; }
+/* Captions are data, so captions are mono. */
+.cf-caption { font-family: var(--font-jetbrains), monospace; font-size: 12.5px; color: var(--cf-muted); line-height: 1.65; }
 .cf-caption b { color: var(--cf-ink); }
 
-/* A photographed/scanned document pinned into the file. */
+/* A photographed/scanned document in a raw frame. */
 .cf-doc { position: relative; }
 .cf-doc img {
   display: block; width: 100%;
-  border: 1px solid var(--cf-doc-line);
-  box-shadow: 0 14px 34px var(--cf-exhibit-shadow);
+  border: 2.5px solid var(--cf-ink);
+  box-shadow: 8px 8px 0 var(--cf-shadow);
   background: #fff;
 }
 
-/* ── Neoclassical ornament system ────────────────────────────────────────── */
-/* Roman numeral marker for section heads and exhibit labels. */
+/* ── Raw markers and rules ───────────────────────────────────────────────── */
+/* Section marker: mono, red, squared. (This class carried Roman numerals
+   in the neoclassical system; the name stays, the device is gone.) */
 .cf-roman {
-  font-family: var(--cf-caps);
-  font-size: 12px; font-weight: 600;
-  letter-spacing: 0.3em; text-transform: uppercase;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--cf-red);
-}
-/* Greek-key meander band: an SVG repeat in currentColor, used as the
-   entablature strip under the header and over the footer. Hairline rules
-   above and below come from the band's own borders. */
-.cf-meander {
-  height: 14px;
-  color: var(--cf-faint);
-  border-top: 1px solid var(--cf-doc-line);
-  border-bottom: 1px solid var(--cf-doc-line);
-  background-repeat: repeat-x;
-  background-position: center;
-  background-size: auto 10px;
-  opacity: 0.9;
 }
 /* The theme toggle answers hover with a paper shift (it was a jury
    noHoverChange finding as a bare icon). */
 .cf-theme-toggle { transition: background-color var(--cf-dur-feedback) var(--cf-ease), color var(--cf-dur-feedback) var(--cf-ease); }
 .cf-theme-toggle:hover { background: var(--cf-paper-2); color: var(--cf-ink); }
 
-/* Laurel divider: hairline, laurel mark, hairline. Rendered by the
-   LaurelDivider component; the lines are plain spans. */
-.cf-laurel { display: flex; align-items: center; gap: 16px; color: var(--cf-red); }
-.cf-laurel::before, .cf-laurel::after {
-  content: ""; flex: 1; height: 1px; background: var(--cf-doc-line);
-}
-.cf-laurel svg { flex: none; display: block; }
-/* Medallion seal: a double ring (border + offset outline) around a mark. */
-.cf-medallion {
-  display: inline-flex; align-items: center; justify-content: center;
-  border: 1.5px solid currentColor; border-radius: 999px;
-  outline: 1px solid currentColor; outline-offset: 3px;
-  padding: 5px;
-}
-/* Arch-topped plate: the museum-plate crop for portrait exhibits. */
-.cf-arch { border-radius: 999px 999px 0 0; overflow: hidden; }
-/* Letterspaced plate label above a caption ("PLATE I — …"). */
+/* The one divider the system allows: a 3px ink rule with a short red
+   block parked at its left end. Rendered by the BlockRule component. */
+.cf-blockrule { border-top: 3px solid var(--cf-ink); }
+.cf-blockrule > span { display: block; width: 96px; height: 8px; background: var(--cf-red); }
+/* Small mono label above a caption or figure. */
 .cf-plate {
-  font-family: var(--cf-caps);
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 0.28em; text-transform: uppercase;
-  color: var(--cf-muted);
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--cf-red);
+}
+/* Bordered data strip: an exposed grid of cells with 2px dividers, the
+   HUD/poster workhorse. Column count is set inline per use; cells stack
+   on small screens with the divider flipping to a top border. */
+.cf-cells { display: grid; border: 3px solid var(--cf-ink); background: var(--cf-paper); }
+.cf-cells > * { padding: 12px 16px; min-width: 0; }
+.cf-cells > * + * { border-left: 2px solid var(--cf-ink); }
+.cf-cell-red { background: var(--cf-red); color: #F4F1EC; }
+@media (max-width: 720px) {
+  .cf-cells { grid-template-columns: 1fr !important; }
+  .cf-cells > * + * { border-left: none; border-top: 2px solid var(--cf-ink); }
 }
 
 /* ── Document wall (certifications) + filed exhibits ─────────────────────── */
@@ -462,19 +459,19 @@ html[data-theme="dark"] .cf-btn::after {
   display: grid; grid-template-columns: repeat(2, 1fr); gap: 44px 40px; align-items: start;
 }
 @media (max-width: 720px) { .cf-docwall { grid-template-columns: 1fr; gap: 36px; } }
-.cf-docwall figure { margin: 0; rotate: var(--tilt, 0deg); transition: rotate 0.6s var(--cf-ease); }
+.cf-docwall figure { margin: 0; }
 .cf-docwall .cf-caption { margin-top: 14px; }
 /* Small real-document thumbnail that rides inside a credential row. */
 .cf-cred-thumb {
   width: 58px; height: auto; flex: none;
-  border: 1px solid var(--cf-doc-line);
-  box-shadow: 0 6px 16px var(--cf-exhibit-shadow);
+  border: 2px solid var(--cf-ink);
+  box-shadow: 4px 4px 0 var(--cf-shadow);
   background: #fff;
 }
 @media (max-width: 640px) { .cf-cred-thumb { width: 44px; } }
 /* An exhibit frame waiting for its document/photograph: honestly empty. */
 .cf-pending-frame {
-  border: 1.5px dashed var(--cf-faint);
+  border: 2px dashed var(--cf-ink-soft);
   background: var(--cf-paper-2);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 10px; text-align: center; padding: 28px 20px;
@@ -524,27 +521,24 @@ html[data-theme="dark"] .cf-btn::after {
 /* ── Terminal capture panel (Exhibit B): a crafted window, not a rectangle ── */
 .cf-term {
   background: var(--cf-log-bg); color: var(--cf-log-text);
-  border: 1px solid #23263a;
-  box-shadow:
-    inset 0 1px 0 rgba(200, 205, 225, 0.07),
-    inset 0 0 70px rgba(0, 0, 0, 0.5),
-    0 18px 40px var(--cf-exhibit-shadow);
+  border: 3px solid var(--cf-ink);
+  box-shadow: 10px 10px 0 var(--cf-shadow);
 }
-/* Window chrome: three small SQUARE controls (dossier geometry, not macOS
+/* Window chrome: three small SQUARE controls (raw geometry, not macOS
    circles), the capture title, and a live-recording marker. */
 .cf-term-bar {
   display: flex; align-items: center; gap: 14px;
   padding: 11px 16px;
-  background: linear-gradient(180deg, #14151f, #0a0a10);
-  border-bottom: 1px solid #2b2e45;
+  background: #141414;
+  border-bottom: 2px solid #3A3A38;
 }
 .cf-term-btns { display: inline-flex; gap: 7px; flex: none; }
 .cf-term-btns i {
   width: 11px; height: 11px; display: block;
-  border: 1.5px solid #4a4f6e; background: transparent;
+  border: 1.5px solid #6B675E; background: transparent;
 }
 .cf-term-btns i:first-child { background: var(--cf-red); border-color: var(--cf-red); }
-.cf-term-btns i:last-child { background: rgba(200, 205, 225, 0.16); }
+.cf-term-btns i:last-child { background: #3A3A38; }
 .cf-term-title {
   flex: 1; text-align: center;
   font-family: var(--font-jetbrains), monospace;
@@ -554,19 +548,19 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-term-rec {
   flex: none; display: inline-flex; align-items: center; gap: 6px;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 10px; letter-spacing: 0.16em; color: #9aa5e8;
+  font-size: 10px; letter-spacing: 0.16em; color: var(--cf-log-head);
 }
 .cf-term-rec i {
-  width: 7px; height: 7px; border-radius: 50%; background: #9aa5e8; display: block;
+  width: 7px; height: 7px; background: var(--cf-red); display: block;
   animation: cf-rec-pulse 1.8s var(--cf-ease) infinite;
 }
 @keyframes cf-rec-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
 /* The old head line survives as a quiet status strip under the chrome. */
 .cf-term-status {
   display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-  padding: 9px 22px; border-bottom: 1px solid #1d1f30;
+  padding: 9px 22px; border-bottom: 1px solid #3A3A38;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 10.5px; letter-spacing: 0.15em; text-transform: uppercase; color: #767c92;
+  font-size: 10.5px; letter-spacing: 0.15em; text-transform: uppercase; color: #9A968C;
 }
 .cf-term-body {
   padding: 20px 22px 24px;
@@ -575,14 +569,17 @@ html[data-theme="dark"] .cf-btn::after {
   white-space: pre-wrap; word-break: break-word;
 }
 .cf-log-line { opacity: 1; }
-.cf-term .warn { color: #c7ccda; }
-.cf-term .alert { color: #9aa5e8; }
-.cf-term .ok { color: #aeb6e4; }
-.cf-term .dim { color: #767c92; }
+.cf-term .warn { color: #F4F1EC; }
+/* Screen register: inside a terminal the red lifts one step (#FF6B5E) so
+   alert text stays readable on the ink screen; the system's printed red
+   remains #AD0117 everywhere outside the glass. */
+.cf-term .alert { color: #FF6B5E; }
+.cf-term .ok { color: #A3BE8C; }
+.cf-term .dim { color: #8A867E; }
 /* Blinking block cursor at the end of the capture. */
 .cf-cursor {
   display: inline-block; width: 8px; height: 1.05em;
-  background: var(--cf-log-head); vertical-align: text-bottom;
+  background: var(--cf-red); vertical-align: text-bottom;
   animation: cf-blink 1.06s steps(1) infinite;
 }
 @keyframes cf-blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
@@ -595,12 +592,12 @@ html[data-theme="dark"] .cf-btn::after {
 }
 
 /* ── Credential rows ─────────────────────────────────────────────────────── */
-.cf-cred { border-top: 1px solid var(--cf-ink); }
+.cf-cred { border-top: 2px solid var(--cf-ink); }
 .cf-cred-row {
   display: grid; grid-template-columns: 1fr auto auto; gap: 24px; align-items: center;
-  padding: 20px 4px; border-bottom: 1px solid var(--cf-ink);
+  padding: 20px 4px; border-bottom: 2px solid var(--cf-ink);
 }
-.cf-cred-row .cf-cred-name { font-size: 23px; font-weight: 800; line-height: 1.2; }
+.cf-cred-row .cf-cred-name { font-family: var(--cf-display); font-size: 22px; font-weight: 400; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1.15; }
 .cf-cred-row .cf-cred-iss { font-size: 14px; color: var(--cf-muted); margin-top: 2px; }
 .cf-cred-row .cf-cred-code { font-family: var(--font-jetbrains), monospace; font-size: 13px; color: var(--cf-ink-soft); }
 @media (max-width: 640px) {
@@ -610,8 +607,8 @@ html[data-theme="dark"] .cf-btn::after {
 }
 
 /* ── Price machine ───────────────────────────────────────────────────────── */
-/* Double-rule panel frame: border + offset outline, the classical panel. */
-.cf-machine { border: 2px solid var(--cf-ink); outline: 1px solid var(--cf-ink); outline-offset: 5px; background: var(--cf-paper-2); }
+/* One heavy frame and one hard shadow. Nothing else. */
+.cf-machine { border: 3px solid var(--cf-ink); box-shadow: 12px 12px 0 var(--cf-shadow); background: var(--cf-paper); }
 .cf-strike { position: relative; display: inline-block; color: var(--cf-muted); }
 .cf-strike::after {
   content: ""; position: absolute; left: -3px; right: -3px; top: 52%;
@@ -628,20 +625,21 @@ html[data-theme="dark"] .cf-btn::after {
 /* ── File contents index + archive rows ──────────────────────────────────── */
 .cf-idx-row {
   display: grid; grid-template-columns: 64px 1fr auto; gap: 18px; align-items: baseline;
-  padding: 15px 2px; border-bottom: 1px solid var(--cf-faint);
+  padding: 16px 2px; border-bottom: 2px solid var(--cf-ink);
   text-decoration: none; color: var(--cf-ink);
   transition: padding-left 0.4s var(--cf-ease), background-color 0.3s var(--cf-ease);
 }
 .cf-idx-row:hover { padding-left: 12px; background: var(--cf-paper-2); }
+.cf-idx-row:hover .cf-idx-title { color: var(--cf-red); }
 .cf-idx-row .cf-idx-no { font-family: var(--font-jetbrains), monospace; font-size: 12px; color: var(--cf-red); font-weight: 700; }
-.cf-idx-row .cf-idx-title { font-size: 19px; font-weight: 700; }
+.cf-idx-row .cf-idx-title { font-size: 19px; font-weight: 700; transition: color 0.3s var(--cf-ease); }
 .cf-idx-row .cf-idx-desc { font-size: 13.5px; color: var(--cf-muted); display: block; margin-top: 2px; font-weight: 400; }
 .cf-idx-row .cf-idx-arrow { font-family: var(--font-jetbrains), monospace; color: var(--cf-muted); transition: transform 0.4s var(--cf-ease), color 0.3s; }
 .cf-idx-row:hover .cf-idx-arrow { transform: translateX(5px); color: var(--cf-red); }
 
 .cf-arch-row {
   display: grid; grid-template-columns: 92px 130px 1fr auto; gap: 18px; align-items: baseline;
-  padding: 14px 2px; border-bottom: 1px solid var(--cf-faint);
+  padding: 14px 2px; border-bottom: 1px solid var(--cf-ink-soft);
   text-decoration: none; color: var(--cf-ink);
   transition: padding-left 0.4s var(--cf-ease), background-color 0.3s var(--cf-ease);
 }
@@ -658,15 +656,15 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-input {
   width: 100%;
   background: var(--cf-paper);
-  border: 1px solid var(--cf-ink);
+  border: 2px solid var(--cf-ink);
   border-radius: 0;
   padding: 11px 14px;
   font-size: 15px; color: var(--cf-ink);
   transition: box-shadow var(--cf-dur-ui) var(--cf-ease), background-color var(--cf-dur-ui) var(--cf-ease);
 }
 .cf-input::placeholder { color: var(--cf-faint); }
-.cf-input:focus { outline: none; box-shadow: 0 3px 0 var(--cf-red); background: var(--cf-paper-2); }
-.cf-input[aria-invalid="true"] { border-color: var(--cf-red); box-shadow: 0 3px 0 var(--cf-red); }
+.cf-input:focus { outline: none; box-shadow: 5px 5px 0 var(--cf-red); background: var(--cf-paper); }
+.cf-input[aria-invalid="true"] { border-color: var(--cf-red); box-shadow: 5px 5px 0 var(--cf-red); }
 .cf-label {
   display: block;
   font-family: var(--font-jetbrains), monospace;
@@ -678,22 +676,22 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-field:focus-within .cf-label { color: var(--cf-red); }
 .cf-opt {
   text-align: left; width: 100%;
-  border: 1.5px solid var(--cf-faint);
+  border: 2px solid var(--cf-ink-soft);
   background: var(--cf-paper);
   color: var(--cf-ink);
   padding: 16px;
   cursor: pointer;
-  transition: transform 0.18s var(--cf-ease), border-color 0.25s var(--cf-ease), background-color 0.25s var(--cf-ease);
+  transition: transform 0.18s var(--cf-ease), border-color 0.25s var(--cf-ease), background-color 0.25s var(--cf-ease), box-shadow 0.18s var(--cf-ease);
 }
-.cf-opt:hover { border-color: var(--cf-ink); transform: translateY(-2px); }
-.cf-opt:active { transform: scale(0.98); }
+.cf-opt:hover { border-color: var(--cf-ink); transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--cf-shadow); }
+.cf-opt:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--cf-shadow); }
 .cf-opt[aria-pressed="true"], .cf-opt[aria-checked="true"] {
-  border-color: var(--cf-ink); background: var(--cf-paper-2);
-  box-shadow: inset 0 0 0 1px var(--cf-ink);
+  border: 3px solid var(--cf-ink); background: var(--cf-paper-2);
+  box-shadow: 5px 5px 0 var(--cf-red);
 }
 .cf-chip {
   padding: 7px 14px; font-size: 13px;
-  border: 1.5px solid var(--cf-faint); background: transparent; color: var(--cf-ink-soft);
+  border: 2px solid var(--cf-ink-soft); background: transparent; color: var(--cf-ink-soft);
   cursor: pointer;
   transition: transform 0.18s var(--cf-ease), border-color 0.25s, background-color 0.25s, color 0.25s;
 }
@@ -702,7 +700,7 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-chip[aria-checked="true"], .cf-chip[aria-pressed="true"] { border-color: var(--cf-ink); background: var(--cf-ink); color: var(--cf-paper); }
 
 /* ── Blog typography ─────────────────────────────────────────────────────── */
-.cf-prose { font-family: var(--cf-serif); font-weight: 500; font-size: 20px; line-height: 1.7; color: var(--cf-ink-soft); }
+.cf-prose { font-family: var(--cf-serif); font-weight: 450; font-size: 18.5px; line-height: 1.7; color: var(--cf-ink-soft); }
 .cf-prose h2, .cf-prose h3 {
   font-family: var(--cf-display); text-transform: uppercase; color: var(--cf-ink);
   line-height: 1.15; margin: 1.6em 0 0.6em;
@@ -720,15 +718,16 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-prose pre {
   background: var(--cf-log-bg); color: var(--cf-log-text);
   font-family: var(--font-jetbrains), monospace; font-size: 13.5px; line-height: 1.7;
-  padding: 18px 20px; overflow-x: auto; margin: 0 0 1.4em; border: 1px solid #1d1f30;
+  padding: 18px 20px; overflow-x: auto; margin: 0 0 1.4em; border: 2.5px solid var(--cf-ink);
+  box-shadow: 7px 7px 0 var(--cf-shadow);
 }
 .cf-prose pre code { background: none; border: none; padding: 0; color: inherit; }
 .cf-prose blockquote {
-  border-left: 3px solid var(--cf-red); padding-left: 18px; margin: 0 0 1.3em;
-  color: var(--cf-ink); font-size: 19px; line-height: 1.6;
+  border-left: 5px solid var(--cf-red); padding-left: 18px; margin: 0 0 1.3em;
+  color: var(--cf-ink); font-size: 19px; font-weight: 600; line-height: 1.6;
 }
-.cf-prose img { border: 1px solid var(--cf-doc-line); box-shadow: 0 12px 28px var(--cf-exhibit-shadow); }
-.cf-prose hr { border: none; border-top: 2px solid var(--cf-ink); margin: 2.2em 0; }
+.cf-prose img { border: 2.5px solid var(--cf-ink); box-shadow: 8px 8px 0 var(--cf-shadow); }
+.cf-prose hr { border: none; border-top: 3px solid var(--cf-ink); margin: 2.2em 0; }
 
 /* Legal pages reuse the .legal wrapper from LegalPage. */
 .cf-scope .legal { color: var(--cf-ink-soft) !important; }
@@ -751,18 +750,31 @@ html[data-theme="dark"] .cf-btn::after {
 }
 
 /* Scroll reveal: the pre-state is only applied by JS (data-cf="pre"), so
-   no-JS and SSR renders are fully visible. Travel is LARGE by design
-   (48px + a scale settle) — the Apple-page feel: sections do not just
-   fade, they arrive. Variants share the reveal duration token; only the
-   pre-state pose differs. */
-.cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(48px) scale(0.96); }
-.cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(48px) scale(0.93); }
-/* The "left" variant historically slid in laterally; the classical format
-   moves on the central axis only, so it now rises like the default. */
-.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateY(48px) scale(0.97); }
+   no-JS and SSR renders are fully visible. Travel is LARGE on purpose
+   (56px rise + a scale settle, or a full clip wipe for section heads):
+   the owner has rejected invisible animation twice, so entrances here
+   are built to be seen from across the room. Variants share the reveal
+   duration token; only the pre-state pose differs. */
+.cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(56px) scale(0.96); }
+.cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(56px) scale(0.92); }
+/* The "left" variant slides in laterally again: index and credential
+   rows travel the x axis, 56px, no settle. */
+.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateX(-56px); }
+/* Wipe: section heads are uncovered left-to-right while sliding in, like
+   a poster being pasted up. */
+.cf-rv[data-variant="wipe"][data-cf="pre"] {
+  opacity: 0; transform: translateX(-40px);
+  clip-path: inset(0 100% 0 0);
+}
 .cf-rv[data-cf="in"] {
   opacity: 1; transform: translateY(0);
   transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease);
+  transition-delay: var(--cf-d, 0s);
+}
+.cf-rv[data-variant="wipe"][data-cf="in"] {
+  transform: translateX(0);
+  clip-path: inset(0 0 0 0);
+  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease), clip-path var(--cf-dur-reveal) var(--cf-ease);
   transition-delay: var(--cf-d, 0s);
 }
 /* A scale-variant reveal ends at scale(1), not translateY(0) alone. */
@@ -784,18 +796,20 @@ html[data-theme="dark"] .cf-btn::after {
   50% { box-shadow: 0 0 0 6px color-mix(in srgb, currentColor 6%, transparent); }
 }
 
-/* Pointer spotlight for document surfaces (credentials wall): a soft gold
-   wash that follows the pointer BEHIND the documents (z-index -1 inside an
-   isolated wrapper), so text and paper never lose contrast. Set --mx/--my
-   from JS; coarse pointers never see it. */
+/* Pointer wash for document surfaces (credentials wall): a FLAT red tint
+   that follows the pointer BEHIND the documents (z-index -1 inside an
+   isolated wrapper), so text and paper never lose contrast. It was a soft
+   radial spotlight in earlier systems; the brutalist system admits no
+   gradients, so the wash is a hard-edged flat field clipped to a block
+   around the pointer. Set --mx/--my from JS; coarse pointers never see it. */
 .cf-spot { position: relative; isolation: isolate; }
 .cf-spot::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   opacity: 0; transition: opacity var(--cf-dur-ui) var(--cf-ease);
-  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(44, 52, 128, 0.12), transparent 65%);
+  background: rgba(173, 1, 23, 0.07);
 }
 html[data-theme="dark"] .cf-spot::before {
-  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(139, 148, 224, 0.13), transparent 65%);
+  background: rgba(173, 1, 23, 0.1);
 }
 .cf-spot:hover::before { opacity: 1; }
 @media (hover: none), (pointer: coarse) { .cf-spot::before { display: none; } }
@@ -803,7 +817,7 @@ html[data-theme="dark"] .cf-spot::before {
 /* Nav link underline (grows from the left, Apple easing). */
 .cf-navlink { position: relative; text-decoration: none; }
 .cf-navlink::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px;
+  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 3px;
   background: var(--cf-red);
   transform: scaleX(0); transform-origin: left center;
   transition: transform 0.4s var(--cf-ease);
@@ -838,17 +852,104 @@ html[data-theme="dark"] .cf-spot::before {
 }
 .cf-pin-doc img {
   max-height: 100%; max-width: min(100%, 620px); width: auto; height: auto;
-  border: 1px solid var(--cf-doc-line);
-  box-shadow: 0 22px 48px var(--cf-exhibit-shadow);
+  border: 2.5px solid var(--cf-ink);
+  box-shadow: 10px 10px 0 var(--cf-shadow);
   background: #fff;
 }
 .cf-pin-caps { position: relative; height: 96px; margin-top: 22px; }
 .cf-pin-cap { position: absolute; inset: 0; will-change: transform, opacity; }
 .cf-pin-bars { display: flex; gap: 8px; margin-top: 6px; }
-.cf-pin-bar { position: relative; flex: 1; height: 3px; background: var(--cf-paper-3); overflow: hidden; }
+.cf-pin-bar { position: relative; flex: 1; height: 4px; background: var(--cf-paper-3); overflow: hidden; }
 .cf-pin-bar i {
   position: absolute; inset: 0; display: block; background: var(--cf-red);
   transform-origin: left center;
+}
+
+/* ── HUD hero panel (homepage) ───────────────────────────────────────────── */
+/* The reference card, rebuilt in the poster's colours: an ink panel with
+   paper mono readouts, a framed photograph under scanlines, and red doing
+   the loud work. The panel is ink in BOTH themes; its frame and shadow
+   come from the theme tokens, so on the dark ground it reads as a paper-
+   framed block with a red offset. */
+.cf-hud {
+  position: relative; overflow: hidden;
+  background: #141414; color: #F4F1EC;
+  border: 3px solid var(--cf-ink);
+  box-shadow: 14px 14px 0 var(--cf-shadow);
+}
+.cf-hud-dim { color: #9A968C; }
+.cf-hud-line { border-color: #3A3A38; }
+/* The headline deck sits right of the photograph on desktop (left rule),
+   below it on mobile (top rule). */
+.cf-hud-main { border-top: 2px solid #3A3A38; }
+@media (min-width: 1024px) {
+  .cf-hud-main { border-top: none; border-left: 2px solid #3A3A38; }
+}
+/* The slow red scan sweep: one 2px line crossing the whole panel on an
+   8s loop. Transform-only; the panel clips it. */
+.cf-hud-scan {
+  position: absolute; left: 0; right: 0; top: 0; height: 2px; z-index: 5;
+  background: var(--cf-red); opacity: 0.55; pointer-events: none;
+  animation: cf-scan 8s linear infinite;
+}
+@keyframes cf-scan {
+  from { transform: translateY(-4px); }
+  to { transform: translateY(1150px); }
+}
+/* Scanline texture over the HUD photograph: hard-stop repeating stripes,
+   the print/screen texture the reference card wears. */
+.cf-scanlines { position: relative; }
+.cf-scanlines::after {
+  content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(20, 20, 20, 0.22) 0 1px, transparent 1px 3px);
+}
+/* HUD nav rows: mono, divided, and they answer hover with a full red block. */
+.cf-hud-nav a {
+  display: flex; align-items: baseline; gap: 14px;
+  padding: 10px 12px; margin: 0 -12px;
+  border-top: 1px solid #3A3A38;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: #F4F1EC; text-decoration: none;
+  transition: background-color 0.22s var(--cf-ease), padding-left 0.22s var(--cf-ease);
+}
+.cf-hud-nav a:hover { background: var(--cf-red); padding-left: 20px; }
+.cf-hud-nav a .cf-hud-nav-no { color: var(--cf-red); font-size: 11px; transition: color 0.22s var(--cf-ease); }
+.cf-hud-nav a:hover .cf-hud-nav-no { color: #F4F1EC; }
+.cf-hud-nav a .cf-hud-nav-arrow { margin-left: auto; }
+/* Block-character meters (data, set in mono). */
+.cf-meter { font-family: var(--font-jetbrains), monospace; letter-spacing: 0.12em; white-space: nowrap; }
+.cf-meter .on { color: var(--cf-red); }
+.cf-meter .off { color: #57544C; }
+
+/* ── Avatar companion: the fixed fellow-traveller ────────────────────────── */
+/* Bottom-LEFT on purpose: the consent banner owns the bottom-right
+   (z-80), the mobile menu owns the full screen (z-50); the companion
+   rides at z-40 under both and never covers either. */
+.cf-companion {
+  position: fixed; left: 16px; z-index: 40;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+.cf-companion-frame {
+  width: 86px;
+  border: 3px solid var(--cf-ink);
+  background: #141414;
+  box-shadow: 6px 6px 0 var(--cf-shadow);
+}
+.cf-companion-tag {
+  background: var(--cf-red); color: #F4F1EC;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 3px 7px; display: flex; align-items: center; gap: 5px;
+}
+.cf-companion-tag i {
+  width: 5px; height: 5px; background: #F4F1EC; display: block; flex: none;
+  animation: cf-rec-pulse 1.8s var(--cf-ease) infinite;
+}
+@media (max-width: 640px) {
+  .cf-companion { left: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+  .cf-companion-frame { width: 54px; box-shadow: 4px 4px 0 var(--cf-shadow); }
+  .cf-companion-tag { font-size: 7px; padding: 2px 4px; letter-spacing: 0.12em; }
 }
 
 /* ── Touch targets: on coarse pointers every footer and chip target is at
@@ -880,11 +981,128 @@ html[data-theme="dark"] .cf-spot::before {
   .cf-prog-ring { animation: none !important; }
   .cf-prog-dots i { animation: none !important; opacity: 0.85 !important; }
   .cf-term-rec i { animation: none !important; opacity: 1 !important; }
-  /* Motion-pass additions off: no paper drift, no page rise, no beacon
-     pulse, no spotlight, no shimmer sweep. */
-  .cf-ambient { animation: none !important; }
+  /* Motion-pass additions off: no page rise, no beacon pulse, no pointer
+     wash, no HUD scan sweep, no companion tag pulse. */
   .cf-page-enter { animation: none !important; }
   .cf-live-dot { animation: none !important; }
   .cf-spot::before { display: none !important; }
-  .cf-btn::after { display: none !important; }
+  .cf-hud-scan { display: none !important; }
+  .cf-companion-tag i { animation: none !important; }
+  .cf-rv[data-variant="wipe"][data-cf="pre"] { clip-path: none !important; }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   STORYBOARD + POLISH LAYER (appended; later rules win at equal specificity)
+   - .cf-tl: the storyboard rail for Experience and Portfolio. Date block on
+     the left, a 3px track, square nodes, framed panels. The track sits at
+     left 9px on small screens and 169px from 900px up; the polish rail
+     fill (.cf-rail-fill) rides exactly on top of it.
+   - .cf-journey: the About journey rail. Each stage section carries one
+     segment (.cf-journey-seg) that paints red in proportion to scroll
+     travel through that stage, and a numbered node on the line.
+   - .cf-panel: the shared storyboard panel press (polish micro-interactions).
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Storyboard rail (Experience + Portfolio) ────────────────────────────── */
+.cf-tl { position: relative; }
+.cf-tl::before {
+  content: ""; position: absolute; top: 10px; bottom: 10px; left: 9px;
+  width: 3px; background: var(--cf-doc-line);
+}
+.cf-rail-fill {
+  position: absolute; top: 10px; bottom: 10px; left: 9px; width: 3px;
+  background: var(--cf-red); transform-origin: top center; z-index: 0;
+}
+.cf-tl-item { position: relative; padding-left: 34px; }
+.cf-tl-date { margin-bottom: 14px; }
+.cf-tl-node {
+  position: absolute; left: 2px; top: 10px; z-index: 1;
+  width: 15px; height: 15px;
+  background: var(--cf-paper); border: 2.5px solid var(--cf-ink);
+}
+/* Invisible hit area: the visible node stays 15px, the target is ~43px. */
+.cf-tl-node::after { content: ""; position: absolute; inset: -14px; }
+.cf-tl-node[data-hot="true"] { background: var(--cf-red); }
+@media (min-width: 900px) {
+  .cf-tl::before { left: 169px; }
+  .cf-rail-fill { left: 169px; }
+  .cf-tl-item {
+    padding-left: 0;
+    display: grid; grid-template-columns: 150px 1fr; column-gap: 44px;
+  }
+  .cf-tl-date { margin-bottom: 0; }
+  .cf-tl-node { left: 162px; }
+}
+
+/* ── Storyboard panel: border and background are set inline per frame; the
+   shadow and the brutalist press live here so every frame inherits them. ── */
+.cf-panel {
+  box-shadow: 6px 6px 0 var(--cf-shadow);
+  transition: transform var(--cf-dur-feedback) var(--cf-ease), box-shadow var(--cf-dur-feedback) var(--cf-ease);
+}
+.cf-panel[data-hot="true"] { box-shadow: 8px 8px 0 var(--cf-shadow); }
+@media (hover: hover) and (pointer: fine) {
+  .cf-panel:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--cf-shadow); }
+  .cf-panel[data-hot="true"]:hover { box-shadow: 10px 10px 0 var(--cf-shadow); }
+}
+.cf-panel:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--cf-shadow); }
+
+/* ── Journey rail (About) ────────────────────────────────────────────────── */
+.cf-journey { position: relative; }
+.cf-journey-seg {
+  position: absolute; top: 0; bottom: 0; left: 44px; width: 3px; z-index: 1;
+  background: var(--cf-red); transform-origin: top center;
+}
+.cf-journey-node {
+  position: absolute; top: 88px; left: 44px; margin-left: -13px; z-index: 2;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--cf-paper); border: 2px solid var(--cf-ink);
+  font-size: 11px; font-weight: 700; color: var(--cf-ink);
+}
+.cf-journey-node[data-final="true"] { background: var(--cf-red); color: #F4F1EC; }
+@media (min-width: 1024px) {
+  .cf-journey-seg { left: 63px; }
+  .cf-journey-node { left: 63px; top: 96px; }
+}
+
+/* ── Polish: button press, strengthened and gated to fine pointers ───────── */
+@media (hover: hover) and (pointer: fine) {
+  .cf-btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--cf-shadow); }
+  .cf-btn-ghost:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--cf-shadow); }
+  .cf-scope .btn-gold:hover, .cf-app .btn-gold:hover,
+  .cf-scope .btn-solid-gold:hover, .cf-app .btn-solid-gold:hover,
+  .cf-scope .btn-primary:hover, .cf-app .btn-primary:hover {
+    transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--cf-shadow);
+  }
+}
+.cf-btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--cf-shadow); }
+.cf-btn-ghost:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--cf-shadow); }
+.cf-scope .btn-gold:active, .cf-app .btn-gold:active,
+.cf-scope .btn-ghost:active, .cf-app .btn-ghost:active,
+.cf-scope .btn-solid-gold:active, .cf-app .btn-solid-gold:active,
+.cf-scope .btn-primary:active, .cf-app .btn-primary:active {
+  transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--cf-shadow);
+}
+
+/* ── Polish UX: hit slop (~44px targets), tabular figures, safe areas ───── */
+.cf-chip { min-height: 44px; display: inline-flex; align-items: center; }
+.cf-hud-nav a { min-height: 44px; align-items: center; }
+.cf-scope header nav a { min-height: 44px; display: inline-flex; align-items: center; }
+.cf-tl-item button[aria-expanded] { min-height: 44px; }
+.cf-scope footer form input, .cf-scope footer form button { min-height: 44px; }
+@media (pointer: coarse) {
+  .cf-tl-item a { min-height: 44px; }
+}
+.cf-mono, .cf-meter, .cf-machine, .cf-tl-date, .cf-journey-node,
+.cf-hud-nav a, .cf-countup { font-variant-numeric: tabular-nums lining-nums; }
+.cf-companion { left: calc(16px + env(safe-area-inset-left, 0px)); }
+@media (max-width: 640px) {
+  .cf-companion { left: calc(10px + env(safe-area-inset-left, 0px)); }
+}
+
+/* ── Polish reduced-motion: scroll-linked fills land on the finished state  */
+@media (prefers-reduced-motion: reduce) {
+  .cf-rail-fill { transform: scaleY(1) !important; }
+  .cf-journey-seg { transform: scaleY(1) !important; }
 }

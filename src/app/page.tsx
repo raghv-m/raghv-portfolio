@@ -1,19 +1,18 @@
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { Reveal } from "@/components/casefile/Reveal";
 import { staggerDelay } from "@/components/casefile/stagger";
 import { Stamp } from "@/components/casefile/Stamp";
-import { Tape } from "@/components/casefile/Tape";
 import { TypeLog } from "@/components/casefile/TypeLog";
-import { Kinetic } from "@/components/casefile/Kinetic";
 import { Magnetic } from "@/components/casefile/Magnetic";
 import { ParallaxLayer } from "@/components/casefile/ParallaxLayer";
 import { ExhibitZoom } from "@/components/casefile/ExhibitZoom";
 import { PinnedDocs } from "@/components/casefile/PinnedDocs";
 import { SpotWrap } from "@/components/casefile/SpotWrap";
-import { LaurelDivider } from "@/components/casefile/Ornaments";
+import { BlockRule } from "@/components/casefile/Ornaments";
+import { HudHero } from "@/components/casefile/HudHero";
+import { CountUp } from "@/components/casefile/CountUp";
 
 const LOG_LINES = [
   <>** Alert 1791978824.294411: - syslog,sshd,authentication_failed,</>,
@@ -72,165 +71,62 @@ const CREDS: Cred[] = [
 ];
 
 const CONTENTS = [
-  { no: "I", href: "/about", title: "About", desc: "Kitchen, guard booth, code, SOC: the non-traditional path, in first person" },
-  { no: "II", href: "/experience", title: "Experience", desc: "Security operations, freelance development, and the career roadmap from here" },
-  { no: "III", href: "/portfolio", title: "Portfolio", desc: "Client sites and lab projects, filed as case entries" },
-  { no: "IV", href: "/cybersecurity", title: "Cybersecurity", desc: "Detection, incident response, SIEM work mapped to MITRE ATT&CK, and the home lab" },
-  { no: "V", href: "/certifications", title: "Certifications", desc: "The full credential file, earned and in progress" },
-  { no: "VI", href: "/blog", title: "Blog: field notes", desc: "Writeups from the lab and the study desk" },
-  { no: "VII", href: "/newsletter", title: "Newsletter: Blue Team Brief", desc: "The week's real attacks in plain English, every edition archived" },
-  { no: "VIII", href: "/news", title: "Daily security news", desc: "The top 3 stories worth your time, every day" },
-  { no: "IX", href: "/hobbies", title: "Hobbies", desc: "Strange GitHub repositories and a camera: the off-duty file" },
-  { no: "X", href: "/estimate", title: "Get an estimate", desc: "Six steps, a real price range, straight into his pipeline" },
-  { no: "XI", href: "/contact", title: "Contact", desc: "Roles, projects, collaborations" },
+  { no: "01", href: "/about", title: "About", desc: "Kitchen, guard booth, code, SOC: the non-traditional path, in first person" },
+  { no: "02", href: "/experience", title: "Experience", desc: "Security operations, freelance development, and the career roadmap from here" },
+  { no: "03", href: "/portfolio", title: "Portfolio", desc: "Client sites and lab builds, presented as case entries" },
+  { no: "04", href: "/cybersecurity", title: "Cybersecurity", desc: "Detection, incident response, SIEM work mapped to MITRE ATT&CK, and the home lab" },
+  { no: "05", href: "/certifications", title: "Certifications", desc: "The full credential list, earned and in progress" },
+  { no: "06", href: "/blog", title: "Blog: field notes", desc: "Writeups from the lab and the study desk" },
+  { no: "07", href: "/newsletter", title: "Newsletter: Blue Team Brief", desc: "The week's real attacks in plain English, every edition archived" },
+  { no: "08", href: "/news", title: "Daily security news", desc: "The top 3 stories worth your time, every day" },
+  { no: "09", href: "/hobbies", title: "Hobbies", desc: "Strange GitHub repositories and a camera: the off-duty side" },
+  { no: "10", href: "/estimate", title: "Get an estimate", desc: "Six steps, a real price range, straight into his pipeline" },
+  { no: "11", href: "/contact", title: "Contact", desc: "Roles, projects, collaborations" },
 ];
 
 export default function HomePage() {
   return (
     <div className="cf-wrap">
-      {/* ── Hero ──────────────────────────────────────────────────── */}
-      <div className="grid lg:grid-cols-[7fr_5fr] gap-12 items-start pt-12 pb-4">
-        <div className="relative">
-          <p className="cf-kicker cf-load">Subject dossier — web developer + security analyst</p>
-          <Kinetic>
-            <h1
-              className="cf-display"
-              style={{ fontSize: "clamp(46px, 13vw, 118px)", lineHeight: 1.0, marginTop: 18, textWrap: "balance" }}
-            >
-              <span className="cf-load block" style={{ "--cf-d": "0.05s" } as CSSProperties}>
-                Raghav
-              </span>
-              <span
-                className="cf-load block"
-                style={{ "--cf-d": "0.14s", marginLeft: "clamp(26px, 5.5vw, 66px)" } as CSSProperties}
-              >
-                Mahajan
-              </span>
-            </h1>
-          </Kinetic>
-
-          {/* The red rule, and the stamp that lands on it (desktop placement). */}
-          <div className="relative" style={{ marginLeft: "clamp(26px, 5.5vw, 66px)", marginTop: 14 }}>
-            <span
-              className="cf-rule-draw block"
-              style={{ width: 280, maxWidth: "62%", height: 8, background: "var(--cf-red)", "--cf-d": "0.5s" } as CSSProperties}
-            />
-            <span className="hidden md:block" style={{ position: "absolute", left: 196, top: -17 }}>
-              <Stamp tone="red" r={-5.5} s={1.04} o={1} bw={3} delay={820} className="cf-stamp-hero">
-                Open to SOC roles
-              </Stamp>
-            </span>
-          </div>
-
-          <p className="cf-lede cf-load" style={{ marginTop: 40, maxWidth: 540, "--cf-d": "0.3s" } as CSSProperties}>
-            By day, Raghav builds websites for small businesses. By night, he hunts intruders in a home SOC lab.{" "}
-            <span className="cf-u-red">Currently open to SOC analyst roles</span> anywhere in Canada.
-          </p>
-
-          {/* Mobile stamp: its own space, clear of the text, above the actions. */}
-          <div className="md:hidden" style={{ marginTop: 26 }}>
-            <Stamp tone="red" r={-4.2} s={1} o={1} bw={2.5} delay={820} className="cf-stamp-hero">
-              Open to SOC roles
-            </Stamp>
-          </div>
-
-          <div className="cf-load flex flex-wrap items-center gap-6" style={{ marginTop: 30, "--cf-d": "0.45s" } as CSSProperties}>
-            <Magnetic strength={18}>
-              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="cf-btn">
-                Download the resume
-              </a>
-            </Magnetic>
-            <Link href="/estimate" className="cf-ulink">
-              Start an estimate →
-            </Link>
-          </div>
-          <p className="cf-note cf-load" style={{ marginTop: 16, "--cf-d": "0.55s" } as CSSProperties}>
-            ↑ Recruiters: the resume is one click. No form. No funnel.
-          </p>
-        </div>
-
-        {/* Exhibit A */}
-        <div className="cf-load" style={{ "--cf-d": "0.35s" } as CSSProperties}>
-          <ParallaxLayer range={34}>
-            <div className="cf-exhibit rotate-[3.4deg] hover:rotate-[2.3deg]" style={{ transition: "rotate 0.6s cubic-bezier(0.22, 1, 0.36, 1)" }}>
-              <Tape width={118} height={30} top={-15} left={24} rotate={-7} opacity={0.8} />
-              <div className="cf-exhibit-frame cf-zoom-frame">
-                <ExhibitZoom>
-                  <Image
-                    src="/images/newsletter/edition-04.webp"
-                    alt="Blue Team Brief newsletter cover, Edition 4"
-                    width={1200}
-                    height={675}
-                    sizes="(max-width: 1024px) 100vw, 520px"
-                    priority
-                  />
-                </ExhibitZoom>
-              </div>
-            </div>
-          </ParallaxLayer>
-          <p className="cf-caption" style={{ marginTop: 20 }}>
-            <b>Exhibit I.</b> Blue Team Brief — his plain-English cybersecurity newsletter. Written, designed, and
-            shipped by the subject. 284 subscribers and counting.
-          </p>
-        </div>
+      {/* ── Hero: the HUD readout panel ────────────────────────────── */}
+      <div className="pt-10">
+        <HudHero />
       </div>
 
-      {/* Laurel divider: the hero field closes on the axis. */}
-      <LaurelDivider className="mt-10" />
-
-      {/* ── Identifying marks: the subject, verified ──────────────── */}
-      <Reveal>
-        <div
-          className="grid sm:grid-cols-[104px_1fr] gap-6 items-center py-7 mt-2"
-          style={{ borderBottom: "1px solid var(--cf-faint)" }}
-        >
-          <ParallaxLayer range={30} invert>
-            <div className="cf-arch" style={{ width: 96, border: "1.5px solid var(--cf-ink)" }}>
-              <Image
-                src="/images/subject-photo.jpg"
-                alt="Raghav Mahajan"
-                width={150}
-                height={150}
-                sizes="96px"
-                className="grayscale contrast-125 block"
-                style={{ width: 96, height: 108, objectFit: "cover", objectPosition: "50% 40%" }}
-              />
+      {/* ── Lead art: the newsletter cover at full width ───────────── */}
+      <Reveal className="mt-14">
+        <ParallaxLayer range={26}>
+          <div className="cf-exhibit">
+            <div className="cf-exhibit-frame cf-zoom-frame">
+              <ExhibitZoom>
+                <Image
+                  src="/images/newsletter/edition-04.webp"
+                  alt="Blue Team Brief newsletter cover, Edition 4"
+                  width={1200}
+                  height={675}
+                  sizes="(max-width: 1240px) 100vw, 1176px"
+                />
+              </ExhibitZoom>
             </div>
-          </ParallaxLayer>
-          <div>
-          <p className="cf-plate mb-3">Plate I — The subject</p>
-          <dl className="cf-mono grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 text-[12px] uppercase" style={{ letterSpacing: "0.07em" }}>
-            <div>
-              <dt style={{ color: "var(--cf-muted)" }}>Subject</dt>
-              <dd className="font-bold mt-1 normal-case text-[13.5px] tracking-normal">Raghav Mahajan</dd>
-            </div>
-            <div>
-              <dt style={{ color: "var(--cf-muted)" }}>Based</dt>
-              <dd className="font-bold mt-1 normal-case text-[13.5px] tracking-normal">Edmonton, AB</dd>
-            </div>
-            <div>
-              <dt style={{ color: "var(--cf-muted)" }}>Languages</dt>
-              <dd className="font-bold mt-1 normal-case text-[13.5px] tracking-normal">English, Hindi, Punjabi, Urdu</dd>
-            </div>
-            <div>
-              <dt style={{ color: "var(--cf-muted)" }}>Distinguishing marks</dt>
-              <dd className="font-bold mt-1 normal-case text-[13.5px] tracking-normal">Runs a 4-node Wazuh lab at home</dd>
-            </div>
-          </dl>
           </div>
-        </div>
+        </ParallaxLayer>
+        <p className="cf-caption" style={{ marginTop: 16 }}>
+          <b>Blue Team Brief.</b> His plain-English cybersecurity newsletter. Written, designed, and
+          shipped by the subject. <CountUp to={284} /> subscribers and counting.
+        </p>
       </Reveal>
+
+      <BlockRule className="mt-14" />
 
       {/* ── Exhibit II: the captured log ──────────────────────────── */}
       <Reveal className="mt-12">
         <ParallaxLayer range={30}>
-          <TypeLog head="Exhibit II — Homelab, live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} />
+          <TypeLog head="Homelab — live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} />
         </ParallaxLayer>
       </Reveal>
 
       {/* ── What he does ──────────────────────────────────────────── */}
       <section className="pt-16">
-        <Reveal>
+        <Reveal variant="wipe">
           <div className="cf-sec-head">
             <h2 className="cf-h2">What Raghav actually does</h2>
           </div>
@@ -262,18 +158,20 @@ export default function HomePage() {
 
       {/* ── Exhibit III: the price machine ─────────────────────────── */}
       <section className="pt-16">
-        <Reveal>
+        <Reveal variant="wipe">
           <div className="cf-sec-head">
-            <h2 className="cf-h2">Exhibit III — The price machine</h2>
+            <h2 className="cf-h2">The price machine</h2>
           </div>
           <ParallaxLayer range={28}>
           <div className="cf-machine grid lg:grid-cols-[7fr_5fr] gap-10 items-center p-8 sm:p-11">
             <div>
               <Reveal>
                 <p className="cf-display" style={{ fontSize: "clamp(40px, 5.5vw, 62px)", lineHeight: 1.02 }}>
-                  <span className="cf-strike">$4,000</span>
+                  <span className="cf-strike">
+                    <CountUp to={4000} prefix="$" />
+                  </span>
                   <br />
-                  $1,800
+                  <CountUp to={1800} prefix="$" />
                 </p>
               </Reveal>
               <p className="cf-mono mt-4 text-[12.5px]" style={{ color: "var(--cf-muted)" }}>
@@ -300,7 +198,7 @@ export default function HomePage() {
 
       {/* ── Credentials + the actual document ─────────────────────── */}
       <section className="pt-16">
-        <Reveal>
+        <Reveal variant="wipe">
           <div className="cf-sec-head">
             <h2 className="cf-h2">Credentials, verified</h2>
           </div>
@@ -324,7 +222,6 @@ export default function HomePage() {
                       height={c.doc.h}
                       sizes="64px"
                       className="cf-cred-thumb"
-                      style={{ rotate: `${c.r}deg` }}
                     />
                   ) : (
                     <Stamp tone={c.tone} r={c.r} s={c.s} o={c.o} bw={c.bw} delay={i * 130} live={c.live}>
@@ -337,12 +234,12 @@ export default function HomePage() {
             </div>
             <p className="mt-6">
               <Link href="/certifications" className="cf-ulink">
-                Open the full credential file →
+                Open the full credential list →
               </Link>
             </p>
           </div>
           <Reveal delay={0.1} className="lg:self-stretch">
-            <figure className="cf-doc rotate-[0.8deg] lg:sticky lg:top-24">
+            <figure className="cf-doc lg:sticky lg:top-24">
               <Image
                 src="/images/cert-google-foundations.jpg"
                 alt="Google Foundations of Cybersecurity certificate issued to Raghav Mahajan, January 8, 2026"
@@ -351,7 +248,7 @@ export default function HomePage() {
                 sizes="(max-width: 1024px) 100vw, 350px"
               />
               <figcaption className="cf-caption" style={{ marginTop: 14 }}>
-                <b>Attached document.</b> The actual certificate, not a badge icon. Google, Foundations of
+                <b>The document itself.</b> The actual certificate, not a badge icon. Google, Foundations of
                 Cybersecurity, issued Jan 8, 2026. Verify code RMT26QI2LCT7, printed on the document itself.
               </figcaption>
             </figure>
@@ -364,9 +261,9 @@ export default function HomePage() {
 
       {/* ── Contents of this file ─────────────────────────────────── */}
       <section className="pt-16 pb-20">
-        <Reveal>
+        <Reveal variant="wipe">
           <div className="cf-sec-head">
-            <h2 className="cf-h2">Contents of this file</h2>
+            <h2 className="cf-h2">Contents</h2>
           </div>
         </Reveal>
         <nav aria-label="Site contents">

@@ -10,10 +10,10 @@ export default function manifest(): MetadataRoute.Manifest {
     description: site.description,
     start_url: "/",
     display: "browser",
-    background_color: "#0a0a0a",
-    theme_color: "#0a0a0a",
+    background_color: "#F4F1EC",
+    theme_color: "#141414",
     icons: [
-      { src: "/icon.svg", type: "image/svg+xml", sizes: "any" },
+      { src: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
       { src: "/icon-512.png", type: "image/png", sizes: "512x512" },
       { src: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
     ],

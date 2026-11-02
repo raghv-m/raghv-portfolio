@@ -1,0 +1,20 @@
+# raghv.dev
+
+> Personal site of Raghav Mahajan, a web developer and SOC analyst in Edmonton, Alberta, Canada. He builds secure websites and web apps for small businesses, works in security operations, and publishes the Blue Team Brief cybersecurity newsletter.
+
+## Main sections
+
+- [Home](https://www.raghv.dev/): introduction, selected work and credentials
+- [About](https://www.raghv.dev/about): background and career path into cybersecurity
+- [Portfolio](https://www.raghv.dev/portfolio): websites, web apps and security projects
+- [Cybersecurity](https://www.raghv.dev/cybersecurity): SOC analyst skills, blue team work and home lab
+- [Experience](https://www.raghv.dev/experience): roles in web development, security operations and IT
+- [Certifications](https://www.raghv.dev/certifications): CompTIA Security+, ISC2 CC, Google certificates and First Aid
+- [Estimate](https://www.raghv.dev/estimate): instant website cost estimate
+- [Contact](https://www.raghv.dev/contact): get in touch
+
+## Writing
+
+- [Blog](https://www.raghv.dev/blog): web development and security writeups
+- [Blue Team Brief](https://www.raghv.dev/newsletter): cybersecurity newsletter archive
+- [Security news](https://www.raghv.dev/news): top security stories, updated daily

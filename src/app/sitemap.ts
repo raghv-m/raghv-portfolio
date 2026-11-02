@@ -8,27 +8,28 @@ export const revalidate = 3600;
 
 /**
  * Every public, indexable page. Admin, portal, auth and API routes are deliberately absent (and
- * blocked in robots.ts). lastModified for static pages is the date their content last changed;
- * bump it when you edit a page so search engines re-crawl it.
+ * blocked in robots.ts). `updated` is the date that page's content actually last changed
+ * (checked against git history — SEO Finding 4); bump it when you edit a page so search
+ * engines re-crawl it. priority/changeFrequency are omitted: Google ignores both.
  */
-const PAGES: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; updated: string }[] = [
-  { path: "", priority: 1.0, changeFrequency: "weekly", updated: "2026-11-01" },
-  { path: "/estimate", priority: 0.9, changeFrequency: "monthly", updated: "2026-11-01" },
-  { path: "/portfolio", priority: 0.8, changeFrequency: "monthly", updated: "2026-11-01" },
-  { path: "/about", priority: 0.8, changeFrequency: "monthly", updated: "2026-11-01" },
-  { path: "/contact", priority: 0.7, changeFrequency: "yearly", updated: "2026-11-01" },
-  { path: "/blog", priority: 0.7, changeFrequency: "weekly", updated: "2026-11-01" },
-  { path: "/newsletter", priority: 0.6, changeFrequency: "weekly", updated: "2026-11-01" },
-  { path: "/news", priority: 0.6, changeFrequency: "daily", updated: "2026-11-01" },
-  { path: "/cybersecurity", priority: 0.6, changeFrequency: "monthly", updated: "2026-11-01" },
-  { path: "/experience", priority: 0.6, changeFrequency: "monthly", updated: "2026-11-01" },
-  { path: "/certifications", priority: 0.5, changeFrequency: "monthly", updated: "2026-11-01" },
-  { path: "/hobbies", priority: 0.4, changeFrequency: "monthly", updated: "2026-11-01" },
-  { path: "/privacy", priority: 0.2, changeFrequency: "yearly", updated: "2026-11-01" },
-  { path: "/terms", priority: 0.2, changeFrequency: "yearly", updated: "2026-11-01" },
-  { path: "/cookies", priority: 0.1, changeFrequency: "yearly", updated: "2026-11-01" },
-  { path: "/refunds", priority: 0.1, changeFrequency: "yearly", updated: "2026-10-08" },
-  { path: "/accessibility", priority: 0.1, changeFrequency: "yearly", updated: "2026-10-08" },
+const PAGES: { path: string; updated: string }[] = [
+  { path: "", updated: "2026-11-02" },
+  { path: "/estimate", updated: "2026-11-02" },
+  { path: "/portfolio", updated: "2026-11-02" },
+  { path: "/about", updated: "2026-11-02" },
+  { path: "/contact", updated: "2026-11-02" },
+  { path: "/blog", updated: "2026-11-02" },
+  { path: "/newsletter", updated: "2026-11-01" },
+  { path: "/news", updated: "2026-11-02" },
+  { path: "/cybersecurity", updated: "2026-11-02" },
+  { path: "/experience", updated: "2026-11-02" },
+  { path: "/certifications", updated: "2026-11-02" },
+  { path: "/hobbies", updated: "2026-11-02" },
+  { path: "/privacy", updated: "2026-11-01" },
+  { path: "/terms", updated: "2026-10-08" },
+  { path: "/cookies", updated: "2026-11-02" },
+  { path: "/refunds", updated: "2026-10-08" },
+  { path: "/accessibility", updated: "2026-10-08" },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -39,17 +40,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .catch(() => []);
 
   return [
-    ...PAGES.map(({ path, priority, changeFrequency, updated }) => ({
+    ...PAGES.map(({ path, updated }) => ({
       url: `${site.url}${path}`,
       lastModified: new Date(updated),
-      changeFrequency,
-      priority,
     })),
     ...posts.map((post) => ({
       url: `${site.url}/blog/${post.slug}`,
       lastModified: post.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
     })),
   ];
 }

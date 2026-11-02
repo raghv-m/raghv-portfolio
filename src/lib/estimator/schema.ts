@@ -37,6 +37,9 @@ export const estimateSubmissionSchema = z.object({
     .partial()
     .prefault({}),
   consent: z.literal(true, { error: "Please agree to the privacy policy so I can reply." }),
+  // Idempotency key from the wizard (opaque, one per submission session):
+  // a retry carrying the same key returns the first save, never a duplicate.
+  idempotencyKey: z.string().trim().min(8).max(64).optional(),
   // Honeypot: real people never see or fill this.
   website: z.string().max(0).optional(),
 });

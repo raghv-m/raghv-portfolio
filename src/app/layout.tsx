@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Inter, Space_Grotesk, JetBrains_Mono, Anton } from "next/font/google";
 import "./globals.css";
 import "./case-file.css";
+import "./ux-pass.css";
 import { validateEnv } from "@/lib/env";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -24,6 +25,7 @@ import { ConsentBanner } from "@/components/layout/ConsentBanner";
 import { PublicChrome } from "@/components/layout/PublicChrome";
 import { CfScope } from "@/components/casefile/CfScope";
 import { AvatarCompanion } from "@/components/casefile/AvatarCompanion";
+import { CommandMenu } from "@/components/casefile/CommandMenu";
 import { SiteJsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/config/site";
 
@@ -181,6 +183,7 @@ gtag('config', '${GA_ID}');`}
           <NewsletterModal />
           <ConsentBanner />
           <AvatarCompanion />
+          <CommandMenu />
         </PublicChrome>
         <Analytics />
         <SpeedInsights />

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/casefile/ThemeToggle";
 import { Magnetic } from "@/components/casefile/Magnetic";
@@ -143,6 +143,27 @@ export default function Navbar() {
             </nav>
 
             <div className="ml-auto flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event("cf:command-menu"))}
+                aria-label="Open the command menu"
+                title="Command menu (Ctrl+K)"
+                className="inline-flex items-center justify-center gap-2.5 min-h-[44px] min-w-[44px]"
+                style={{
+                  fontFamily: "var(--font-jetbrains), monospace",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
+                  color: "var(--cf-muted)",
+                  border: "2px solid var(--cf-ink)",
+                  background: "var(--cf-paper)",
+                  padding: "0 12px",
+                  boxShadow: "3px 3px 0 var(--cf-shadow)",
+                }}
+              >
+                <Search className="w-4 h-4" aria-hidden="true" />
+                <span className="hidden md:inline" aria-hidden="true">⌘K</span>
+              </button>
               <span className="opacity-60 hover:opacity-100 transition-opacity hidden sm:block">
                 <ThemeToggle />
               </span>

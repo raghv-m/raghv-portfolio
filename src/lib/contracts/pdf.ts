@@ -33,6 +33,9 @@ const GOLD = "#9a7410"; // the light-background logo colour
 const GOLD_SOFT = "#f7f2e4";
 const RULE = "#e6e0d2";
 const GREEN = "#1f7a4d";
+const RED = "#AD0117"; // the RM BLOCK hard shadow (the site red)
+const BLOCK_INK = "#141414"; // the RM BLOCK face (the site ink)
+const PAPER = "#F4F1EC"; // the RM letters (the site paper)
 
 const PAGE = { top: 104, bottom: 76, side: 64 };
 
@@ -47,22 +50,18 @@ const stamp = (iso: string) => {
 const day = (iso?: string) =>
   iso ? new Intl.DateTimeFormat("en-CA", { dateStyle: "long", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`)) : "To be agreed";
 
-/** The RM lockup from public/logo-light.svg, drawn as vectors (no file read at runtime). */
+/** The RM BLOCK mark (the site logo since the Nov 2026 redesign), drawn as
+ * vectors: an ink block carrying paper RM letters in a mono face, with the
+ * red block offset behind it as a hard shadow. The same mark as
+ * public/logo.svg and the email header; it replaces the retired gold
+ * hexagon lockup that used to be drawn here. */
 function drawLogo(doc: PDFKit.PDFDocument, x: number, y: number, height: number) {
   const s = height / 120;
   doc.save();
   doc.translate(x, y).scale(s);
-  doc.lineJoin("round");
-  doc.polygon([60, 10], [103.3, 35], [103.3, 85], [60, 110], [16.7, 85], [16.7, 35]).lineWidth(1.5).strokeColor(GOLD).stroke();
-  doc.polygon([60, 18], [96.4, 39], [96.4, 81], [60, 102], [23.6, 81], [23.6, 39]).lineWidth(0.5).strokeOpacity(0.5).stroke();
-  doc.strokeOpacity(1);
-  doc.save();
-  doc.translate(60, 60).scale(0.556).translate(-340, -130);
-  doc.lineCap("square").lineWidth(5);
-  doc.path("M286 165V95H306A17.5 17.5 0 0 1 306 130H286M306 130L320 165").stroke(GOLD);
-  doc.path("M336 165V95L364 136L392 95V165").stroke(GOLD);
-  doc.restore();
-  doc.circle(60, 110, 2).fill(GOLD);
+  doc.rect(26, 26, 88, 88).fill(RED);
+  doc.rect(18, 18, 88, 88).fill(BLOCK_INK);
+  doc.font("Courier-Bold").fontSize(37).fillColor(PAPER).text("RM", 18, 44, { width: 88, align: "center", lineBreak: false });
   doc.font("Helvetica-Bold").fontSize(24).fillColor(INK).text("RAGHV.DEV", 128, 50, { characterSpacing: 3, lineBreak: false });
   doc.restore();
 }

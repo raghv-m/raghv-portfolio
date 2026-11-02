@@ -45,6 +45,16 @@ async function handlePOST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    // Idempotency: the same message from the same address inside 15
+    // minutes is a double submit (double click, retry, back-button
+    // resend), not a second enquiry. Accept it so the sender sees
+    // success, but don't store it or send the emails twice.
+    const duplicate = await prisma.contactSubmission.findFirst({
+      where: { email, message, createdAt: { gte: new Date(Date.now() - 15 * 60 * 1000) } },
+      select: { id: true },
+    });
+    if (duplicate) return NextResponse.json({ ok: true });
+
     const ipHash = hashIp(ip);
 
     await prisma.contactSubmission.create({

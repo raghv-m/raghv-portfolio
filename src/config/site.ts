@@ -39,8 +39,26 @@ export function pageMetadata(path: string, title: string, description: string, e
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { title, description, url, siteName: site.name, type: "website", locale: "en_CA" },
-    twitter: { card: "summary_large_image", title, description },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: site.name,
+      type: "website",
+      locale: "en_CA",
+      // Explicit default share image: pages that define their own Open Graph object do NOT
+      // inherit the root app/opengraph-image.tsx output, so without this every subpage
+      // renders with no og:image at all (SEO Finding 1).
+      images: [
+        {
+          url: `${site.url}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: "Raghav Mahajan: web developer and cybersecurity analyst in Edmonton",
+        },
+      ],
+    },
+    twitter: { card: "summary_large_image", title, description, images: [`${site.url}/opengraph-image`] },
     ...extra,
   };
 }

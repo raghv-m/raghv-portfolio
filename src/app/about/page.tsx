@@ -6,6 +6,8 @@ import { Download } from "lucide-react";
 import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { site } from "@/config/site";
 
 
 const STAGES = [
@@ -241,6 +243,13 @@ function StageSection({ stage, index }: { stage: typeof STAGES[0]; index: number
 export default function AboutPage() {
   return (
     <div className="pb-24">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "ProfilePage",
+          mainEntity: { "@id": `${site.url}/#person` },
+        }}
+      />
       <div className="cf-wrap">
         <PageHead
           kicker="About, subject history"

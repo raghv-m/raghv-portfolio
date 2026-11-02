@@ -18,8 +18,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await prisma.post.findUnique({ where: { slug, published: true } }).catch(() => null);
   if (!post) return { title: "Post not found" };
   const url = `${site.url}/blog/${post.slug}`;
+  // Posts without a cover image fall back to the site's default share image so every
+  // post renders og:image / twitter:image (SEO Finding 1).
+  const shareImage = post.coverImage ?? `${site.url}/opengraph-image`;
   return {
-    title: post.title,
+    // Explicit suffix: the root layout's "%s | raghv.dev" template does not reach post
+    // pages in this Next version (SEO Finding 5).
+    title: `${post.title} | raghv.dev`,
     description: post.excerpt,
     alternates: { canonical: url },
     openGraph: {
@@ -32,9 +37,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       modifiedTime: post.updatedAt.toISOString(),
       authors: [site.person],
       section: post.category,
-      ...(post.coverImage ? { images: [{ url: post.coverImage }] } : {}),
+      images: [{ url: shareImage }],
     },
-    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt },
+    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt, images: [shareImage] },
   };
 }
 
@@ -168,6 +173,17 @@ export default async function BlogPostPage({ params }: Props) {
           articleSection: post.category,
           keywords: tags.join(", "),
           ...(post.coverImage ? { image: post.coverImage } : {}),
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: site.url },
+            { "@type": "ListItem", position: 2, name: "Blog", item: `${site.url}/blog` },
+            { "@type": "ListItem", position: 3, name: post.title, item: `${site.url}/blog/${post.slug}` },
+          ],
         }}
       />
       <div className="max-w-6xl mx-auto">

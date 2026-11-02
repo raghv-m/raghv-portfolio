@@ -25,6 +25,7 @@ export function SiteJsonLd() {
             "@id": personId,
             name: site.person,
             url: site.url,
+            image: `${site.url}/images/subject-photo.jpg`,
             email: `mailto:${site.email}`,
             jobTitle: "Web Developer & SOC Analyst",
             address: { "@type": "PostalAddress", addressLocality: site.city, addressRegion: site.region, addressCountry: site.country },

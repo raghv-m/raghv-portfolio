@@ -25,12 +25,12 @@ export default async function UnsubscribePage({
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="max-w-md w-full text-center" style={cardStyle}>
-          <CheckCircle className="w-12 h-12 mx-auto mb-4" style={{ color: "var(--cf-gold)" }} />
+          <CheckCircle className="w-12 h-12 mx-auto mb-4" style={{ color: "var(--cf-red)" }} />
           <h1 className="cf-display mb-3" style={{ fontSize: "30px", lineHeight: 1.05 }}>
             Unsubscribed
           </h1>
           <p className="mb-6" style={{ color: "var(--cf-muted)", lineHeight: 1.65 }}>
-            You&apos;ve been removed from Raghav&apos;s Cyber Daily. No more emails.
+            You&apos;ve been removed from Blue Team Brief. No more emails.
           </p>
           <Link href="/" className="cf-btn-ghost">
             Go home
@@ -44,12 +44,12 @@ export default async function UnsubscribePage({
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
         <div className="max-w-md w-full text-center" style={cardStyle}>
-          <Mail className="w-12 h-12 mx-auto mb-4" style={{ color: "var(--cf-gold)" }} />
+          <Mail className="w-12 h-12 mx-auto mb-4" style={{ color: "var(--cf-red)" }} />
           <h1 className="cf-display mb-3" style={{ fontSize: "30px", lineHeight: 1.05 }}>
             Confirm Unsubscribe
           </h1>
           <p className="mb-6" style={{ color: "var(--cf-muted)", lineHeight: 1.65 }}>
-            Are you sure you want to unsubscribe from Raghav&apos;s Cyber Daily?
+            Are you sure you want to unsubscribe from Blue Team Brief?
           </p>
           <form action="/api/unsubscribe" method="POST" className="flex flex-col items-center gap-3">
             <input type="hidden" name="token" value={token} />

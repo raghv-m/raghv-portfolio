@@ -37,6 +37,48 @@ export async function submitEstimateAction(input: unknown): Promise<SubmitEstima
   const categoryLabel = catalog.find((item) => item.slug === data.category)?.label ?? data.category;
 
   const admin = getSupabaseAdmin();
+
+  // Idempotency: the wizard sends one key per submission session. If that
+  // key already saved an estimate, a retry or double submit gets the first
+  // save back: no second row, no second round of emails. The lookup fails
+  // open on purpose: a dedupe error must never block a real submission.
+  if (data.idempotencyKey) {
+    try {
+      const { data: dup } = await admin
+        .from("estimates")
+        .select("id, reference, line_items, one_time_cents, one_time_low_cents, one_time_high_cents, monthly_cents, my_low_cents, my_high_cents")
+        .contains("selections", { idempotency_key: data.idempotencyKey })
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      if (dup) {
+        const { data: send } = await admin
+          .from("email_sends")
+          .select("status")
+          .eq("estimate_id", dup.id)
+          .eq("type", "estimate_sent")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        return {
+          ok: true,
+          reference: dup.reference,
+          result: {
+            lines: (dup.line_items ?? []) as unknown as EstimateResult["lines"],
+            oneTimeCents: dup.one_time_cents,
+            oneTimeLowCents: dup.one_time_low_cents,
+            oneTimeHighCents: dup.one_time_high_cents,
+            monthlyCents: dup.monthly_cents,
+            myLowCents: dup.my_low_cents,
+            myHighCents: dup.my_high_cents,
+          },
+          emailed: send?.status === "sent",
+        };
+      }
+    } catch (err) {
+      console.error("[estimate] idempotency check failed", err);
+    }
+  }
   const { data: saved, error } = await admin
     .from("estimates")
     .insert({
@@ -53,7 +95,7 @@ export async function submitEstimateAction(input: unknown): Promise<SubmitEstima
       place_id: data.address.placeId ?? null,
       category_slug: data.category,
       pages: data.pages,
-      selections: { features: data.features, integrations: data.integrations, hosting: data.hosting, addons: data.addons },
+      selections: { features: data.features, integrations: data.integrations, hosting: data.hosting, addons: data.addons, ...(data.idempotencyKey ? { idempotency_key: data.idempotencyKey } : {}) },
       description: data.description ?? null,
       timeline: data.timeline ?? null,
       budget: data.budget ?? null,

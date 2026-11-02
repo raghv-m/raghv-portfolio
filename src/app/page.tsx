@@ -163,7 +163,7 @@ export default function HomePage() {
           </ParallaxLayer>
           <p className="cf-caption" style={{ marginTop: 20 }}>
             <b>Exhibit A.</b> Blue Team Brief — his plain-English cybersecurity newsletter. Written, designed, and
-            shipped by the subject. 256 subscribers and counting.
+            shipped by the subject. 284 subscribers and counting.
           </p>
         </div>
       </div>

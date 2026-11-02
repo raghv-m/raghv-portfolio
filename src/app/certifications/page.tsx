@@ -49,7 +49,7 @@ const CERTS = [
     name: "CompTIA Security+ SY0-701",
     issuer: "CompTIA",
     status: "EARNED",
-    date: "2025",
+    date: "Jun 2026",
     value: "Industry-standard security certification. Covers threats, vulnerabilities, architecture, identity management, risk management, and cryptography.",
     color: "var(--green)",
     glow: "rgba(0,255,136,0.2)",

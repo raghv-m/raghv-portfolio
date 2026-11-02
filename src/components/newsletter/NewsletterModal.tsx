@@ -20,6 +20,13 @@ export default function NewsletterModal() {
     localStorage.setItem(KEY, "1");
   };
 
+  // A successful signup also retires the popup for good: this visitor is subscribed,
+  // so the modal must never reappear on later visits. The success card stays visible
+  // until they close it themselves.
+  const markSubscribed = () => {
+    localStorage.setItem(KEY, "1");
+  };
+
   return (
     <AnimatePresence>
       {show && (
@@ -40,11 +47,12 @@ export default function NewsletterModal() {
           >
             <button
               onClick={dismiss}
-              className="absolute top-3 right-3 z-10 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-label="Close"
+              className="absolute top-3 right-3 z-10 text-[var(--cf-muted)] hover:text-[var(--cf-ink)] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
             >
               <X className="w-4 h-4" />
             </button>
-            <SubscribeWidget />
+            <SubscribeWidget onSuccess={markSubscribed} onClose={dismiss} />
           </motion.div>
         </motion.div>
       )}

@@ -41,6 +41,9 @@ export async function proxy(request: NextRequest) {
       // GTM's <noscript> fallback iframe.
       "frame-src https://www.googletagmanager.com",
       "frame-ancestors 'none'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
       "worker-src blob:",
     ].join("; ")
   );

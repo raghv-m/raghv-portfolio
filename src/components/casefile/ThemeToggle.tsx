@@ -52,8 +52,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     <button
       type="button"
       onClick={next}
-      className={`cf-mono inline-flex items-center gap-1.5 uppercase ${className}`}
-      style={{ letterSpacing: "0.09em", fontSize: 10.5 }}
+      className={`cf-mono cf-theme-toggle inline-flex items-center gap-1.5 uppercase px-2 ${className}`}
+      style={{ letterSpacing: "0.09em", fontSize: 10.5, minHeight: 36 }}
       aria-label={`Theme: ${label}. Activate to switch theme.`}
       title={`Theme: ${label} (tap to change)`}
     >

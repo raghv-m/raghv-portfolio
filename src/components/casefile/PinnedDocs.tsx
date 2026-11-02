@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 
 /**
- * Exhibit D — the pinned examination sequence. On desktop with motion
+ * Exhibit IV — the pinned examination sequence. On desktop with motion
  * allowed, the section pins for ~240vh of scroll and the three filed
  * certificate documents step through the stage: each arrives, holds, and
  * hands over to the next, with its caption and a progress bar tracking the
@@ -133,7 +133,7 @@ function PinDoc({
       className="cf-pin-doc"
       style={{ opacity, y, scale, rotate: doc.rot, filter }}
     >
-      <Image src={doc.src} alt={doc.alt} width={doc.w} height={doc.h} />
+      <Image src={doc.src} alt={doc.alt} width={doc.w} height={doc.h} sizes="(max-width: 720px) 100vw, 620px" />
     </motion.figure>
   );
 }
@@ -210,7 +210,7 @@ export function PinnedDocs() {
 
   const head = (
     <div className="cf-sec-head">
-      <h2 className="cf-h2">Exhibit D — The documents, examined</h2>
+      <h2 className="cf-h2">Exhibit IV — The documents, examined</h2>
     </div>
   );
 
@@ -244,7 +244,7 @@ export function PinnedDocs() {
             <div className="grid gap-12">
               {DOCS.map((d) => (
                 <figure key={d.src} className="cf-doc" style={{ maxWidth: 560 }}>
-                  <Image src={d.src} alt={d.alt} width={d.w} height={d.h} />
+                  <Image src={d.src} alt={d.alt} width={d.w} height={d.h} sizes="(max-width: 720px) 100vw, 620px" />
                   <figcaption className="cf-caption" style={{ marginTop: 14 }}>
                     <b>{d.name}.</b> {d.detail}
                   </figcaption>

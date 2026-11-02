@@ -1,24 +1,37 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Download } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/casefile/ThemeToggle";
-import { LiveClock } from "@/components/casefile/LiveClock";
 import { Magnetic } from "@/components/casefile/Magnetic";
+import { MeanderBand } from "@/components/casefile/Ornaments";
 
+/**
+ * One slim bar (Nov 2026 rebuild). Logo left in a medallion seal, six
+ * primary links in letterspaced Roman capitals, one cobalt CTA right.
+ * Hairline rule under the bar, meander entablature strip under that.
+ * The dossier strip, clock, resume link and availability beacon moved out;
+ * the file data lives in the footer now. Active page = cobalt underline
+ * only, and it slides between links (framer layoutId).
+ */
 const LINKS = [
   { href: "/about", label: "About" },
   { href: "/experience", label: "Experience" },
-  { href: "/certifications", label: "Certs" },
-  { href: "/cybersecurity", label: "Cybersecurity" },
   { href: "/portfolio", label: "Portfolio" },
+  { href: "/cybersecurity", label: "Cybersecurity" },
   { href: "/blog", label: "Blog" },
   { href: "/newsletter", label: "Newsletter" },
+];
+
+/** Everything the mobile panel lists: the six primaries, then the rest of the file. */
+const PANEL_LINKS = [
+  ...LINKS,
+  { href: "/certifications", label: "Certifications" },
   { href: "/hobbies", label: "Hobbies" },
+  { href: "/estimate", label: "Get an estimate" },
   { href: "/contact", label: "Contact" },
   { href: "/auth/login", label: "Client login" },
 ];
@@ -28,7 +41,6 @@ export default function Navbar() {
   const pathname = usePathname();
   const reduceMotion = useReducedMotion();
 
-  // While the mobile menu is open: Escape closes it and the page behind doesn't scroll.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -48,57 +60,22 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="cf-scope cf-load-fade" style={{ borderBottom: "3px double var(--cf-ink)" }}>
+      <header className="cf-scope cf-load-fade">
         <div className="cf-wrap">
-          {/* Dossier strip: the file header, printed at the top of every page. */}
-          <div
-            className="cf-mono flex items-center gap-3 sm:gap-5 pt-3 pb-2.5 text-[10.5px] sm:text-[11px] uppercase"
-            style={{ letterSpacing: "0.09em", borderBottom: "1px solid var(--cf-faint)" }}
-          >
-            <Link href="/" aria-label="raghv.dev home" className="flex items-center gap-3 shrink-0">
-              <Logo size={27} style={{ color: "var(--cf-ink)" }} />
-              <Image
-                src="/images/subject-photo.jpg"
-                alt="Raghav Mahajan"
-                width={28}
-                height={28}
-                priority
-                className="block border border-[var(--cf-ink)] grayscale contrast-125"
-                style={{ objectFit: "cover", objectPosition: "50% 40%" }}
-              />
-              <span className="hidden md:inline">
-                <b>File No.</b> YEG-2026-001
+          <div className="flex items-center gap-6 h-[68px]" style={{ borderBottom: "1px solid var(--cf-doc-line)" }}>
+            <Link href="/" aria-label="raghv.dev home" className="flex items-center gap-3.5 shrink-0 min-h-[44px]">
+              <span className="cf-medallion" style={{ color: "var(--cf-ink)" }}>
+                <Logo size={21} />
               </span>
-              <span className="md:hidden font-bold">YEG-2026-001</span>
+              <span
+                className="hidden sm:block"
+                style={{ fontFamily: "var(--cf-caps)", fontSize: 13.5, fontWeight: 600, letterSpacing: "0.22em", color: "var(--cf-ink)" }}
+              >
+                Raghav Mahajan
+              </span>
             </Link>
-            <span className="hidden sm:inline">
-              <b>Subject:</b> Raghav Mahajan
-            </span>
-            <span className="hidden lg:inline">
-              <b>Filed:</b> Edmonton, AB · 53.5461° N, 113.4938° W
-            </span>
-            <span className="ml-auto hidden sm:inline">
-              <b>Classification:</b> Public
-            </span>
-            <span className="ml-auto sm:hidden font-bold">Public</span>
-            <span className="shrink-0 hidden sm:block" style={{ borderLeft: "1px solid var(--cf-faint)", paddingLeft: 14 }}>
-              <LiveClock />
-            </span>
-            <span className="shrink-0" style={{ borderLeft: "1px solid var(--cf-faint)", paddingLeft: 12 }}>
-              <ThemeToggle />
-            </span>
-          </div>
 
-          {/* Nav row */}
-          <div className="flex items-center gap-5 py-3">
-            <Link
-              href="/"
-              className="cf-display text-[19px] leading-none tracking-wide lg:hidden"
-              aria-label="raghv.dev home"
-            >
-              Raghav Mahajan
-            </Link>
-            <nav className="hidden lg:flex items-center gap-5 flex-wrap" aria-label="Main">
+            <nav className="hidden lg:flex items-center gap-7 ml-3" aria-label="Main" style={{ flexWrap: "nowrap" }}>
               {LINKS.map((link) => {
                 const active = pathname === link.href;
                 return (
@@ -106,8 +83,15 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     aria-current={active ? "page" : undefined}
-                    className="cf-navlink cf-mono text-[11.5px] uppercase py-1"
-                    style={{ letterSpacing: "0.1em", color: active ? undefined : "var(--cf-ink-soft)" }}
+                    className="cf-navlink whitespace-nowrap py-2"
+                    style={{
+                      fontFamily: "var(--cf-caps)",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      color: active ? "var(--cf-ink)" : "var(--cf-muted)",
+                    }}
                   >
                     {link.label}
                     {active && (
@@ -122,7 +106,7 @@ export default function Navbar() {
                           position: "absolute",
                           left: 0,
                           right: 0,
-                          bottom: -4,
+                          bottom: -2,
                           height: 2,
                           background: "var(--cf-red)",
                         }}
@@ -134,32 +118,26 @@ export default function Navbar() {
             </nav>
 
             <div className="ml-auto flex items-center gap-4">
-              <div className="hidden xl:flex items-center gap-1.5">
-                <span className="cf-live-dot w-1.5 h-1.5 rounded-full" style={{ background: "var(--cf-green)", color: "var(--cf-green)" }} />
-                <span className="cf-mono text-[10px] tracking-wider" style={{ color: "var(--cf-green)" }}>AVAILABLE</span>
-              </div>
-              <a
-                href="/resume.pdf"
-                download="Raghav_Mahajan_Resume.pdf"
-                className="cf-mono hidden sm:inline-flex items-center gap-1.5 text-[11px] uppercase py-1 cf-navlink"
-                style={{ letterSpacing: "0.1em" }}
-              >
-                <Download className="w-3 h-3" />
-                Resume
-              </a>
-              <Magnetic strength={16} className="hidden md:inline-block">
+              <span className="opacity-60 hover:opacity-100 transition-opacity hidden sm:block">
+                <ThemeToggle />
+              </span>
+              <Magnetic strength={14} className="hidden md:inline-block">
                 <Link
-                  href="/estimate"
-                  className="cf-mono hidden md:inline-flex items-center text-[11px] font-bold uppercase px-4 py-2.5"
+                  href="/contact"
+                  className="inline-flex items-center whitespace-nowrap"
                   style={{
-                    letterSpacing: "0.1em",
-                    background: "var(--cf-ink)",
-                    color: "var(--cf-paper)",
-                    border: "2px solid var(--cf-ink)",
-                    boxShadow: "4px 4px 0 var(--cf-shadow)",
+                    fontFamily: "var(--cf-caps)",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    letterSpacing: "0.18em",
+                    textTransform: "uppercase",
+                    background: "#2c3480",
+                    color: "#ffffff",
+                    padding: "11px 20px",
+                    border: "1px solid #2c3480",
                   }}
                 >
-                  Start an estimate
+                  Contact
                 </Link>
               </Magnetic>
               <button
@@ -170,115 +148,87 @@ export default function Navbar() {
                 aria-expanded={open}
                 aria-controls="mobile-menu"
               >
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.span
-                    key={open ? "close" : "open"}
-                    initial={reduceMotion ? false : { opacity: 0, rotate: -45 }}
-                    animate={{ opacity: 1, rotate: 0 }}
-                    exit={reduceMotion ? undefined : { opacity: 0, rotate: 45 }}
-                    transition={{ duration: 0.15 }}
-                    className="flex"
-                  >
-                    {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                  </motion.span>
-                </AnimatePresence>
+                {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
           </div>
         </div>
+        <MeanderBand />
       </header>
 
-      {/* Mobile menu: full-height paper panel that slides in from the right */}
+      {/* Mobile menu: a full-screen black panel. Big Didone links, cobalt
+          active state, in both themes — the VELARA field, taken whole. */}
       <AnimatePresence>
         {open && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/60"
-              onClick={() => setOpen(false)}
-            />
-            <motion.div
-              id="mobile-menu"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Menu"
-              initial={reduceMotion ? { opacity: 0 } : { x: "100%" }}
-              animate={reduceMotion ? { opacity: 1 } : { x: 0 }}
-              exit={
-                reduceMotion
-                  ? { opacity: 0 }
-                  : { x: "100%", transition: { duration: 0.24, ease: [0.32, 0.72, 0, 1] } }
-              }
-              transition={{ duration: 0.34, ease: [0.32, 0.72, 0, 1] }}
-              className="cf-scope fixed top-0 right-0 bottom-0 z-50 w-80 max-w-[88vw] flex flex-col"
-              style={{ borderLeft: "2px solid var(--cf-ink)" }}
-            >
-              <div className="flex items-center justify-between px-6 h-16" style={{ borderBottom: "3px double var(--cf-ink)" }}>
-                <span className="cf-mono text-[11px] uppercase" style={{ letterSpacing: "0.09em" }}>
-                  <b>File No.</b> YEG-2026-001
+          <motion.div
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.26, ease: [0.23, 1, 0.32, 1] }}
+            className="fixed inset-0 z-50 flex flex-col"
+            style={{ background: "#000000", color: "#f4f4f7" }}
+          >
+            <div className="cf-wrap w-full">
+              <div className="flex items-center justify-between h-[68px]" style={{ borderBottom: "1px solid #33333d" }}>
+                <span style={{ fontFamily: "var(--cf-caps)", fontSize: 12, letterSpacing: "0.22em", color: "#a7a7b3" }}>
+                  File No. YEG-2026-001
                 </span>
-                <button onClick={() => setOpen(false)} aria-label="Close menu" autoFocus className="min-w-[44px] min-h-[44px] flex items-center justify-center" style={{ color: "var(--cf-ink)" }}>
-                  <X className="w-5 h-5" />
+                <button
+                  onClick={() => setOpen(false)}
+                  aria-label="Close menu"
+                  autoFocus
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2"
+                  style={{ color: "#f4f4f7" }}
+                >
+                  <X className="w-6 h-6" />
                 </button>
               </div>
-              <nav className="flex-1 overflow-y-auto py-4" aria-label="Main">
-                {LINKS.map((link, i) => (
-                  <motion.div
-                    key={link.href}
-                    initial={reduceMotion ? false : { opacity: 0, x: 12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.05 + i * 0.035, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-                  >
-                    <Link
-                      href={link.href}
-                      aria-current={pathname === link.href ? "page" : undefined}
-                      className="flex items-center px-6 min-h-[46px] cf-display text-[17px] uppercase"
-                      style={{
-                        color: pathname === link.href ? "var(--cf-red)" : "var(--cf-ink)",
-                        borderLeft: pathname === link.href ? "3px solid var(--cf-red)" : "3px solid transparent",
-                      }}
+            </div>
+            <nav className="flex-1 overflow-y-auto" aria-label="Main">
+              <div className="cf-wrap py-8 flex flex-col">
+                {PANEL_LINKS.map((link, i) => {
+                  const active = pathname === link.href;
+                  return (
+                    <motion.div
+                      key={link.href}
+                      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.04 + i * 0.04, duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
                     >
-                      {link.label}
-                    </Link>
-                  </motion.div>
-                ))}
-              </nav>
-              <motion.div
-                className="px-6 pb-8 pt-4 flex flex-col gap-4"
-                style={{ borderTop: "1px solid var(--cf-faint)" }}
-                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + LINKS.length * 0.035 + 0.05, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--cf-green)" }} />
-                    <span className="cf-mono text-[10px] tracking-wider" style={{ color: "var(--cf-green)" }}>AVAILABLE FOR SOC ROLES</span>
-                  </div>
-                  <ThemeToggle />
-                </div>
-                <Link
-                  href="/estimate"
-                  onClick={() => setOpen(false)}
-                  className="cf-btn justify-center"
-                >
-                  Start an estimate
-                </Link>
-                <a
-                  href="/resume.pdf"
-                  download="Raghav_Mahajan_Resume.pdf"
-                  className="cf-btn-ghost justify-center"
-                  onClick={() => setOpen(false)}
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Download Resume
-                </a>
-              </motion.div>
-            </motion.div>
-          </>
+                      <Link
+                        href={link.href}
+                        aria-current={active ? "page" : undefined}
+                        className="flex items-baseline gap-4 py-2.5 min-h-[52px]"
+                        style={{
+                          fontFamily: "var(--cf-display)",
+                          fontSize: 31,
+                          fontWeight: 600,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.01em",
+                          color: active ? "#8b94e0" : "#f4f4f7",
+                        }}
+                      >
+                        <span style={{ fontFamily: "var(--cf-caps)", fontSize: 11, letterSpacing: "0.2em", color: active ? "#8b94e0" : "#55555f" }}>
+                          {["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"][i]}
+                        </span>
+                        {link.label}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </nav>
+            <div className="cf-wrap w-full pb-9 pt-4 flex items-center justify-between" style={{ borderTop: "1px solid #33333d" }}>
+              <span style={{ fontFamily: "var(--cf-caps)", fontSize: 11, letterSpacing: "0.2em", color: "#a7a7b3" }}>
+                Edmonton, AB — Public
+              </span>
+              <ThemeToggle />
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>

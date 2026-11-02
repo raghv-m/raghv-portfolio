@@ -140,13 +140,6 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Alert ticker ────────────────────────────────────────────── */
-@keyframes ticker {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.ticker-content { animation: ticker 50s linear infinite; will-change: transform; }
-
 /* ── Section spacing ─────────────────────────────────────────── */
 .section { padding: 7rem 1.5rem; }
 .section-sm { padding: 4rem 1.5rem; }
@@ -311,27 +304,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .btn-gold::after, .btn-ghost::after, .btn-solid-gold::after, .btn-primary::after { transition: none; }
 }
-
-/* ── Alert feed ──────────────────────────────────────────────── */
-.alert-feed {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 40;
-  border-top: 1px solid var(--border);
-  /* Solid, so page content never shows through while scrolling. */
-  background: #0a0a0a;
-  overflow: hidden;
-  white-space: nowrap;
-  height: 24px;
-  display: flex;
-  align-items: center;
-}
-
-/* The ticker is fixed to the bottom: leave room for it so the end of the page (the footer)
-   is never hidden underneath. */
-body:has(.alert-feed) { padding-bottom: 24px; }
 
 /* ── Glow line ───────────────────────────────────────────────── */
 .glow-line {

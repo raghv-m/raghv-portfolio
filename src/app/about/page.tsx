@@ -259,7 +259,7 @@ export default function AboutPage() {
               <span className="cf-u-red">The Analyst</span>
             </>
           }
-          lede="From kitchen operations to security operations: five stages of a non-traditional path into cybersecurity, told in first person."
+          lede="Raghav Mahajan is an Edmonton web developer and SOC analyst. This is the non-traditional path in: from kitchen operations to security operations, in five stages, told in first person."
         />
 
         {/* File contents: the stage nav, kept as index rows with the same anchors */}

@@ -42,11 +42,21 @@ function saveChoice(choice: Choice) {
 export function ConsentBanner() {
   const [visible, setVisible] = useState(false);
 
+  // Deferred on purpose (PageSpeed, Nov 2026): the banner must never be the
+  // largest paint or sit in the hero's way. It mounts only after the window
+  // load event plus a beat, as a small corner card with no layout impact.
   useEffect(() => {
-    if (!storedChoice()) {
-      const t = setTimeout(() => setVisible(true), 900);
-      return () => clearTimeout(t);
-    }
+    if (storedChoice()) return;
+    let t: ReturnType<typeof setTimeout>;
+    const arm = () => {
+      t = setTimeout(() => setVisible(true), 1400);
+    };
+    if (document.readyState === "complete") arm();
+    else window.addEventListener("load", arm);
+    return () => {
+      window.removeEventListener("load", arm);
+      clearTimeout(t);
+    };
   }, []);
 
   useEffect(() => {
@@ -66,29 +76,32 @@ export function ConsentBanner() {
     <div
       role="region"
       aria-label="Privacy choices"
-      className="cf-scope fixed bottom-0 left-0 right-0 z-[80]"
-      style={{ borderTop: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)", boxShadow: "0 -12px 32px rgba(0,0,0,0.18)" }}
+      className="cf-scope fixed z-[80]"
+      style={{
+        right: 16,
+        bottom: 16,
+        width: "min(348px, calc(100vw - 32px))",
+        border: "1px solid var(--cf-faint)",
+        background: "var(--cf-paper-2)",
+        boxShadow: "0 14px 34px rgba(0, 0, 0, 0.22)",
+        padding: "14px 16px",
+      }}
     >
-      <div className="cf-wrap flex flex-col gap-4 py-5 md:flex-row md:items-center">
-        <div className="min-w-0 flex-1">
-          <p className="cf-mono text-[10px] font-bold uppercase" style={{ letterSpacing: "0.14em", color: "var(--cf-red)" }}>
-            Privacy choices
-          </p>
-          <p className="mt-1.5 text-[13.5px] leading-relaxed" style={{ color: "var(--cf-ink-soft)" }}>
-            This site uses essential cookies to keep you signed in and stop spam, and analytics
-            (Google Analytics via Tag Manager, and Vercel Analytics) that show me which pages get
-            read. Record your choice here; the site works fully either way. Details in the{" "}
-            <Link href="/cookies" className="cf-ulink">cookie policy</Link>.
-          </p>
-        </div>
-        <div className="flex shrink-0 items-center gap-3">
-          <button type="button" onClick={() => choose("accepted")} className="cf-btn" style={{ padding: "11px 20px", fontSize: 13.5 }}>
-            Accept
-          </button>
-          <button type="button" onClick={() => choose("declined")} className="cf-btn-ghost" style={{ padding: "11px 20px", fontSize: 13.5 }}>
-            Decline
-          </button>
-        </div>
+      <p style={{ fontFamily: "var(--cf-caps)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--cf-red)" }}>
+        Privacy choices
+      </p>
+      <p className="mt-1.5 text-[12.5px] leading-relaxed" style={{ color: "var(--cf-ink-soft)" }}>
+        Essential cookies, plus analytics (Google Analytics via Tag Manager, and Vercel
+        Analytics) that run either way. Your choice is recorded; the site works fully
+        regardless. <Link href="/cookies" className="cf-ulink">Cookie policy</Link>
+      </p>
+      <div className="flex items-center gap-2.5 mt-3">
+        <button type="button" onClick={() => choose("accepted")} className="cf-btn" style={{ padding: "9px 16px", fontSize: 12.5, minHeight: 40 }}>
+          Accept
+        </button>
+        <button type="button" onClick={() => choose("declined")} className="cf-btn-ghost" style={{ padding: "9px 16px", fontSize: 12.5, minHeight: 40 }}>
+          Decline
+        </button>
       </div>
     </div>
   );

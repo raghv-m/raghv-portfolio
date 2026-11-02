@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, Space_Grotesk, JetBrains_Mono, Anton } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import "./case-file.css";
 import { validateEnv } from "@/lib/env";
@@ -19,7 +20,6 @@ const GA_ID = "G-70FNMH9P4X";
 if (process.env.NODE_ENV === "production") validateEnv();
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import AlertTicker from "@/components/layout/AlertTicker";
 import NewsletterModal from "@/components/newsletter/NewsletterModal";
 import { ConsentBanner } from "@/components/layout/ConsentBanner";
 import { PublicChrome } from "@/components/layout/PublicChrome";
@@ -45,11 +45,33 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-/* Heavy condensed display face for the case-file public design (headlines only). */
-const anton = Anton({
-  variable: "--font-anton",
-  subsets: ["latin"],
-  weight: "400",
+/* VELARA system type (Nov 2026): Didone serif for display (Playfair Display),
+   engraved Roman capitals for labels and numerals (Cinzel), old-style serif
+   for body reading (Cormorant Garamond). JetBrains Mono stays for the file
+   data and terminal exhibits only. Self-hosted variable fonts (next/font/local):
+   this Next version's Turbopack google-font replacer fails on these families
+   in the edge runtime, and local files remove the build-time network fetch. */
+const playfair = localFont({
+  src: "../fonts/playfair.woff2",
+  variable: "--font-playfair",
+  weight: "400 900",
+  display: "swap",
+});
+
+const cinzel = localFont({
+  src: "../fonts/cinzel.woff2",
+  variable: "--font-cinzel",
+  weight: "400 900",
+  display: "swap",
+});
+
+const cormorant = localFont({
+  src: [
+    { path: "../fonts/cormorant.woff2", style: "normal" },
+    { path: "../fonts/cormorant-italic.woff2", style: "italic" },
+  ],
+  variable: "--font-cormorant",
+  weight: "300 700",
   display: "swap",
 });
 
@@ -93,8 +115,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3efe6" },
-    { media: "(prefers-color-scheme: dark)", color: "#16140f" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
 };
 
@@ -112,7 +134,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       data-scroll-behavior="smooth"
       data-theme="light"
       suppressHydrationWarning
-      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${anton.variable}`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${playfair.variable} ${cinzel.variable} ${cormorant.variable}`}
     >
       <body className="bg-[var(--bg)] text-[var(--text)] antialiased">
         <Script id="cf-theme-init" strategy="beforeInteractive">
@@ -158,7 +180,6 @@ gtag('config', '${GA_ID}');`}
         </main>
         <PublicChrome>
           <Footer />
-          <AlertTicker />
           <NewsletterModal />
           <ConsentBanner />
         </PublicChrome>

@@ -43,7 +43,7 @@ export function Logo({
         RM
       </text>
       <g transform="rotate(3 115 30)">
-        <rect x="92" y="20" width="46" height="20" fill="#b3231b" />
+        <rect x="92" y="20" width="46" height="20" fill="#2C3480" />
         <text
           x="115"
           y="35"
@@ -51,7 +51,7 @@ export function Logo({
           fontFamily="var(--font-jetbrains), 'JetBrains Mono', ui-monospace, monospace"
           fontWeight="700"
           fontSize="13"
-          fill="#f3efe6"
+          fill="#ffffff"
         >
           YEG
         </text>

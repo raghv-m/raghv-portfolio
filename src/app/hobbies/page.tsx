@@ -125,6 +125,7 @@ export default function HobbiesPage() {
                       alt={`Photograph by Raghav Mahajan, taken at the Edmonton Valley Zoo (featured frame ${photo.n})`}
                       width={1206}
                       height={1809}
+                      sizes="(max-width: 820px) 100vw, 380px"
                     />
                   ) : (
                     <div className="cf-pending-frame">
@@ -161,6 +162,7 @@ export default function HobbiesPage() {
                     alt={`Photograph by Raghav Mahajan: ${photo.caption.toLowerCase()}`}
                     width={photo.w}
                     height={photo.h}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
                   />
                   <figcaption className="cf-caption cf-mono" style={{ marginTop: 12, fontSize: 12 }}>
                     <b>Field frame {photo.n}.</b> {photo.caption}.

@@ -75,7 +75,7 @@ export default function SubscribeWidget({ compact = false }: { compact?: boolean
         <label htmlFor={emailName} className="sr-only">Email address</label>
         <div className="flex gap-2">
           {emailInput("cf-input flex-1 min-w-0", "Your email")}
-          <button type="submit" disabled={loading} aria-label="Subscribe to the newsletter" className="btn-gold text-sm px-4 py-2 shrink-0 flex items-center gap-1" />
+          <button type="submit" disabled={loading} aria-label="Subscribe to the newsletter" className="btn-gold text-sm px-4 py-2 shrink-0 flex items-center gap-1">{loading ? "…" : "→"}</button>
         </div>
         <FieldError name={emailName} message={error || undefined} />
       </form>

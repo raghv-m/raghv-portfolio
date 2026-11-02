@@ -1,8 +1,18 @@
 /* ════════════════════════════════════════════════════════════════════════════
-   CASE FILE design system (public pages only).
+   THE ARCHIVE design system (public pages only).
    Everything is either a --cf-* token or a .cf-* class, so the admin console,
    client portal and auth screens, which never use these names, are untouched.
    Applied by wrapping public chrome + page content in .cf-scope.
+
+   Nov 2026 — VELARA neoclassical pass. The case file, presented as a
+   classical archive: black / white / cobalt (#2C3480) ONLY, in the reel's
+   proportions (dark fields dominant, white panels, cobalt ~5% and precious).
+   Token NAMES are unchanged from the dossier era; their VALUES moved:
+   --cf-red now holds the cobalt stamp ink (stamps are blue-ink archival
+   stamps now), --cf-gold and --cf-green fold into the cobalt family too.
+   Type: Playfair Display (Didone) for display, Cinzel for Roman capitals
+   and labels, Cormorant Garamond for body serif, JetBrains Mono only for
+   file data and the terminal exhibits.
 
    Motion rules: one easing vocabulary (Apple-style cubic-bezier(0.22,1,0.36,1)),
    transform/opacity only, and a hard reduced-motion kill switch at the bottom.
@@ -10,24 +20,25 @@
 
 :root {
   color-scheme: light;
-  /* Light theme: the paper case file. */
-  --cf-paper: #f3efe6;
-  --cf-paper-2: #ece7d9;
-  --cf-paper-3: #e3ddcb;
-  --cf-ink: #16150f;
-  --cf-ink-soft: #3c3a31;
-  --cf-muted: #6f6a5c;
-  --cf-faint: #a39c8a;
-  --cf-red: #b3231b;
-  --cf-red-ink: rgba(179, 35, 27, 0.92);
-  --cf-gold: #9a7410;
-  --cf-green: #2e6b1e;
-  --cf-shadow: rgba(22, 21, 15, 0.9);
-  --cf-exhibit-shadow: rgba(22, 21, 15, 0.22);
-  --cf-doc-line: #d8d2c0;
-  --cf-log-bg: #101208;
-  --cf-log-head: #9fb27e;
-  --cf-log-text: #d7e0c8;
+  /* Light theme: the inverse reading of the same system. White ground,
+     black ink, cobalt accent. (Dark is the primary presentation.) */
+  --cf-paper: #ffffff;
+  --cf-paper-2: #f2f2f4;
+  --cf-paper-3: #e3e3e9;
+  --cf-ink: #0b0b0e;
+  --cf-ink-soft: #33333c;
+  --cf-muted: #5c5c66;
+  --cf-faint: #a7a7b3;
+  --cf-red: #2c3480;
+  --cf-red-ink: rgba(44, 52, 128, 0.92);
+  --cf-gold: #2c3480;
+  --cf-green: #2c3480;
+  --cf-shadow: rgba(11, 11, 14, 0.9);
+  --cf-exhibit-shadow: rgba(11, 11, 14, 0.22);
+  --cf-doc-line: #d5d5dd;
+  --cf-log-bg: #07070c;
+  --cf-log-head: #9aa5e8;
+  --cf-log-text: #d9dbe4;
   /* Easing vocabulary per Emil Kowalski's design-engineering system
      (github.com/emilkowalski/skills): strong custom curves, never the
      weak built-ins, never ease-in on UI. ease-out for entrances/feedback,
@@ -52,59 +63,62 @@
   --cf-dur-page: 280ms;
   --cf-dur-ambient: 16s;
   --cf-stagger: 75ms;
-  --cf-display: var(--font-anton), "Arial Narrow", sans-serif;
-  --cf-serif: Georgia, "Times New Roman", serif;
+  --cf-display: var(--font-playfair), "Didot", "Bodoni MT", serif;
+  --cf-caps: var(--font-cinzel), "Trajan Pro", serif;
+  --cf-serif: var(--font-cormorant), Georgia, "Times New Roman", serif;
 
   /* The legacy theme vars (used across portal, admin and auth) follow the
      same palette, so the whole site themes from these two blocks. */
-  --bg: #f3efe6;
-  --surface: #ece7d9;
-  --card: #ece7d9;
-  --border: #cfc8b2;
-  --gold: #9a7410;
-  --gold-light: #7d5e0c;
-  --gold-muted: #9a7410;
-  --text: #16150f;
-  --text-muted: #57534a;
-  --green: #2e6b1e;
-  --red: #b3231b;
-  --blue: #33549e;
-  --cyan: #0e6e8c;
+  --bg: #ffffff;
+  --surface: #f2f2f4;
+  --card: #f2f2f4;
+  --border: #cfcfd8;
+  --gold: #2c3480;
+  --gold-light: #232a6b;
+  --gold-muted: #2c3480;
+  --text: #0b0b0e;
+  --text-muted: #4c4c55;
+  --green: #2c3480;
+  --red: #2c3480;
+  --blue: #2c3480;
+  --cyan: #3d478f;
 }
 
-/* Dark theme: the same file, read at night. Warm charcoal paper, cream ink.
-   Red, gold and green are lifted so stamps and statuses keep AA contrast. */
+/* Dark theme: the primary presentation. The VELARA field: pure black
+   ground, white ink and panels, cobalt lifted one register (#8b94e0) only
+   where it must read as small text on black; fills and rules keep the
+   deep #2C3480 gem tone. */
 html[data-theme="dark"] {
   color-scheme: dark;
-  --cf-paper: #16140f;
-  --cf-paper-2: #1f1c13;
-  --cf-paper-3: #2a2718;
-  --cf-ink: #ece7d9;
-  --cf-ink-soft: #cfc8b4;
-  --cf-muted: #a39c8a;
-  --cf-faint: #57534a;
-  --cf-red: #e0564b;
-  --cf-red-ink: rgba(224, 86, 75, 0.92);
-  --cf-gold: #d4a017;
-  --cf-green: #7ac74f;
+  --cf-paper: #000000;
+  --cf-paper-2: #101014;
+  --cf-paper-3: #1d1d24;
+  --cf-ink: #f4f4f7;
+  --cf-ink-soft: #cfcfd8;
+  --cf-muted: #a7a7b3;
+  --cf-faint: #55555f;
+  --cf-red: #8b94e0;
+  --cf-red-ink: rgba(139, 148, 224, 0.92);
+  --cf-gold: #8b94e0;
+  --cf-green: #8b94e0;
   --cf-shadow: rgba(0, 0, 0, 0.65);
   --cf-exhibit-shadow: rgba(0, 0, 0, 0.55);
-  --cf-doc-line: #3a372c;
-  --cf-log-bg: #0c0e06;
+  --cf-doc-line: #33333d;
+  --cf-log-bg: #050508;
 
-  --bg: #16140f;
-  --surface: #1f1c13;
-  --card: #201d14;
-  --border: #3a372c;
-  --gold: #d4a017;
-  --gold-light: #f0c040;
-  --gold-muted: #a97f14;
-  --text: #ece7d9;
-  --text-muted: #a89f8a;
-  --green: #7ac74f;
-  --red: #e0564b;
-  --blue: #6ea8ff;
-  --cyan: #4cc3e6;
+  --bg: #000000;
+  --surface: #101014;
+  --card: #121218;
+  --border: #33333d;
+  --gold: #8b94e0;
+  --gold-light: #aab1ea;
+  --gold-muted: #6d76c4;
+  --text: #f4f4f7;
+  --text-muted: #a7a7b3;
+  --green: #8b94e0;
+  --red: #8b94e0;
+  --blue: #8b94e0;
+  --cyan: #9aa5e8;
 }
 
 /* ── Scope roots ─────────────────────────────────────────────────────────── */
@@ -139,9 +153,9 @@ html[data-theme="dark"] {
 .cf-app {
   color: var(--text);
 }
-.cf-scope ::selection, .cf-app ::selection { background: rgba(179, 35, 27, 0.25); }
+.cf-scope ::selection, .cf-app ::selection { background: rgba(44, 52, 128, 0.22); }
 html[data-theme="dark"] .cf-scope ::selection,
-html[data-theme="dark"] .cf-app ::selection { background: rgba(224, 86, 75, 0.35); }
+html[data-theme="dark"] .cf-app ::selection { background: rgba(139, 148, 224, 0.35); }
 .cf-scope :focus-visible, .cf-app :focus-visible {
   outline: 2px solid var(--cf-red); outline-offset: 2px;
   animation: cf-focus-in var(--cf-dur-ui) var(--cf-ease);
@@ -187,8 +201,6 @@ html[data-theme="dark"] .cf-app ::selection { background: rgba(224, 86, 75, 0.35
 .cf-app .card-lift { transition: transform 0.45s var(--cf-ease), border-color 0.45s var(--cf-ease); }
 .cf-app .card-lift:hover { transform: translateY(-3px); box-shadow: none; }
 .cf-scope .progress-bar, .cf-app .progress-bar { background: var(--cf-red); box-shadow: none; }
-.cf-scope .alert-feed { background: var(--cf-ink); border-top: 1px solid var(--cf-ink); }
-html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-color: #3a372c; }
 
 /* Old gold buttons read poorly on paper; inside either scope they become
    the dossier's ink buttons (public pages, portal and admin all use these). */
@@ -230,22 +242,27 @@ html[data-theme="dark"] .cf-scope .alert-feed { background: #0c0b08; border-top-
 .cf-wrap { max-width: 1240px; margin-inline: auto; padding-inline: 32px; }
 @media (max-width: 640px) { .cf-wrap { padding-inline: 20px; } }
 
-.cf-display { font-family: var(--cf-display); font-weight: 400; text-transform: uppercase; }
+.cf-display { font-family: var(--cf-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.01em; }
 .cf-mono { font-family: var(--font-jetbrains), ui-monospace, monospace; }
 .cf-kicker {
-  font-family: var(--font-jetbrains), monospace;
-  font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--cf-muted);
+  font-family: var(--cf-caps);
+  font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--cf-muted);
 }
 .cf-h2 {
   font-family: var(--cf-display);
-  font-size: clamp(30px, 4.5vw, 44px);
-  line-height: 1.05;
+  font-size: clamp(27px, 4.5vw, 44px);
+  line-height: 1.08;
   text-transform: uppercase;
-  letter-spacing: 0.005em;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+  text-wrap: balance;
 }
-.cf-sec-head { border-top: 2px solid var(--cf-ink); padding-top: 14px; margin-bottom: 30px; }
-.cf-lede { font-size: 20px; line-height: 1.55; }
-.cf-body { font-size: 17px; line-height: 1.65; color: var(--cf-ink-soft); }
+/* Section head: an entablature band. Double rule above, the title set as an
+   inscription, generous but bounded air below (spacing scale: 96px max). */
+.cf-sec-head { border-top: 3px double var(--cf-ink); padding-top: 16px; margin-bottom: 32px; }
+.cf-sec-head .cf-roman { display: block; margin-bottom: 8px; }
+.cf-lede { font-family: var(--cf-serif); font-weight: 500; font-size: 23px; line-height: 1.5; }
+.cf-body { font-family: var(--cf-serif); font-weight: 500; font-size: 19px; line-height: 1.6; color: var(--cf-ink-soft); }
 .cf-note {
   font-family: var(--font-jetbrains), monospace;
   font-size: 12px; color: var(--cf-muted); letter-spacing: 0.04em; line-height: 1.7;
@@ -335,26 +352,28 @@ html[data-theme="dark"] .cf-btn::after {
   border-radius: 3px;
   width: max-content;
   transform: rotate(var(--r, -3deg)) scale(var(--s, 1));
-  opacity: var(--o, 0.9);
+  /* Opacity floor 0.9: per-instance softness stops where legibility does
+     (jury accessibility finding, Nov 2026). */
+  opacity: max(var(--o, 0.9), 0.9);
   text-shadow: 0 0 1px currentColor;
   white-space: nowrap;
 }
-.cf-stamp-red { color: var(--cf-red); background: rgba(179, 35, 27, 0.05); }
+.cf-stamp-red { color: var(--cf-red); background: rgba(44, 52, 128, 0.06); }
 /* The hero stamp is the one grid-breaking gesture: full ink, never washed. */
 .cf-stamp-hero {
-  background: rgba(179, 35, 27, 0.12);
+  background: rgba(44, 52, 128, 0.10);
   text-shadow: 0 0 1.5px currentColor;
   font-weight: 800;
 }
-[data-theme="dark"] .cf-stamp-hero { background: rgba(224, 86, 75, 0.16); }
-.cf-stamp-gold { color: var(--cf-gold); background: rgba(154, 116, 16, 0.05); }
-.cf-stamp-green { color: var(--cf-green); background: rgba(46, 107, 30, 0.05); }
-.cf-stamp-ink { color: var(--cf-ink); background: rgba(22, 21, 15, 0.04); }
+[data-theme="dark"] .cf-stamp-hero { background: rgba(139, 148, 224, 0.16); }
+.cf-stamp-gold { color: var(--cf-gold); background: rgba(44, 52, 128, 0.05); }
+.cf-stamp-green { color: var(--cf-green); background: rgba(44, 52, 128, 0.04); }
+.cf-stamp-ink { color: var(--cf-ink); background: rgba(11, 11, 14, 0.04); }
 @keyframes cf-stamp-in {
   0% { transform: rotate(calc(var(--r, -3deg) - 7deg)) scale(1.7); opacity: 0; }
-  55% { opacity: var(--o, 0.9); }
-  72% { transform: rotate(calc(var(--r, -3deg) + 1.2deg)) scale(calc(var(--s, 1) * 0.96)); opacity: var(--o, 0.9); }
-  100% { transform: rotate(var(--r, -3deg)) scale(var(--s, 1)); opacity: var(--o, 0.9); }
+  55% { opacity: max(var(--o, 0.9), 0.9); }
+  72% { transform: rotate(calc(var(--r, -3deg) + 1.2deg)) scale(calc(var(--s, 1) * 0.96)); opacity: max(var(--o, 0.9), 0.9); }
+  100% { transform: rotate(var(--r, -3deg)) scale(var(--s, 1)); opacity: max(var(--o, 0.9), 0.9); }
 }
 .cf-stamp-slam { opacity: 0; }
 .cf-stamp-slam.cf-in { animation: cf-stamp-in 0.55s var(--cf-ease-spring) both; }
@@ -371,7 +390,7 @@ html[data-theme="dark"] .cf-btn::after {
 /* ONE tape strip per exhibit. Torn edges from a jagged clip-path polygon. */
 .cf-tape {
   position: absolute; z-index: 4;
-  background: rgba(229, 219, 175, 0.82);
+  background: rgba(206, 208, 218, 0.85);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.14);
   clip-path: polygon(2% 12%, 9% 0%, 24% 8%, 41% 2%, 58% 10%, 74% 3%, 89% 9%, 99% 0%, 100% 88%, 93% 100%, 77% 91%, 60% 99%, 43% 92%, 27% 100%, 12% 93%, 0% 100%, 1% 55%);
   pointer-events: none;
@@ -386,6 +405,56 @@ html[data-theme="dark"] .cf-btn::after {
   border: 1px solid var(--cf-doc-line);
   box-shadow: 0 14px 34px var(--cf-exhibit-shadow);
   background: #fff;
+}
+
+/* ── Neoclassical ornament system ────────────────────────────────────────── */
+/* Roman numeral marker for section heads and exhibit labels. */
+.cf-roman {
+  font-family: var(--cf-caps);
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--cf-red);
+}
+/* Greek-key meander band: an SVG repeat in currentColor, used as the
+   entablature strip under the header and over the footer. Hairline rules
+   above and below come from the band's own borders. */
+.cf-meander {
+  height: 14px;
+  color: var(--cf-faint);
+  border-top: 1px solid var(--cf-doc-line);
+  border-bottom: 1px solid var(--cf-doc-line);
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: auto 10px;
+  opacity: 0.9;
+}
+/* The theme toggle answers hover with a paper shift (it was a jury
+   noHoverChange finding as a bare icon). */
+.cf-theme-toggle { transition: background-color var(--cf-dur-feedback) var(--cf-ease), color var(--cf-dur-feedback) var(--cf-ease); }
+.cf-theme-toggle:hover { background: var(--cf-paper-2); color: var(--cf-ink); }
+
+/* Laurel divider: hairline, laurel mark, hairline. Rendered by the
+   LaurelDivider component; the lines are plain spans. */
+.cf-laurel { display: flex; align-items: center; gap: 16px; color: var(--cf-red); }
+.cf-laurel::before, .cf-laurel::after {
+  content: ""; flex: 1; height: 1px; background: var(--cf-doc-line);
+}
+.cf-laurel svg { flex: none; display: block; }
+/* Medallion seal: a double ring (border + offset outline) around a mark. */
+.cf-medallion {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1.5px solid currentColor; border-radius: 999px;
+  outline: 1px solid currentColor; outline-offset: 3px;
+  padding: 5px;
+}
+/* Arch-topped plate: the museum-plate crop for portrait exhibits. */
+.cf-arch { border-radius: 999px 999px 0 0; overflow: hidden; }
+/* Letterspaced plate label above a caption ("PLATE I — …"). */
+.cf-plate {
+  font-family: var(--cf-caps);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--cf-muted);
 }
 
 /* ── Document wall (certifications) + filed exhibits ─────────────────────── */
@@ -455,9 +524,9 @@ html[data-theme="dark"] .cf-btn::after {
 /* ── Terminal capture panel (Exhibit B): a crafted window, not a rectangle ── */
 .cf-term {
   background: var(--cf-log-bg); color: var(--cf-log-text);
-  border: 1px solid #2a2e12;
+  border: 1px solid #23263a;
   box-shadow:
-    inset 0 1px 0 rgba(215, 224, 200, 0.07),
+    inset 0 1px 0 rgba(200, 205, 225, 0.07),
     inset 0 0 70px rgba(0, 0, 0, 0.5),
     0 18px 40px var(--cf-exhibit-shadow);
 }
@@ -466,16 +535,16 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-term-bar {
   display: flex; align-items: center; gap: 14px;
   padding: 11px 16px;
-  background: linear-gradient(180deg, #191c0d, #12140a);
-  border-bottom: 1px solid #2c3018;
+  background: linear-gradient(180deg, #14151f, #0a0a10);
+  border-bottom: 1px solid #2b2e45;
 }
 .cf-term-btns { display: inline-flex; gap: 7px; flex: none; }
 .cf-term-btns i {
   width: 11px; height: 11px; display: block;
-  border: 1.5px solid #565e3a; background: transparent;
+  border: 1.5px solid #4a4f6e; background: transparent;
 }
 .cf-term-btns i:first-child { background: var(--cf-red); border-color: var(--cf-red); }
-.cf-term-btns i:last-child { background: rgba(215, 224, 200, 0.16); }
+.cf-term-btns i:last-child { background: rgba(200, 205, 225, 0.16); }
 .cf-term-title {
   flex: 1; text-align: center;
   font-family: var(--font-jetbrains), monospace;
@@ -485,19 +554,19 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-term-rec {
   flex: none; display: inline-flex; align-items: center; gap: 6px;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 10px; letter-spacing: 0.16em; color: #ff7a6b;
+  font-size: 10px; letter-spacing: 0.16em; color: #9aa5e8;
 }
 .cf-term-rec i {
-  width: 7px; height: 7px; border-radius: 50%; background: #ff7a6b; display: block;
+  width: 7px; height: 7px; border-radius: 50%; background: #9aa5e8; display: block;
   animation: cf-rec-pulse 1.8s var(--cf-ease) infinite;
 }
 @keyframes cf-rec-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
 /* The old head line survives as a quiet status strip under the chrome. */
 .cf-term-status {
   display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-  padding: 9px 22px; border-bottom: 1px solid #23270f;
+  padding: 9px 22px; border-bottom: 1px solid #1d1f30;
   font-family: var(--font-jetbrains), monospace;
-  font-size: 10.5px; letter-spacing: 0.15em; text-transform: uppercase; color: #77875f;
+  font-size: 10.5px; letter-spacing: 0.15em; text-transform: uppercase; color: #767c92;
 }
 .cf-term-body {
   padding: 20px 22px 24px;
@@ -506,10 +575,10 @@ html[data-theme="dark"] .cf-btn::after {
   white-space: pre-wrap; word-break: break-word;
 }
 .cf-log-line { opacity: 1; }
-.cf-term .warn { color: #e8b93c; }
-.cf-term .alert { color: #ff7a6b; }
-.cf-term .ok { color: #8fd07a; }
-.cf-term .dim { color: #77875f; }
+.cf-term .warn { color: #c7ccda; }
+.cf-term .alert { color: #9aa5e8; }
+.cf-term .ok { color: #aeb6e4; }
+.cf-term .dim { color: #767c92; }
 /* Blinking block cursor at the end of the capture. */
 .cf-cursor {
   display: inline-block; width: 8px; height: 1.05em;
@@ -519,7 +588,7 @@ html[data-theme="dark"] .cf-btn::after {
 @keyframes cf-blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
 /* Marker-stroke redaction: skewed, jagged, uneven. Not a rectangle. */
 .cf-redact {
-  background: #0a0a06; color: transparent; user-select: none;
+  background: #050508; color: transparent; user-select: none;
   padding: 1px 9px 2px 5px; margin: 0 1px;
   display: inline-block; transform: skewX(-9deg) rotate(-0.7deg) translateY(2px);
   clip-path: polygon(0% 22%, 4% 4%, 18% 14%, 35% 2%, 52% 12%, 68% 3%, 84% 13%, 97% 5%, 100% 30%, 99% 76%, 90% 97%, 72% 88%, 55% 99%, 38% 89%, 20% 98%, 6% 90%, 0% 96%);
@@ -541,7 +610,8 @@ html[data-theme="dark"] .cf-btn::after {
 }
 
 /* ── Price machine ───────────────────────────────────────────────────────── */
-.cf-machine { border: 2px solid var(--cf-ink); background: var(--cf-paper-2); }
+/* Double-rule panel frame: border + offset outline, the classical panel. */
+.cf-machine { border: 2px solid var(--cf-ink); outline: 1px solid var(--cf-ink); outline-offset: 5px; background: var(--cf-paper-2); }
 .cf-strike { position: relative; display: inline-block; color: var(--cf-muted); }
 .cf-strike::after {
   content: ""; position: absolute; left: -3px; right: -3px; top: 52%;
@@ -632,7 +702,7 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-chip[aria-checked="true"], .cf-chip[aria-pressed="true"] { border-color: var(--cf-ink); background: var(--cf-ink); color: var(--cf-paper); }
 
 /* ── Blog typography ─────────────────────────────────────────────────────── */
-.cf-prose { font-size: 17.5px; line-height: 1.75; color: var(--cf-ink-soft); }
+.cf-prose { font-family: var(--cf-serif); font-weight: 500; font-size: 20px; line-height: 1.7; color: var(--cf-ink-soft); }
 .cf-prose h2, .cf-prose h3 {
   font-family: var(--cf-display); text-transform: uppercase; color: var(--cf-ink);
   line-height: 1.15; margin: 1.6em 0 0.6em;
@@ -650,7 +720,7 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-prose pre {
   background: var(--cf-log-bg); color: var(--cf-log-text);
   font-family: var(--font-jetbrains), monospace; font-size: 13.5px; line-height: 1.7;
-  padding: 18px 20px; overflow-x: auto; margin: 0 0 1.4em; border: 1px solid #23270f;
+  padding: 18px 20px; overflow-x: auto; margin: 0 0 1.4em; border: 1px solid #1d1f30;
 }
 .cf-prose pre code { background: none; border: none; padding: 0; color: inherit; }
 .cf-prose blockquote {
@@ -687,7 +757,9 @@ html[data-theme="dark"] .cf-btn::after {
    pre-state pose differs. */
 .cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(48px) scale(0.96); }
 .cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(48px) scale(0.93); }
-.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateX(-48px); }
+/* The "left" variant historically slid in laterally; the classical format
+   moves on the central axis only, so it now rises like the default. */
+.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateY(48px) scale(0.97); }
 .cf-rv[data-cf="in"] {
   opacity: 1; transform: translateY(0);
   transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease);
@@ -720,10 +792,10 @@ html[data-theme="dark"] .cf-btn::after {
 .cf-spot::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   opacity: 0; transition: opacity var(--cf-dur-ui) var(--cf-ease);
-  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(154, 116, 16, 0.13), transparent 65%);
+  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(44, 52, 128, 0.12), transparent 65%);
 }
 html[data-theme="dark"] .cf-spot::before {
-  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(212, 160, 23, 0.14), transparent 65%);
+  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(139, 148, 224, 0.13), transparent 65%);
 }
 .cf-spot:hover::before { opacity: 1; }
 @media (hover: none), (pointer: coarse) { .cf-spot::before { display: none; } }
@@ -779,6 +851,15 @@ html[data-theme="dark"] .cf-spot::before {
   transform-origin: left center;
 }
 
+/* ── Touch targets: on coarse pointers every footer and chip target is at
+   least 44px tall (PageSpeed tap-target audit, Nov 2026). ────────────────── */
+@media (pointer: coarse) {
+  .cf-scope footer a, .cf-scope footer button { min-height: 44px; }
+  .cf-scope footer .cf-navlink, .cf-scope footer nav a { display: inline-flex; align-items: center; }
+  .cf-scope footer .space-y-2\.5 > a { display: flex; align-items: center; }
+  .cf-chip { min-height: 44px; display: inline-flex; align-items: center; }
+}
+
 /* ── Reduced motion: EVERYTHING off, content fully visible ───────────────── */
 @media (prefers-reduced-motion: reduce) {
   .cf-scope *, .cf-scope *::before, .cf-scope *::after,
@@ -791,7 +872,7 @@ html[data-theme="dark"] .cf-spot::before {
   .cf-load, .cf-load-fade { opacity: 1 !important; animation: none !important; }
   .cf-rule-draw { transform: scaleX(1) !important; animation: none !important; }
   .cf-rv[data-cf="pre"] { opacity: 1 !important; transform: none !important; }
-  .cf-stamp-slam { opacity: var(--o, 0.9) !important; animation: none !important; }
+  .cf-stamp-slam { opacity: max(var(--o, 0.9), 0.9) !important; animation: none !important; }
   .cf-strike::after { transform: scaleX(1) !important; transition: none !important; }
   .cf-exhibit-frame { transition: none !important; }
   /* Micro-life off: cursor holds steady, ring stops, dots rest, REC is solid. */

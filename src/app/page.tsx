@@ -13,6 +13,7 @@ import { ParallaxLayer } from "@/components/casefile/ParallaxLayer";
 import { ExhibitZoom } from "@/components/casefile/ExhibitZoom";
 import { PinnedDocs } from "@/components/casefile/PinnedDocs";
 import { SpotWrap } from "@/components/casefile/SpotWrap";
+import { LaurelDivider } from "@/components/casefile/Ornaments";
 
 const LOG_LINES = [
   <>** Alert 1791978824.294411: - syslog,sshd,authentication_failed,</>,
@@ -71,17 +72,17 @@ const CREDS: Cred[] = [
 ];
 
 const CONTENTS = [
-  { no: "01", href: "/about", title: "About", desc: "Kitchen, guard booth, code, SOC: the non-traditional path, in first person" },
-  { no: "02", href: "/experience", title: "Experience", desc: "Security operations, freelance development, and the career roadmap from here" },
-  { no: "03", href: "/portfolio", title: "Portfolio", desc: "Client sites and lab projects, filed as case entries" },
-  { no: "04", href: "/cybersecurity", title: "Cybersecurity", desc: "Detection, incident response, SIEM work mapped to MITRE ATT&CK, and the home lab" },
-  { no: "05", href: "/certifications", title: "Certifications", desc: "The full credential file, earned and in progress" },
-  { no: "06", href: "/blog", title: "Blog: field notes", desc: "Writeups from the lab and the study desk" },
-  { no: "07", href: "/newsletter", title: "Newsletter: Blue Team Brief", desc: "The week's real attacks in plain English, every edition archived" },
-  { no: "08", href: "/news", title: "Daily security news", desc: "The top 3 stories worth your time, every day" },
-  { no: "09", href: "/hobbies", title: "Hobbies", desc: "Strange GitHub repositories and a camera: the off-duty file" },
-  { no: "10", href: "/estimate", title: "Get an estimate", desc: "Six steps, a real price range, straight into his pipeline" },
-  { no: "11", href: "/contact", title: "Contact", desc: "Roles, projects, collaborations" },
+  { no: "I", href: "/about", title: "About", desc: "Kitchen, guard booth, code, SOC: the non-traditional path, in first person" },
+  { no: "II", href: "/experience", title: "Experience", desc: "Security operations, freelance development, and the career roadmap from here" },
+  { no: "III", href: "/portfolio", title: "Portfolio", desc: "Client sites and lab projects, filed as case entries" },
+  { no: "IV", href: "/cybersecurity", title: "Cybersecurity", desc: "Detection, incident response, SIEM work mapped to MITRE ATT&CK, and the home lab" },
+  { no: "V", href: "/certifications", title: "Certifications", desc: "The full credential file, earned and in progress" },
+  { no: "VI", href: "/blog", title: "Blog: field notes", desc: "Writeups from the lab and the study desk" },
+  { no: "VII", href: "/newsletter", title: "Newsletter: Blue Team Brief", desc: "The week's real attacks in plain English, every edition archived" },
+  { no: "VIII", href: "/news", title: "Daily security news", desc: "The top 3 stories worth your time, every day" },
+  { no: "IX", href: "/hobbies", title: "Hobbies", desc: "Strange GitHub repositories and a camera: the off-duty file" },
+  { no: "X", href: "/estimate", title: "Get an estimate", desc: "Six steps, a real price range, straight into his pipeline" },
+  { no: "XI", href: "/contact", title: "Contact", desc: "Roles, projects, collaborations" },
 ];
 
 export default function HomePage() {
@@ -94,7 +95,7 @@ export default function HomePage() {
           <Kinetic>
             <h1
               className="cf-display"
-              style={{ fontSize: "clamp(68px, 10.5vw, 122px)", lineHeight: 0.94, marginTop: 18 }}
+              style={{ fontSize: "clamp(46px, 13vw, 118px)", lineHeight: 1.0, marginTop: 18, textWrap: "balance" }}
             >
               <span className="cf-load block" style={{ "--cf-d": "0.05s" } as CSSProperties}>
                 Raghav
@@ -122,7 +123,7 @@ export default function HomePage() {
           </div>
 
           <p className="cf-lede cf-load" style={{ marginTop: 40, maxWidth: 540, "--cf-d": "0.3s" } as CSSProperties}>
-            Builds websites for small businesses by day. Hunts intruders in a home SOC lab by night.{" "}
+            By day, Raghav builds websites for small businesses. By night, he hunts intruders in a home SOC lab.{" "}
             <span className="cf-u-red">Currently open to SOC analyst roles</span> anywhere in Canada.
           </p>
 
@@ -160,6 +161,7 @@ export default function HomePage() {
                     alt="Blue Team Brief newsletter cover, Edition 4"
                     width={1200}
                     height={675}
+                    sizes="(max-width: 1024px) 100vw, 520px"
                     priority
                   />
                 </ExhibitZoom>
@@ -167,28 +169,36 @@ export default function HomePage() {
             </div>
           </ParallaxLayer>
           <p className="cf-caption" style={{ marginTop: 20 }}>
-            <b>Exhibit A.</b> Blue Team Brief — his plain-English cybersecurity newsletter. Written, designed, and
+            <b>Exhibit I.</b> Blue Team Brief — his plain-English cybersecurity newsletter. Written, designed, and
             shipped by the subject. 284 subscribers and counting.
           </p>
         </div>
       </div>
 
+      {/* Laurel divider: the hero field closes on the axis. */}
+      <LaurelDivider className="mt-10" />
+
       {/* ── Identifying marks: the subject, verified ──────────────── */}
       <Reveal>
         <div
-          className="grid sm:grid-cols-[104px_1fr] gap-6 items-center py-7 mt-6"
-          style={{ borderTop: "2px solid var(--cf-ink)", borderBottom: "1px solid var(--cf-faint)" }}
+          className="grid sm:grid-cols-[104px_1fr] gap-6 items-center py-7 mt-2"
+          style={{ borderBottom: "1px solid var(--cf-faint)" }}
         >
           <ParallaxLayer range={30} invert>
-            <Image
-              src="/images/subject-photo.jpg"
-              alt="Raghav Mahajan"
-              width={150}
-              height={150}
-              className="grayscale contrast-125 -rotate-[1.2deg]"
-              style={{ width: 96, height: 96, objectFit: "cover", objectPosition: "50% 40%", border: "1.5px solid var(--cf-ink)" }}
-            />
+            <div className="cf-arch" style={{ width: 96, border: "1.5px solid var(--cf-ink)" }}>
+              <Image
+                src="/images/subject-photo.jpg"
+                alt="Raghav Mahajan"
+                width={150}
+                height={150}
+                sizes="96px"
+                className="grayscale contrast-125 block"
+                style={{ width: 96, height: 108, objectFit: "cover", objectPosition: "50% 40%" }}
+              />
+            </div>
           </ParallaxLayer>
+          <div>
+          <p className="cf-plate mb-3">Plate I — The subject</p>
           <dl className="cf-mono grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 text-[12px] uppercase" style={{ letterSpacing: "0.07em" }}>
             <div>
               <dt style={{ color: "var(--cf-muted)" }}>Subject</dt>
@@ -207,13 +217,14 @@ export default function HomePage() {
               <dd className="font-bold mt-1 normal-case text-[13.5px] tracking-normal">Runs a 4-node Wazuh lab at home</dd>
             </div>
           </dl>
+          </div>
         </div>
       </Reveal>
 
-      {/* ── Exhibit B: the captured log ───────────────────────────── */}
+      {/* ── Exhibit II: the captured log ──────────────────────────── */}
       <Reveal className="mt-12">
         <ParallaxLayer range={30}>
-          <TypeLog head="Exhibit B — Homelab, live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} />
+          <TypeLog head="Exhibit II — Homelab, live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} />
         </ParallaxLayer>
       </Reveal>
 
@@ -221,7 +232,7 @@ export default function HomePage() {
       <section className="pt-16">
         <Reveal>
           <div className="cf-sec-head">
-            <h2 className="cf-h2">What he actually does</h2>
+            <h2 className="cf-h2">What Raghav actually does</h2>
           </div>
         </Reveal>
         <div className="grid md:grid-cols-2 gap-12">
@@ -249,11 +260,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Exhibit C: the price machine ──────────────────────────── */}
+      {/* ── Exhibit III: the price machine ─────────────────────────── */}
       <section className="pt-16">
         <Reveal>
           <div className="cf-sec-head">
-            <h2 className="cf-h2">Exhibit C — The price machine</h2>
+            <h2 className="cf-h2">Exhibit III — The price machine</h2>
           </div>
           <ParallaxLayer range={28}>
           <div className="cf-machine grid lg:grid-cols-[7fr_5fr] gap-10 items-center p-8 sm:p-11">
@@ -311,6 +322,7 @@ export default function HomePage() {
                       alt={c.doc.alt}
                       width={c.doc.w}
                       height={c.doc.h}
+                      sizes="64px"
                       className="cf-cred-thumb"
                       style={{ rotate: `${c.r}deg` }}
                     />
@@ -336,6 +348,7 @@ export default function HomePage() {
                 alt="Google Foundations of Cybersecurity certificate issued to Raghav Mahajan, January 8, 2026"
                 width={1275}
                 height={1650}
+                sizes="(max-width: 1024px) 100vw, 350px"
               />
               <figcaption className="cf-caption" style={{ marginTop: 14 }}>
                 <b>Attached document.</b> The actual certificate, not a badge icon. Google, Foundations of
@@ -346,7 +359,7 @@ export default function HomePage() {
         </SpotWrap>
       </section>
 
-      {/* ── Exhibit D: the pinned document examination ────────────── */}
+      {/* ── Exhibit IV: the pinned document examination ────────────── */}
       <PinnedDocs />
 
       {/* ── Contents of this file ─────────────────────────────────── */}

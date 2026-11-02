@@ -13,13 +13,14 @@
  * motion library): no new dependency, native reverse scrolling, and a
  * static stacked layout when the visitor prefers reduced motion.
  */
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   motion,
   useScroll,
   useTransform,
   useSpring,
   useReducedMotion,
+  useMotionValueEvent,
   type MotionValue,
 } from "framer-motion";
 
@@ -620,27 +621,6 @@ function SceneLayer({
   );
 }
 
-function StageCaption({ progress, index }: { progress: MotionValue<number>; index: number }) {
-  const { start, end } = sceneWindow(index);
-  const opacity = useTransform(
-    progress,
-    index === 0
-      ? [0, end - 0.05, end + 0.03]
-      : index === 3
-        ? [start - 0.05, start + 0.04, 1]
-        : [start - 0.05, start + 0.04, end - 0.04, end + 0.04],
-    index === 0 ? [1, 1, 0] : index === 3 ? [0, 1, 1] : [0, 1, 1, 0],
-  );
-  return (
-    <motion.p
-      className="cf-mono cf-fs-data col-start-1 row-start-1"
-      style={{ opacity, color: "var(--cf-ink)" }}
-    >
-      {CAPTIONS[index]}
-    </motion.p>
-  );
-}
-
 function Stage({
   progress,
   height,
@@ -649,6 +629,14 @@ function Stage({
   height: string;
 }) {
   const spine = useSpring(progress, { stiffness: 55, damping: 20, mass: 0.4 });
+  /* One caption element whose text swaps at each scene boundary. The first
+     build stacked four crossfading captions and the Scene 01 text ghosted
+     through under Scene 04 (caught in the Nov 2 visual check) — a single
+     swapping caption cannot bleed. */
+  const [active, setActive] = useState(0);
+  useMotionValueEvent(progress, "change", (v) => {
+    setActive(v < 0.265 ? 0 : v < 0.515 ? 1 : v < 0.765 ? 2 : 3);
+  });
   return (
     <div
       className="cf-panel relative flex flex-col overflow-hidden"
@@ -681,13 +669,17 @@ function Stage({
         />
       </div>
 
-      <div
-        className="grid px-4 py-2.5"
-        style={{ borderTop: "2px solid var(--cf-ink)" }}
-      >
-        {[0, 1, 2, 3].map((i) => (
-          <StageCaption key={i} progress={progress} index={i} />
-        ))}
+      <div className="px-4 py-2.5" style={{ borderTop: "2px solid var(--cf-ink)" }}>
+        <motion.p
+          key={active}
+          className="cf-mono cf-fs-data"
+          style={{ color: "var(--cf-ink)" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.25 }}
+        >
+          {CAPTIONS[active]}
+        </motion.p>
       </div>
     </div>
   );

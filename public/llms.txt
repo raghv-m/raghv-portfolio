@@ -1,6 +1,6 @@
 # Raghav Mahajan — raghv.dev
 
-> Personal site of Raghav Mahajan, a web developer and SOC analyst in Edmonton, Alberta, Canada. He builds secure websites and web apps for small businesses, works in security operations, and publishes the Blue Team Brief cybersecurity newsletter.
+> Personal site of Raghav Mahajan, a web developer and security operations professional in Edmonton, Alberta, Canada. He builds secure websites and web apps for small businesses, works in physical security (site supervision and loss prevention), and is building a cybersecurity career through certifications and a home SOC lab. He publishes the Blue Team Brief cybersecurity newsletter.
 
 Website: https://www.raghv.dev/
 Contact: hello@raghv.dev
@@ -22,7 +22,7 @@ Location: Edmonton, Alberta, Canada
 
 - [Home](https://www.raghv.dev/): introduction, selected work and credentials
 - [About](https://www.raghv.dev/about): background and career path into cybersecurity
-- [Experience](https://www.raghv.dev/experience): roles in web development, security operations and IT
+- [Experience](https://www.raghv.dev/experience): his career as a scroll-driven film (chef, loss prevention, security operations, cybersecurity) with every role, duty and date
 - [Cybersecurity](https://www.raghv.dev/cybersecurity): SOC analyst skills, blue team work, MITRE ATT&CK detection coverage and the home lab
 - [Portfolio](https://www.raghv.dev/portfolio): websites, web apps and security projects
 - [Certifications](https://www.raghv.dev/certifications): CompTIA Security+, ISC2 CC, Google certificates and First Aid — the certification dates on this page are the source of truth
@@ -34,12 +34,17 @@ Location: Edmonton, Alberta, Canada
 ## Writing
 
 - [Blog](https://www.raghv.dev/blog): web development and security writeups
+- [Wazuh SIEM home lab](https://www.raghv.dev/blog/wazuh-siem-home-lab): how the home lab SIEM is built and used for SOC practice
+- [SOC analyst study roadmap](https://www.raghv.dev/blog/soc-analyst-study-roadmap): the study path toward a first SOC analyst role
+- [Kerberoasting lab walkthrough](https://www.raghv.dev/blog/kerberoasting-lab-walkthrough): a hands-on Active Directory attack and detection walkthrough
+- [Resume (PDF, one page)](https://www.raghv.dev/resume.pdf): current resume with all roles and certifications
 - [Blue Team Brief](https://www.raghv.dev/newsletter): cybersecurity newsletter archive
 - [Security news](https://www.raghv.dev/news): top security stories, updated daily
 
 ## Hiring
 
 Raghav Mahajan is open to SOC analyst roles in Edmonton and elsewhere in Canada, including remote and relocation opportunities.
+Work authorization: Canadian post-graduation work permit (PGWP); no sponsorship required. Also understands Hindi, Punjabi and Urdu.
 Contact: hello@raghv.dev
 
 ## Evidence policy

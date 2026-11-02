@@ -137,7 +137,7 @@ export default function NewsletterPage() {
           <p className="mt-2 max-w-[55ch] text-[15px] leading-relaxed" style={{ color: "var(--cf-ink-soft)" }}>
             One email per edition, nothing else. Unsubscribe any time.
           </p>
-          <div className="mt-5 max-w-xl">
+          <div className="mt-5">
             <SubscribeWidget />
           </div>
         </div>

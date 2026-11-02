@@ -83,8 +83,6 @@ const C = {
   red: "#AD0117",
   link: "#AD0117",
 };
-// Always the production URL: an email can be opened years later, from any device.
-const LOGO_URL = "https://www.raghv.dev/logo-email.png";
 const SANS = "'Helvetica Neue',Helvetica,Arial,sans-serif";
 const MONO = "'SFMono-Regular',Menlo,Consolas,'Courier New',monospace";
 
@@ -121,9 +119,9 @@ function button(url: string, label: string, variant: "primary" | "secondary" = "
 /** Key/value summary, e.g. amount and due date. */
 function facts(rows: [string, string][], accent = C.red) {
   return `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:4px 0 22px;background:${C.panel};border:1px solid ${C.border};border-left:3px solid ${accent};">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:4px 0 22px;background:${C.panel};border-top:2px solid ${accent};">
     ${rows.map(([k, v], i) => `
-    <tr><td style="padding:${i ? 4 : 16}px 18px ${i === rows.length - 1 ? 16 : 4}px;">
+    <tr><td style="padding:${i ? 10 : 16}px 18px ${i === rows.length - 1 ? 16 : 10}px;${i ? `border-top:1px solid ${C.border};` : ""}">
       <p style="margin:0;font-family:${MONO};font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:${C.muted};">${k}</p>
       <p style="margin:3px 0 0;font-family:${SANS};font-size:${i === 0 ? 20 : 15}px;font-weight:${i === 0 ? 700 : 500};color:${C.text};font-variant-numeric:tabular-nums lining-nums;">${v}</p>
     </td></tr>`).join("")}
@@ -133,7 +131,7 @@ function facts(rows: [string, string][], accent = C.red) {
 /** Panel with a title, for secondary information inside an email. */
 function panel(title: string, inner: string) {
   return `
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:22px 0 0;background:${C.panel};border:1px solid ${C.border};">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.panel}" style="margin:22px 0 0;background:${C.panel};">
     <tr><td style="padding:18px;">
       <p style="margin:0 0 8px;font-family:${MONO};font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:${C.red};">${title}</p>
       ${inner}
@@ -172,15 +170,23 @@ function layout(content: string, preview: string) {
     <tr><td align="center" style="padding:36px 12px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:592px;">
         <tr><td style="padding:0 6px 18px;">
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0">
             <tr>
-              <td align="left" valign="middle">
-                <!-- PNG, not SVG: most email clients don't render SVG. The RM BLOCK
-                     lockup, ink on transparent, made for the paper card. -->
-                <a href="${site.url}" style="text-decoration:none;"><img src="${LOGO_URL}" width="200" height="80" alt="RAGHV.DEV" style="display:block;width:200px;height:80px;border:0;outline:none;color:${C.text};font-family:${MONO};font-size:14px;font-weight:700;letter-spacing:0.12em;"/></a>
+              <td>
+                <!-- The logo is tables and text, not an image: it renders with images
+                     blocked, and the ink block carries its own contrast in dark-mode
+                     inboxes, where the old transparent PNG disappeared. -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                  <tr><td bgcolor="${C.red}" style="padding:0 4px 4px 0;background:${C.red};">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.text}" style="background:${C.text};">
+                      <tr><td style="padding:8px 12px 10px;font-family:${MONO};font-size:23px;line-height:1;font-weight:700;letter-spacing:0.05em;color:${C.card};">RM</td></tr>
+                    </table>
+                  </td></tr>
+                </table>
               </td>
-              <td class="hdr-meta" align="right" valign="middle" style="font-family:${MONO};font-size:10px;line-height:1.7;letter-spacing:0.14em;color:${C.muted};text-transform:uppercase;">
-                Web design &amp; security<br/>Edmonton, Alberta
+              <td valign="middle" style="padding-left:13px;">
+                <a href="${site.url}" style="text-decoration:none;font-family:${SANS};font-size:16px;font-weight:700;letter-spacing:0.1em;color:${C.text};">RAGHV.DEV</a><br/>
+                <span class="hdr-meta" style="font-family:${MONO};font-size:10px;letter-spacing:0.12em;color:${C.muted};text-transform:uppercase;">Web design &amp; security &middot; Edmonton, Alberta</span>
               </td>
             </tr>
           </table>
@@ -190,8 +196,7 @@ function layout(content: string, preview: string) {
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.text}">
             <tr><td style="padding:0 6px 6px 0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.card}" style="border:2px solid ${C.text};">
-                <tr><td height="6" style="height:6px;line-height:6px;font-size:0;background:${C.red};">&nbsp;</td></tr>
-                <tr><td class="px" style="padding:38px 36px 36px;">${content}</td></tr>
+                <tr><td class="px" style="padding:34px 36px 36px;">${content}</td></tr>
               </table>
             </td></tr>
           </table>

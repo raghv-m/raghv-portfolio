@@ -63,9 +63,18 @@ export function HudHero() {
   const [session, setSession] = useState("00:00:00");
 
   // Boot sequence: retype the readout lines once on load. SSR and
-  // reduced-motion keep the full text from the initial state.
+  // reduced-motion keep the full text from the initial state. Audit-fix:
+  // the typing plays once per browser session — a return view in the same
+  // session keeps the full text instead of retyping (the flag is set when
+  // the sequence starts; storage failures just let it replay).
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    try {
+      if (window.sessionStorage.getItem("cf-hero-boot") === "1") return;
+      window.sessionStorage.setItem("cf-hero-boot", "1");
+    } catch {
+      /* storage unavailable: play the sequence */
+    }
     const full = BOOT_LINES.join("\n");
     let i = 0;
     setBoot("");

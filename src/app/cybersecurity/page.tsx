@@ -8,7 +8,43 @@ import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { HomeLabSection } from "@/components/sections/HomeLabSection";
+import { JsonLd, faqPageSchema } from "@/components/seo/JsonLd";
 import { EASE_OUT } from "@/components/casefile/motion";
+
+/*
+ * Audit-fix: the lab Q&A rendered at the foot of this page and mirrored
+ * 1:1 in its FAQPage schema. Answers use ONLY the verified lab facts:
+ * a 4-node home lab; Wazuh as the SIEM, running in Docker; Windows
+ * Server 2022 with Active Directory; Kali Linux as the attack platform;
+ * 50+ documented practice attack simulations; Splunk used in lab only.
+ * No version numbers, no extra tooling claims.
+ */
+const LAB_FAQS: { q: string; a: string }[] = [
+  {
+    q: "How big is the home lab?",
+    a: "Four nodes, run at home as a practice environment for security operations.",
+  },
+  {
+    q: "What watches the lab?",
+    a: "Wazuh is the SIEM. It runs in Docker and collects the lab's logs and alerts in one place.",
+  },
+  {
+    q: "What does the Windows server do?",
+    a: "Windows Server 2022 runs Active Directory, so the lab has a real domain to monitor and defend.",
+  },
+  {
+    q: "Where do the attacks come from?",
+    a: "Kali Linux is the attack platform. Every attack in the lab is a practice simulation, run on purpose against his own machines.",
+  },
+  {
+    q: "How much practice is documented?",
+    a: "More than 50 practice attack simulations, each one documented.",
+  },
+  {
+    q: "What about Splunk?",
+    a: "Splunk is used in the lab only. It is part of the practice setup, not a production system.",
+  },
+];
 
 // MITRE ATT&CK techniques simplified — 12 tactics, select techniques per tactic
 const ATTACK_MATRIX = [
@@ -162,6 +198,8 @@ export default function CybersecurityPage() {
 
   return (
     <div className="pb-32">
+      {/* Audit-fix: FAQPage schema for the lab Q&A at the foot of the page. */}
+      <JsonLd data={faqPageSchema(LAB_FAQS)} />
       <div className="cf-wrap">
         <PageHead
           kicker="Cybersecurity"
@@ -396,6 +434,42 @@ export default function CybersecurityPage() {
         <div className="mt-14">
           <HomeLabSection />
         </div>
+
+        {/* Audit-fix: the lab Q&A. Every answer is printed here in full;
+            the FAQPage schema at the top of this page carries the same
+            text, word for word, from the same LAB_FAQS array. */}
+        <section className="mt-14">
+          <Reveal>
+            <div className="cf-sec-head">
+              <p className="cf-kicker" style={{ marginBottom: 8 }}>Lab questions</p>
+              <h2 className="cf-h2">The lab, answered straight</h2>
+            </div>
+          </Reveal>
+          <Reveal>
+            <div
+              style={{
+                border: "2.5px solid var(--cf-ink)",
+                background: "var(--cf-paper-2)",
+                boxShadow: "8px 8px 0 var(--cf-shadow)",
+              }}
+            >
+              {LAB_FAQS.map((item, i) => (
+                <div
+                  key={item.q}
+                  className="px-5 sm:px-6 py-4"
+                  style={i > 0 ? { borderTop: "2px solid var(--cf-faint)" } : undefined}
+                >
+                  <p className="cf-display" style={{ fontSize: 17, letterSpacing: "0.02em", color: "var(--cf-ink)" }}>
+                    {item.q}
+                  </p>
+                  <p className="mt-2" style={{ fontSize: 15.5, lineHeight: 1.65, color: "var(--cf-ink-soft)", maxWidth: "68ch" }}>
+                    {item.a}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </section>
       </div>
     </div>
   );

@@ -15,6 +15,8 @@ import { HudHero } from "@/components/casefile/HudHero";
 import { CountUp } from "@/components/casefile/CountUp";
 import { TaglineReveal } from "@/components/casefile/TaglineReveal";
 import { Faq } from "@/components/casefile/Faq";
+import { FAQS } from "@/components/casefile/faqData";
+import { JsonLd, faqPageSchema } from "@/components/seo/JsonLd";
 import { RailFill } from "@/components/casefile/RailFill";
 
 /* U2(a) (upscale pass): the build process as three outcome steps. Every
@@ -154,7 +156,7 @@ export default function HomePage() {
       {/* ── Exhibit II: the captured log ──────────────────────────── */}
       <Reveal className="mt-12">
         <ParallaxLayer range={30}>
-          <TypeLog head="Homelab — live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} />
+          <TypeLog head="Homelab — live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} sessionKey="home-capture" />
         </ParallaxLayer>
       </Reveal>
 
@@ -292,6 +294,8 @@ export default function HomePage() {
 
       {/* ── U2(c): the FAQ ─────────────────────────────────────────── */}
       <section className="pt-16">
+        {/* Audit-fix: FAQPage schema from the same FAQS array Faq renders. */}
+        <JsonLd data={faqPageSchema(FAQS)} />
         <Reveal variant="wipe">
           <div className="cf-sec-head">
             <h2 className="cf-h2">Questions, answered straight</h2>

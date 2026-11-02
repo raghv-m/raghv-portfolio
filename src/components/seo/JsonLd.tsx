@@ -11,6 +11,24 @@ export function JsonLd({ data }: { data: Record<string, unknown> }) {
   );
 }
 
+/**
+ * FAQPage schema built from the exact Q&A array a page renders visibly, so
+ * the structured data always describes content a visitor can read (audit-fix
+ * pass). Callers pass their own array: the homepage passes faqData's FAQS,
+ * /cybersecurity passes its lab Q&A.
+ */
+export function faqPageSchema(faqs: { q: string; a: string }[]): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+}
+
 /** Site-wide graph: the person, the business they run, and the website. */
 export function SiteJsonLd() {
   const personId = `${site.url}/#person`;
@@ -29,7 +47,7 @@ export function SiteJsonLd() {
             email: `mailto:${site.email}`,
             jobTitle: "Web Developer & SOC Analyst",
             address: { "@type": "PostalAddress", addressLocality: site.city, addressRegion: site.region, addressCountry: site.country },
-            knowsAbout: ["Web development", "Next.js", "React", "Cybersecurity", "Security operations", "Incident response", "SIEM"],
+            knowsAbout: ["Web development", "Next.js", "React", "Cybersecurity", "Security operations", "Incident response", "SIEM", "Wazuh", "Splunk", "Active Directory", "Linux", "IT support"],
             sameAs: site.sameAs,
           },
           {

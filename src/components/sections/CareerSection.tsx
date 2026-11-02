@@ -5,106 +5,17 @@ import Link from "next/link";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { EASE_OUT } from "@/components/casefile/motion";
+import { NODES, SKILLS, CERTS } from "@/components/sections/careerData";
 
 /**
  * The career roadmap, merged into /experience (round 2). Formerly the whole
  * /career page; /career now redirects here. Markers are dossier-native —
  * numbered mono labels, rules and stamps; the old lucide glyph set (star,
  * crosshair, chevrons) was removed at the subject's request.
+ *
+ * The roadmap data (NODES, SKILLS, CERTS) lives in careerData.ts, shared
+ * with the /roadmap progression board (audit-fix pass).
  */
-
-const NODES = [
-  {
-    id: "current",
-    label: "NOW",
-    title: "Screening Officer + Active Learner",
-    timeline: "Apr 2023 – Present",
-    status: "CURRENT" as const,
-    color: "var(--green)",
-    badge: "YOU ARE HERE",
-    desc: "Building the foundation in physical security operations while aggressively pursuing cybersecurity knowledge. Every shift at ADESA and Covenant Health is a lesson in incident response, access control, and documentation. The SOC mindset begins here.",
-    skills: ["Incident Reporting", "Access Control", "SIEM Fundamentals", "Active Directory", "Linux Admin", "Python", "TCP/IP Networking"],
-    certs: ["ISC2 CC ✓", "Google Cybersecurity ✓", "Security+ ✓"],
-    note: "The guard booth teaches the same mindset as the SOC: monitor, detect, respond, document.",
-  },
-  {
-    id: "soc1",
-    label: "2026",
-    title: "SOC Analyst, Tier 1",
-    timeline: "Target: 2025–2026",
-    status: "NEXT" as const,
-    color: "var(--gold)",
-    badge: null,
-    desc: "Entry point to the blue team. Alert triage, SIEM operations, ticket escalation, shift documentation. Learning the environment from the ground up and building the adversarial awareness that will eventually move me to the red side.",
-    skills: ["Alert Triage", "SIEM Operations", "Ticket Escalation", "Log Correlation", "IR Documentation", "Shift Reporting"],
-    certs: ["CompTIA Security+"],
-    note: "Edmonton-first. Open to remote. Primary short-term target.",
-  },
-  {
-    id: "soc2",
-    label: "2027",
-    title: "SOC Analyst T2 / Threat Hunter",
-    timeline: "2027–2028",
-    status: "PLANNED" as const,
-    color: "var(--blue)",
-    badge: null,
-    desc: "Deeper investigation, malware triage, threat hunting across the environment. Building the adversarial mindset that bridges blue to red, understanding how attackers think by watching them in action in the SIEM.",
-    skills: ["Threat Hunting", "Malware Triage", "IR Lead", "SIEM Rule Authoring", "MITRE ATT&CK", "Threat Intelligence"],
-    certs: ["CySA+", "CASP+"],
-    note: "This stage builds the offensive intuition essential for penetration testing.",
-  },
-  {
-    id: "pentest",
-    label: "2028",
-    title: "Penetration Tester / Red Team Analyst",
-    timeline: "2028+",
-    status: "GOAL" as const,
-    color: "var(--gold)",
-    badge: "PRIMARY GOAL",
-    isMilestone: true,
-    desc: "The long-term target. Offensive security assessments: identifying and exploiting vulnerabilities before real attackers do. Web app testing, network pentesting, Active Directory attacks, professional report writing.",
-    skills: ["Vulnerability Assessment", "Exploit Development", "Metasploit", "Burp Suite", "Custom Tooling", "Professional Report Writing", "Client Communication"],
-    certs: ["OSCP (north star certification)", "CEH", "eJPT"],
-    note: "OSCP is the milestone that unlocks this role. Everything I'm building (the lab, the certs, the scripting) feeds directly into this.",
-  },
-  {
-    id: "senior",
-    label: "Long-Term",
-    title: "Senior Pentester / Red Team Lead",
-    timeline: "Long-term vision",
-    status: "VISION" as const,
-    color: "var(--gold-muted)",
-    badge: null,
-    desc: "Independent assessments, specialized domain expertise, and leading red team engagements. Web app, network, Active Directory, and cloud penetration testing at the highest level.",
-    skills: ["Web App PenTest", "Network PenTest", "AD & Cloud PenTest", "Red Team Leadership", "Security Research"],
-    certs: ["OSED", "OSEP", "CRTO", "CISSP"],
-    note: "International ambitions: Dubai, Australia, or senior Canadian engagements.",
-  },
-];
-
-const SKILLS = [
-  { name: "Network Security", pct: 65 },
-  { name: "LAN Setup & Networking (Home Lab)", pct: 65 },
-  { name: "SIEM & Log Analysis", pct: 60 },
-  { name: "Incident Response", pct: 55 },
-  { name: "Linux Administration", pct: 72 },
-  { name: "Active Directory", pct: 60 },
-  { name: "Python & Scripting", pct: 72 },
-  { name: "Threat Detection", pct: 55 },
-  { name: "Web Application Security", pct: 62 },
-  { name: "Offensive Security", pct: 35 },
-];
-
-const CERTS = [
-  { name: "Google Cybersecurity", abbr: "GCC", status: "DONE" },
-  { name: "ISC2 CC", abbr: "CC", status: "DONE" },
-  { name: "Security+", abbr: "SEC+", status: "DONE" },
-  { name: "CySA+", abbr: "CySA+", status: "PLANNED" },
-  { name: "eJPT", abbr: "eJPT", status: "PLANNED" },
-  { name: "OSCP", abbr: "OSCP", status: "GOAL", star: true },
-  { name: "OSED", abbr: "OSED", status: "FUTURE" },
-  { name: "OSEP", abbr: "OSEP", status: "FUTURE" },
-];
 
 const STATUS_STYLE = {
   CURRENT: { border: "rgba(173,1,23,0.55)", bg: "rgba(173,1,23,0.06)", text: "var(--gold)", dot: "var(--gold)" },

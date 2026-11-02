@@ -8,6 +8,7 @@ import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { Magnetic } from "@/components/casefile/Magnetic";
 import { RailFill } from "@/components/casefile/RailFill";
+import { EASE_OUT } from "@/components/casefile/motion";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor">
@@ -226,7 +227,7 @@ const STAMP_O = [0.9, 0.85, 0.94, 0.83, 0.92, 0.88, 0.96, 0.84, 0.91, 0.87, 0.93
 const STAMP_BW = [2.5, 3.1, 2.1, 3.4, 2.3, 2.8, 3.3, 2.0, 2.7, 3.0, 2.4];
 
 function LinkRow({ project, big = false }: { project: typeof PROJECTS[0]; big?: boolean }) {
-  const cls = big ? "cf-mono text-[11px]" : "cf-mono text-[9px]";
+  const cls = big ? "cf-mono cf-fs-label" : "cf-mono cf-fs-data";
   return (
     <>
       {project.live && (
@@ -251,7 +252,7 @@ function FeaturedVic({ project }: { project: typeof PROJECTS[0] }) {
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.55, ease: EASE_OUT }}
       style={{
         border: "3px solid var(--cf-ink)",
         background: "var(--cf-paper-2)",
@@ -263,19 +264,19 @@ function FeaturedVic({ project }: { project: typeof PROJECTS[0] }) {
         <div>
           <div className="flex flex-wrap items-center gap-3 mb-3">
             <span
-              className="cf-mono text-[9px] tracking-widest px-2 py-0.5"
+              className="cf-mono cf-fs-data tracking-widest px-2 py-0.5"
               style={{ background: "var(--cf-red)", color: "var(--cf-paper)" }}
             >
               FEATURED — CLIENT WORK
             </span>
-            <Stamp tone="red" r={-2.7} s={1.0} o={0.92} bw={2.7} delay={150} className="text-[9px]">
+            <Stamp tone="red" r={-2.7} s={1.0} o={0.92} bw={2.7} delay={150} className="cf-fs-data">
               {project.status}
             </Stamp>
           </div>
           <h2 className="cf-display text-3xl sm:text-4xl text-[var(--cf-ink)] leading-none">
             {project.title}
           </h2>
-          <p className="cf-mono text-[11px] text-[var(--cf-muted)] mt-2">{project.subtitle}</p>
+          <p className="cf-mono cf-fs-label text-[var(--cf-muted)] mt-2">{project.subtitle}</p>
           <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed mt-4" style={{ maxWidth: "62ch" }}>
             {project.description}
           </p>
@@ -283,7 +284,7 @@ function FeaturedVic({ project }: { project: typeof PROJECTS[0] }) {
             {project.impact.map((i) => (
               <div key={i} className="flex items-start gap-2">
                 <span className="w-1.5 h-1.5 mt-1.5 shrink-0" style={{ background: "var(--cf-red)" }} />
-                <p className="cf-mono text-[10px] text-[var(--cf-ink-soft)]">{i}</p>
+                <p className="cf-mono cf-fs-data text-[var(--cf-ink-soft)]">{i}</p>
               </div>
             ))}
           </div>
@@ -301,17 +302,17 @@ function FeaturedVic({ project }: { project: typeof PROJECTS[0] }) {
             className="block p-5 group"
             style={{ background: "var(--cf-red)", boxShadow: "6px 6px 0 var(--cf-ink)" }}
           >
-            <span className="cf-mono text-[9px] tracking-widest block" style={{ color: "var(--cf-paper)", opacity: 0.8 }}>
+            <span className="cf-mono cf-fs-data tracking-widest block" style={{ color: "var(--cf-paper)", opacity: 0.8 }}>
               LIVE PREVIEW
             </span>
             <span className="cf-display text-2xl block mt-1 group-hover:underline" style={{ color: "var(--cf-paper)" }}>
               viccameleers.com ↗
             </span>
-            <span className="cf-mono text-[9px] block mt-2" style={{ color: "var(--cf-paper)", opacity: 0.8 }}>
+            <span className="cf-mono cf-fs-data block mt-2" style={{ color: "var(--cf-paper)", opacity: 0.8 }}>
               REMOVALS · CRANBOURNE / MELBOURNE, AU
             </span>
           </a>
-          <p className="cf-mono text-[9px] text-[var(--cf-muted)] leading-relaxed">
+          <p className="cf-mono cf-fs-data text-[var(--cf-muted)] leading-relaxed">
             First international client. Designed, built and shipped solo from
             Edmonton, still live and taking enquiries.
           </p>
@@ -330,7 +331,7 @@ function ProjectFrame({ project, index }: { project: typeof PROJECTS[0]; index: 
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, ease: EASE_OUT }}
       className="cf-tl-item"
       style={{ paddingBottom: 30 }}
     >
@@ -338,21 +339,21 @@ function ProjectFrame({ project, index }: { project: typeof PROJECTS[0]; index: 
         className="cf-tl-node"
         data-hot={project.featured ? "true" : undefined}
         aria-hidden="true"
-        initial={reduce ? false : { scale: 0.3 }}
-        whileInView={{ scale: 1 }}
+        initial={reduce ? false : { scale: 0.92, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ type: "spring", stiffness: 480, damping: 19, delay: 0.12 }}
+        transition={{ type: "spring", stiffness: 380, damping: 26, delay: 0.12 }}
       />
 
       <div className="cf-tl-date">
         <p className="cf-display" style={{ fontSize: 30, lineHeight: 1, color: "var(--cf-ink)" }}>
           {String(project.id).padStart(2, "0")}
         </p>
-        <p className="cf-mono text-[10px] mt-2" style={{ color: "var(--cf-red)" }}>
+        <p className="cf-mono cf-fs-data mt-2" style={{ color: "var(--cf-red)" }}>
           CASE {String(project.id).padStart(2, "0")}
         </p>
-        <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">{project.category.toUpperCase()}</p>
-        <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">{project.status}</p>
+        <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-1">{project.category.toUpperCase()}</p>
+        <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-1">{project.status}</p>
       </div>
 
       <article
@@ -369,7 +370,7 @@ function ProjectFrame({ project, index }: { project: typeof PROJECTS[0]; index: 
             <div>
               <div className="flex items-center gap-2 mb-2 flex-wrap">
                 {project.featured && (
-                  <span className="cf-mono text-[8px] tracking-widest px-1.5 py-0.5"
+                  <span className="cf-mono cf-fs-data tracking-widest px-1.5 py-0.5"
                     style={{ color: "var(--cf-gold)", border: "1px solid var(--cf-gold)" }}>
                     FEATURED
                   </span>
@@ -381,7 +382,7 @@ function ProjectFrame({ project, index }: { project: typeof PROJECTS[0]; index: 
                   o={STAMP_O[index % STAMP_O.length]}
                   bw={STAMP_BW[index % STAMP_BW.length]}
                   delay={index * 60}
-                  className="text-[8px]"
+                  className="cf-fs-data"
                 >
                   {project.status}
                 </Stamp>
@@ -389,7 +390,7 @@ function ProjectFrame({ project, index }: { project: typeof PROJECTS[0]; index: 
               <h2 className="cf-display text-xl text-[var(--cf-ink)] group-hover:text-[var(--cf-red)] transition-colors">
                 {project.title}
               </h2>
-              <p className="cf-mono text-[10px] text-[var(--cf-muted)]">{project.subtitle}</p>
+              <p className="cf-mono cf-fs-data text-[var(--cf-muted)]">{project.subtitle}</p>
             </div>
             <div
               className="w-9 h-9 flex items-center justify-center shrink-0"
@@ -407,7 +408,7 @@ function ProjectFrame({ project, index }: { project: typeof PROJECTS[0]; index: 
             {project.impact.map((i) => (
               <div key={i} className="flex items-start gap-2">
                 <span className="w-1.5 h-1.5 mt-1.5 shrink-0" style={{ background: "var(--cf-red)" }} />
-                <p className="cf-mono text-[9px] text-[var(--cf-ink-soft)]">{i}</p>
+                <p className="cf-mono cf-fs-data text-[var(--cf-ink-soft)]">{i}</p>
               </div>
             ))}
           </div>
@@ -419,7 +420,7 @@ function ProjectFrame({ project, index }: { project: typeof PROJECTS[0]; index: 
           <div className="flex items-center gap-3 pt-3" style={{ borderTop: "1px solid var(--cf-faint)" }}>
             <LinkRow project={project} />
             <div className="flex-1" />
-            <span className="cf-mono text-[9px]" style={{ color: "var(--cf-red)" }}>
+            <span className="cf-mono cf-fs-data" style={{ color: "var(--cf-red)" }}>
               # {String(project.id).padStart(2, "0")}
             </span>
           </div>
@@ -459,7 +460,7 @@ export default function ProjectsPage() {
                 key={cat}
                 onClick={() => setFilter(cat)}
                 aria-pressed={filter === cat}
-                className="cf-chip cf-mono text-[10px]"
+                className="cf-chip cf-mono cf-fs-data"
                 style={filter === cat
                   ? { background: "var(--cf-ink)", color: "var(--cf-paper)", borderColor: "var(--cf-ink)" }
                   : undefined}

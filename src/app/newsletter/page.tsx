@@ -64,7 +64,7 @@ export default function NewsletterPage() {
                   style={{ background: "var(--cf-ink)", color: "var(--cf-paper)" }}
                 >
                   <span className="cf-display text-[clamp(2rem,5vw,3.4rem)] leading-none">BLUE TEAM BRIEF</span>
-                  <span className="cf-mono text-[11px] tracking-widest" style={{ color: "var(--cf-gold)" }}>
+                  <span className="cf-mono cf-fs-label tracking-widest" style={{ color: "var(--cf-gold)" }}>
                     {edLabel(latest.number).toUpperCase()} · {fmtDate(latest.date).toUpperCase()}
                   </span>
                 </div>
@@ -72,7 +72,7 @@ export default function NewsletterPage() {
             </div>
             <div>
               <div className="flex flex-wrap items-center gap-4">
-                <p className="cf-mono text-[11px] font-bold tracking-widest" style={{ color: "var(--cf-red)" }}>
+                <p className="cf-mono cf-fs-label font-bold tracking-widest" style={{ color: "var(--cf-red)" }}>
                   LATEST EDITION
                 </p>
                 <Stamp r={-3.4} s={1.02} o={0.93} bw={3}>Latest</Stamp>
@@ -80,7 +80,7 @@ export default function NewsletterPage() {
               <h2 className="cf-display mt-4 text-[clamp(2rem,4.5vw,3.2rem)] leading-[1.02]" style={{ color: "var(--cf-ink)" }}>
                 {latest.title}
               </h2>
-              <p className="cf-mono mt-4 text-[11px] tracking-wider" style={{ color: "var(--cf-muted)" }}>
+              <p className="cf-mono mt-4 cf-fs-label tracking-wider" style={{ color: "var(--cf-muted)" }}>
                 {edLabel(latest.number).toUpperCase()} · PUBLISHED {fmtDate(latest.date).toUpperCase()}
               </p>
               <p className="mt-4 max-w-[52ch] leading-relaxed" style={{ color: "var(--cf-ink-soft)" }}>
@@ -128,7 +128,7 @@ export default function NewsletterPage() {
 
       <Reveal className="mt-20">
         <div className="p-6 sm:p-8" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
-          <p className="cf-mono text-[10px] font-bold tracking-widest" style={{ color: "var(--cf-red)" }}>
+          <p className="cf-mono cf-fs-data font-bold tracking-widest" style={{ color: "var(--cf-red)" }}>
             GET THE NEXT DISPATCH
           </p>
           <h2 className="cf-display mt-3 text-[28px] leading-tight" style={{ color: "var(--cf-ink)" }}>

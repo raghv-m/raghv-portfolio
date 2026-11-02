@@ -8,6 +8,7 @@ import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { HomeLabSection } from "@/components/sections/HomeLabSection";
+import { EASE_OUT } from "@/components/casefile/motion";
 
 // MITRE ATT&CK techniques simplified — 12 tactics, select techniques per tactic
 const ATTACK_MATRIX = [
@@ -112,7 +113,7 @@ function ToolCard({ tool, color, code, index }: {
     >
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.5, ease: EASE_OUT }}
         className="relative w-full h-full"
         style={{ transformStyle: "preserve-3d" }}
       >
@@ -125,13 +126,13 @@ function ToolCard({ tool, color, code, index }: {
           <div className="flex flex-col p-3 min-w-0">
             <div className="flex items-baseline justify-between gap-2">
               <span className="cf-display text-[13px] leading-tight text-[var(--cf-ink)]">{tool.name}</span>
-              <span className="cf-mono text-[8px] shrink-0" style={{ color }}>
+              <span className="cf-mono cf-fs-data shrink-0" style={{ color }}>
                 {code}-{String(index + 1).padStart(2, "0")}
               </span>
             </div>
-            <p className="cf-mono text-[8px] tracking-widest mt-1" style={{ color }}>{tool.tag}</p>
-            <p className="text-[var(--cf-ink-soft)] text-[10px] leading-snug mt-2">{tool.use}</p>
-            <p className="cf-mono text-[8px] text-[var(--cf-muted)] mt-auto">▸ TAP — FULL FILE</p>
+            <p className="cf-mono cf-fs-data tracking-widest mt-1" style={{ color }}>{tool.tag}</p>
+            <p className="text-[var(--cf-ink-soft)] cf-fs-data leading-snug mt-2">{tool.use}</p>
+            <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-auto">▸ TAP — FULL FILE</p>
           </div>
         </div>
         {/* Back: the full file */}
@@ -141,8 +142,8 @@ function ToolCard({ tool, color, code, index }: {
         >
           <div style={{ width: 5, background: color, flexShrink: 0 }} />
           <div className="p-3 overflow-hidden">
-            <p className="cf-mono text-[8px] tracking-widest mb-1.5" style={{ color }}>{tool.tag} — FILE</p>
-            <p className="text-[var(--cf-ink-soft)] text-[10px] leading-relaxed">{tool.desc}</p>
+            <p className="cf-mono cf-fs-data tracking-widest mb-1.5" style={{ color }}>{tool.tag} — FILE</p>
+            <p className="text-[var(--cf-ink-soft)] cf-fs-data leading-relaxed">{tool.desc}</p>
           </div>
         </div>
       </motion.div>
@@ -190,7 +191,7 @@ export default function CybersecurityPage() {
               >
                 <stat.icon className="w-5 h-5 mx-auto mb-2" style={{ color: stat.color }} />
                 <p className="cf-display text-2xl" style={{ color: stat.color }}>{stat.value}</p>
-                <p className="cf-mono text-[9px] text-[var(--cf-muted)] mt-0.5">{stat.label}</p>
+                <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-0.5">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -208,7 +209,7 @@ export default function CybersecurityPage() {
                 {[["Low", "rgba(46,107,30,0.18)"], ["Med", "rgba(46,107,30,0.45)"], ["High", "var(--cf-gold)"]].map(([l, c]) => (
                   <div key={l} className="flex items-center gap-1.5">
                     <div className="w-3 h-3" style={{ background: c, border: "1px solid var(--cf-faint)" }} />
-                    <span className="cf-mono text-[9px] text-[var(--cf-muted)]">{l}</span>
+                    <span className="cf-mono cf-fs-data text-[var(--cf-muted)]">{l}</span>
                   </div>
                 ))}
               </div>
@@ -227,7 +228,7 @@ export default function CybersecurityPage() {
                 aria-label={`${tactic.tactic}: ${Math.round(tactic.coverage * 100)}% detection coverage`}
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={matrixInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: i * 0.04, ease: EASE_OUT }}
                 className="relative overflow-hidden text-left cursor-pointer"
                 style={{
                   minHeight: 80,
@@ -240,9 +241,9 @@ export default function CybersecurityPage() {
                 }}
               >
                 <div className="relative">
-                  <p className="cf-mono text-[8px] text-[var(--cf-muted)] tracking-wide">{tactic.id}</p>
-                  <p className="cf-display text-[10px] text-[var(--cf-ink)] mt-0.5 leading-tight">{tactic.tactic}</p>
-                  <p className="cf-mono text-[9px] mt-1.5" style={{ color: tactic.coverage >= 0.65 ? "var(--cf-gold)" : "var(--cf-green, #2e6b1e)" }}>
+                  <p className="cf-mono cf-fs-data text-[var(--cf-muted)] tracking-wide">{tactic.id}</p>
+                  <p className="cf-display cf-fs-data text-[var(--cf-ink)] mt-0.5 leading-tight">{tactic.tactic}</p>
+                  <p className="cf-mono cf-fs-data mt-1.5" style={{ color: tactic.coverage >= 0.65 ? "var(--cf-gold)" : "var(--cf-green, #2e6b1e)" }}>
                     {Math.round(tactic.coverage * 100)}%
                   </p>
                 </div>
@@ -261,37 +262,45 @@ export default function CybersecurityPage() {
               key={sel.id}
               initial={reduce ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduce ? 0 : 0.25, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: reduce ? 0 : 0.25, ease: EASE_OUT }}
               className="p-5 flex flex-wrap items-center gap-x-10 gap-y-4"
               aria-live="polite"
             >
               <div>
-                <p className="cf-mono text-[9px] tracking-widest" style={{ color: "var(--cf-red)" }}>{sel.id} · TACTIC</p>
+                <p className="cf-mono cf-fs-data tracking-widest" style={{ color: "var(--cf-red)" }}>{sel.id} · TACTIC</p>
                 <p className="cf-display text-xl mt-1" style={{ color: "var(--cf-ink)" }}>{sel.tactic}</p>
               </div>
               <div style={{ flex: "1 1 220px", maxWidth: 340, minWidth: 180 }}>
                 <div className="flex justify-between items-baseline gap-4">
-                  <p className="cf-mono text-[9px] tracking-widest text-[var(--cf-muted)]">DETECTION COVERAGE</p>
+                  <p className="cf-mono cf-fs-data tracking-widest text-[var(--cf-muted)]">DETECTION COVERAGE</p>
                   <p className="cf-display text-2xl" style={{ color: "var(--cf-red)" }}>{Math.round(sel.coverage * 100)}%</p>
                 </div>
                 <div className="h-2 mt-2" style={{ background: "var(--cf-paper-3)" }}>
+                  {/* U4 (upscale pass): the fill is a full-width bar scaled
+                      on X (transform, compositor-only), not a width
+                      animation (layout on every frame). */}
                   <div
-                    className="h-full"
-                    style={{ background: "var(--cf-red)", width: `${sel.coverage * 100}%`, transition: "width 0.3s cubic-bezier(0.22, 1, 0.36, 1)" }}
+                    className="h-full w-full"
+                    style={{
+                      background: "var(--cf-red)",
+                      transform: `scaleX(${sel.coverage})`,
+                      transformOrigin: "left center",
+                      transition: "transform 0.3s cubic-bezier(0.23, 1, 0.32, 1)",
+                    }}
                   />
                 </div>
               </div>
               <div>
-                <p className="cf-mono text-[9px] tracking-widest text-[var(--cf-muted)] mb-2">TECHNIQUES TRACKED · {sel.techniques.length}</p>
+                <p className="cf-mono cf-fs-data tracking-widest text-[var(--cf-muted)] mb-2">TECHNIQUES TRACKED · {sel.techniques.length}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {sel.techniques.map((t) => (
-                    <span key={t} className="cf-mono text-[10px] px-2 py-1" style={{ border: "1px solid var(--cf-faint)", color: "var(--cf-ink)" }}>{t}</span>
+                    <span key={t} className="cf-mono cf-fs-data px-2 py-1" style={{ border: "1px solid var(--cf-faint)", color: "var(--cf-ink)" }}>{t}</span>
                   ))}
                 </div>
               </div>
             </motion.div>
           </div>
-          <p className="cf-mono text-[9px] text-[var(--cf-muted)] mt-3">Select any cell — its file opens here.</p>
+          <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-3">Select any cell — its file opens here.</p>
         </section>
 
         {/* Skill bars */}
@@ -308,17 +317,20 @@ export default function CybersecurityPage() {
                   <div className="flex justify-between mb-1.5">
                     <div>
                       <span className="cf-display text-sm text-[var(--cf-ink)]">{skill.name}</span>
-                      <p className="cf-mono text-[9px] text-[var(--cf-muted)] mt-0.5">{skill.desc}</p>
+                      <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-0.5">{skill.desc}</p>
                     </div>
-                    <span className="cf-mono text-[11px] shrink-0 ml-4" style={{ color: skill.color }}>{skill.pct}%</span>
+                    <span className="cf-mono cf-fs-label shrink-0 ml-4" style={{ color: skill.color }}>{skill.pct}%</span>
                   </div>
                   <div className="h-1.5 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
+                    {/* U4 (upscale pass): scaleX from the left edge, not a
+                        width animation. */}
                     <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${skill.pct}%` }}
+                      initial={{ scaleX: 0 }}
+                      whileInView={{ scaleX: skill.pct / 100 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: i * 0.05 }}
-                      className="h-full progress-bar"
+                      transition={{ duration: 1.2, ease: EASE_OUT, delay: i * 0.05 }}
+                      className="h-full w-full progress-bar"
+                      style={{ transformOrigin: "left center" }}
                     />
                   </div>
                 </div>
@@ -333,7 +345,7 @@ export default function CybersecurityPage() {
             <div className="cf-sec-head">
               <p className="cf-kicker" style={{ marginBottom: 8 }}>Toolstack</p>
               <h2 className="cf-h2">Click any card to flip</h2>
-              <p className="cf-mono text-[10px] text-[var(--cf-muted)]" style={{ marginTop: 10 }}>The duty line is on the face of every card — flip for the full file</p>
+              <p className="cf-mono cf-fs-data text-[var(--cf-muted)]" style={{ marginTop: 10 }}>The duty line is on the face of every card — flip for the full file</p>
             </div>
           </Reveal>
 
@@ -342,8 +354,8 @@ export default function CybersecurityPage() {
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-1.5 h-4" style={{ background: group.color }} />
-                  <p className="cf-mono text-[10px] tracking-wider" style={{ color: group.color }}>{group.group}</p>
-                  <span className="cf-mono text-[9px] text-[var(--cf-muted)]">· {group.tools.length} UNITS</span>
+                  <p className="cf-mono cf-fs-data tracking-wider" style={{ color: group.color }}>{group.group}</p>
+                  <span className="cf-mono cf-fs-data text-[var(--cf-muted)]">· {group.tools.length} UNITS</span>
                 </div>
                 <div className="grid grid-cols-1 min-[520px]:grid-cols-2 lg:grid-cols-3 gap-3">
                   {group.tools.map((tool, ti) => (
@@ -362,7 +374,7 @@ export default function CybersecurityPage() {
             style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}
           >
             <div>
-              <p className="cf-mono text-[9px] tracking-wider mb-1" style={{ color: "var(--cf-gold)" }}>CREDENTIAL STATUS</p>
+              <p className="cf-mono cf-fs-data tracking-wider mb-1" style={{ color: "var(--cf-gold)" }}>CREDENTIAL STATUS</p>
               <p className="text-[var(--cf-ink)] text-sm">ISC2 CC · Google Cyber · Security+ earned · SC-200 in progress · THM SOC L1 (65%)</p>
             </div>
             <Link href="/certifications" className="cf-btn-ghost text-sm gap-1.5">

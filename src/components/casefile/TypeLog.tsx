@@ -77,7 +77,7 @@ export function TypeLog({
             style={{
               opacity: i < shown ? 1 : 0,
               visibility: i < shown ? "visible" : "hidden",
-              transition: "opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+              transition: "opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1)",
             }}
           >
             {line}

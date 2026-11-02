@@ -5,6 +5,7 @@ import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { CertWall } from "@/components/casefile/CertWall";
+import { EASE_OUT } from "@/components/casefile/motion";
 
 
 /**
@@ -134,7 +135,7 @@ export default function CertificationsPage() {
                 <div key={label} className="flex items-center gap-2.5 px-4 py-2.5"
                   style={{ background: "var(--cf-paper-2)", border: "1.5px solid var(--cf-ink)" }}>
                   <Icon className="w-3.5 h-3.5" style={{ color }} />
-                  <span className="cf-mono text-[10px] tracking-wider text-[var(--cf-ink-soft)]">{label}</span>
+                  <span className="cf-mono cf-fs-data tracking-wider text-[var(--cf-ink-soft)]">{label}</span>
                 </div>
               ))}
             </div>
@@ -161,7 +162,7 @@ export default function CertificationsPage() {
             {Object.entries(STATUS_COLOR).map(([status, color]) => (
               <div key={status} className="flex items-center gap-1.5">
                 <span className="w-2 h-2" style={{ background: color }} />
-                <span className="cf-mono text-[10px] text-[var(--cf-muted)]">{status}</span>
+                <span className="cf-mono cf-fs-data text-[var(--cf-muted)]">{status}</span>
               </div>
             ))}
           </div>
@@ -178,7 +179,7 @@ export default function CertificationsPage() {
                   initial={{ opacity: 0, y: 18 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.5, delay: i * 0.05, ease: EASE_OUT }}
                   className="cf-cred-row"
                 >
                   <div>
@@ -200,7 +201,7 @@ export default function CertificationsPage() {
                     bw={STAMP_BW[i % STAMP_BW.length]}
                     delay={i * 90}
                     live={cert.status === "IN PROGRESS"}
-                    className="text-[11px]"
+                    className="cf-fs-label"
                   >
                     {cert.status}
                   </Stamp>

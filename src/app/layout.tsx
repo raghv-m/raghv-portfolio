@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Inter, Space_Grotesk, JetBrains_Mono, Anton } from "next/font/google";
-import localFont from "next/font/local";
 import "./globals.css";
 import "./case-file.css";
 import { validateEnv } from "@/lib/env";
@@ -49,40 +48,17 @@ const jetbrainsMono = JetBrains_Mono({
 /* BRUTALIST system type (Nov 2026): Anton, a condensed grotesque, carries
    every headline at poster scale; Space Grotesk sets labels and buttons;
    Inter is the body grotesque; JetBrains Mono sets data strips, meta and
-   the terminal exhibits. The serif families below (Playfair, Cinzel,
-   Cormorant) are the previous system's type, still loaded because older
-   app surfaces reference their variables; the public design tokens in
-   case-file.css no longer point at them. Self-hosted variable fonts
-   (next/font/local) for the serifs: this Next version's Turbopack
-   google-font replacer fails on these families in the edge runtime, and
-   local files remove the build-time network fetch. */
+   the terminal exhibits.
+   U9 (upscale pass): the previous system's serif families (Playfair,
+   Cinzel, Cormorant) are no longer loaded. A repo-wide grep found no
+   reference to their variables anywhere (the two contract signature
+   inputs use Tailwind's font-serif utility, which resolves to the
+   default serif stack, not these families), so they were pure preload
+   weight on every first paint. The font files stay in src/fonts. */
 const anton = Anton({
   variable: "--font-anton",
   subsets: ["latin"],
   weight: "400",
-  display: "swap",
-});
-const playfair = localFont({
-  src: "../fonts/playfair.woff2",
-  variable: "--font-playfair",
-  weight: "400 900",
-  display: "swap",
-});
-
-const cinzel = localFont({
-  src: "../fonts/cinzel.woff2",
-  variable: "--font-cinzel",
-  weight: "400 900",
-  display: "swap",
-});
-
-const cormorant = localFont({
-  src: [
-    { path: "../fonts/cormorant.woff2", style: "normal" },
-    { path: "../fonts/cormorant-italic.woff2", style: "italic" },
-  ],
-  variable: "--font-cormorant",
-  weight: "300 700",
   display: "swap",
 });
 
@@ -150,7 +126,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       data-scroll-behavior="smooth"
       data-theme="light"
       suppressHydrationWarning
-      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${anton.variable} ${playfair.variable} ${cinzel.variable} ${cormorant.variable}`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${anton.variable}`}
     >
       <body className="bg-[var(--bg)] text-[var(--text)] antialiased">
         <Script id="cf-theme-init" strategy="beforeInteractive">
@@ -189,9 +165,15 @@ gtag('config', '${GA_ID}');`}
         </Script>
         <SiteJsonLd />
         <PublicChrome>
+          {/* U6 (upscale pass): skip to content, the first focusable
+              element of the public chrome. Public-only by construction:
+              this PublicChrome instance renders nothing on app routes. */}
+          <a href="#content" className="cf-skip">
+            Skip to content
+          </a>
           <Navbar />
         </PublicChrome>
-        <main className="relative z-10">
+        <main id="content" className="relative z-10 cf-main">
           <CfScope>{children}</CfScope>
         </main>
         <PublicChrome>

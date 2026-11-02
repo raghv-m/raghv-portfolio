@@ -9,6 +9,7 @@ import { Stamp } from "@/components/casefile/Stamp";
 import { SubjectAvatar } from "@/components/casefile/SubjectAvatar";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/config/site";
+import { EASE_OUT } from "@/components/casefile/motion";
 
 
 const STAGES = [
@@ -164,7 +165,7 @@ function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; in
       style={{ borderTop: "3px solid var(--cf-ink)" }}
       initial={{ opacity: 0 }}
       animate={inView ? { opacity: 1 } : {}}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.8, ease: EASE_OUT }}
     >
       {/* Journey rail (desktop): this stage's span of the rail paints red
           as the reader scrolls through it, and its number pops on the line. */}
@@ -177,9 +178,9 @@ function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; in
         className="cf-journey-node cf-mono"
         data-final={stage.id === STAGES.length ? "true" : undefined}
         aria-hidden="true"
-        initial={reduce ? false : { scale: 0.4, opacity: 0 }}
+        initial={reduce ? false : { scale: 0.92, opacity: 0 }}
         animate={inView ? { scale: 1, opacity: 1 } : {}}
-        transition={{ type: "spring", stiffness: 420, damping: 18, delay: 0.1 }}
+        transition={{ type: "spring", stiffness: 380, damping: 26, delay: 0.1 }}
       >
         {String(stage.id).padStart(2, "0")}
       </motion.span>
@@ -192,7 +193,7 @@ function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; in
           o={0.91}
           bw={2.7}
           delay={250}
-          className="absolute -top-4 right-4 sm:right-10 z-10 text-[11px]"
+          className="absolute -top-4 right-4 sm:right-10 z-10 cf-fs-label"
         >
           Target
         </Stamp>
@@ -203,7 +204,7 @@ function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; in
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.9, delay: 0.2, ease: EASE_OUT }}
           className="flex flex-col items-start gap-6"
         >
           <div
@@ -221,7 +222,7 @@ function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; in
             {stage.tags.map((t) => (
               <span
                 key={t}
-                className="cf-mono text-[10px] px-2 py-1"
+                className="cf-mono cf-fs-data px-2 py-1"
                 style={{
                   color: "var(--cf-ink-soft)",
                   background: "transparent",
@@ -234,7 +235,7 @@ function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; in
           </div>
 
           {/* Transition to the next leg of the journey */}
-          <p className="cf-mono text-[9px] tracking-widest" style={{ color: "var(--cf-red)" }}>
+          <p className="cf-mono cf-fs-data tracking-widest" style={{ color: "var(--cf-red)" }}>
             {nextTitle ? `▼ NEXT LEG — ${nextTitle.toUpperCase()}` : "■ FINAL LEG — TARGET LOCKED"}
           </p>
         </motion.div>
@@ -243,7 +244,7 @@ function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; in
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.9, delay: 0.3, ease: EASE_OUT }}
         >
           <div className="flex items-center gap-3">
             {/* Number chip: the rail node, in flow, below the lg breakpoint */}
@@ -271,7 +272,7 @@ function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; in
                 className="cf-body"
                 initial={{ opacity: 0, y: 12 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: 0.35 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.7, delay: 0.35 + i * 0.08, ease: EASE_OUT }}
               >
                 {para}
               </motion.p>
@@ -324,7 +325,7 @@ export default function AboutPage() {
                 o={0.9}
                 bw={2.4}
                 delay={350}
-                className="inline-block mt-5 text-[11px]"
+                className="inline-block mt-5 cf-fs-label"
               >
                 Likeness verified
               </Stamp>
@@ -344,7 +345,7 @@ export default function AboutPage() {
               o={0.88}
               bw={3.2}
               delay={300}
-              className="absolute -top-5 right-2 sm:right-8 text-[11px]"
+              className="absolute -top-5 right-2 sm:right-8 cf-fs-label"
             >
               The path in
             </Stamp>

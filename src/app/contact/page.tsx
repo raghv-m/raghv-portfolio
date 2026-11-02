@@ -6,6 +6,7 @@ import { PageHead } from "@/components/casefile/PageHead";
 import { Stamp } from "@/components/casefile/Stamp";
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Globe, Lock, CheckCircle, Download } from "lucide-react";
+import { EASE_OUT } from "@/components/casefile/motion";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
@@ -82,7 +83,7 @@ export default function ContactPage() {
       <div className="mt-8 flex flex-wrap items-center gap-5">
         <span className="inline-flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[var(--cf-green)] animate-pulse" />
-          <span className="cf-mono text-[11px] tracking-wider" style={{ color: "var(--cf-green)" }}>
+          <span className="cf-mono cf-fs-label tracking-wider" style={{ color: "var(--cf-green)" }}>
             AVAILABLE FOR OPPORTUNITIES · 2025/2026
           </span>
         </span>
@@ -95,11 +96,11 @@ export default function ContactPage() {
           <motion.div
             initial={{ opacity: 0, x: -44, scale: 0.98 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, delay: 0.2, ease: EASE_OUT }}
             className="lg:col-span-2 space-y-4"
           >
             <div className="p-6" style={{ border: "1.5px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
-              <h2 className="cf-mono text-[10px] font-bold tracking-wider mb-5" style={{ color: "var(--cf-red)" }}>CONTACT ENDPOINTS</h2>
+              <h2 className="cf-mono cf-fs-data font-bold tracking-wider mb-5" style={{ color: "var(--cf-red)" }}>CONTACT ENDPOINTS</h2>
               <div className="space-y-4">
                 {[
                   { icon: Mail, label: "Email", value: "hello@raghv.dev", href: "mailto:hello@raghv.dev", color: "var(--cf-gold)" },
@@ -112,7 +113,7 @@ export default function ContactPage() {
                       <item.icon className="w-3.5 h-3.5" />
                     </div>
                     <div>
-                      <p className="cf-mono text-[9px]" style={{ color: "var(--cf-muted)" }}>{item.label}</p>
+                      <p className="cf-mono cf-fs-data" style={{ color: "var(--cf-muted)" }}>{item.label}</p>
                       {item.href
                         ? <a href={item.href} className="cf-ulink text-[13px]" style={{ color: "var(--cf-ink)" }}>{item.value}</a>
                         : <p className="text-[13px]" style={{ color: "var(--cf-ink)" }}>{item.value}</p>}
@@ -124,7 +125,7 @@ export default function ContactPage() {
 
             {/* Social links */}
             <div className="p-5" style={{ border: "1px solid var(--cf-faint)", background: "var(--cf-paper-2)" }}>
-              <p className="cf-mono text-[10px] tracking-wider mb-4" style={{ color: "var(--cf-muted)" }}>SOCIAL · COMMUNITY</p>
+              <p className="cf-mono cf-fs-data tracking-wider mb-4" style={{ color: "var(--cf-muted)" }}>SOCIAL · COMMUNITY</p>
               <div className="space-y-3">
                 {[
                   { icon: GithubIcon, label: "GitHub", value: "HomeLab-Raghav", href: "https://github.com/HomeLab-Raghav", color: "var(--cf-muted)" },
@@ -137,7 +138,7 @@ export default function ContactPage() {
                       <s.icon />
                     </div>
                     <div>
-                      <p className="cf-mono text-[9px]" style={{ color: "var(--cf-muted)" }}>{s.label}</p>
+                      <p className="cf-mono cf-fs-data" style={{ color: "var(--cf-muted)" }}>{s.label}</p>
                       <p className="text-[13px] group-hover:text-[var(--cf-red)] transition-colors" style={{ color: "var(--cf-ink)" }}>{s.value}</p>
                     </div>
                   </a>
@@ -153,7 +154,7 @@ export default function ContactPage() {
             {/* Security notice */}
             <div className="flex items-center gap-2 px-4 py-2.5" style={{ border: "1px solid var(--cf-faint)" }}>
               <Lock className="w-3 h-3" style={{ color: "var(--cf-gold)" }} />
-              <p className="cf-mono text-[9px]" style={{ color: "var(--cf-muted)" }}>
+              <p className="cf-mono cf-fs-data" style={{ color: "var(--cf-muted)" }}>
                 HTTPS · CSRF protected · IP hashed
               </p>
             </div>
@@ -163,14 +164,14 @@ export default function ContactPage() {
           <motion.div
             initial={{ opacity: 0, x: 44, scale: 0.98 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, delay: 0.3, ease: EASE_OUT }}
             className="lg:col-span-3"
           >
             <div style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
               {/* Dossier form header */}
               <div className="flex items-center gap-2 px-5 py-3" style={{ borderBottom: "3px double var(--cf-ink)" }}>
-                <h2 className="cf-mono text-[10px] font-bold" style={{ color: "var(--cf-ink)" }}>FILE A MESSAGE</h2>
-                <span className="cf-mono text-[10px]" style={{ color: "var(--cf-muted)" }}>secure-compose · raghv.dev</span>
+                <h2 className="cf-mono cf-fs-data font-bold" style={{ color: "var(--cf-ink)" }}>FILE A MESSAGE</h2>
+                <span className="cf-mono cf-fs-data" style={{ color: "var(--cf-muted)" }}>secure-compose · raghv.dev</span>
                 <Lock className="w-3 h-3 ml-auto" style={{ color: "var(--cf-red)" }} />
               </div>
 
@@ -184,10 +185,10 @@ export default function ContactPage() {
                     <CheckCircle className="w-14 h-14" style={{ color: "var(--cf-green)" }} />
                     <div>
                       <p className="cf-mono text-sm font-bold mb-1" style={{ color: "var(--cf-green)" }}>MESSAGE TRANSMITTED</p>
-                      <p className="cf-mono text-[10px]" style={{ color: "var(--cf-muted)" }}>
+                      <p className="cf-mono cf-fs-data" style={{ color: "var(--cf-muted)" }}>
                         {">"} Auto-reply sent to {form.email}
                       </p>
-                      <p className="cf-mono text-[10px]" style={{ color: "var(--cf-muted)" }}>
+                      <p className="cf-mono cf-fs-data" style={{ color: "var(--cf-muted)" }}>
                         {">"} Expected response: 24 to 48 hours
                       </p>
                     </div>
@@ -198,7 +199,7 @@ export default function ContactPage() {
                     <input type="text" name="website" className="hidden" aria-hidden="true" value={form.website}
                       onChange={(e) => setForm({ ...form, website: e.target.value })} tabIndex={-1} autoComplete="off" />
 
-                    <p className="cf-mono text-[10px] mb-4" style={{ color: "var(--cf-muted)" }}>
+                    <p className="cf-mono cf-fs-data mb-4" style={{ color: "var(--cf-muted)" }}>
                       {">"} COMPOSE ENCRYPTED MESSAGE
                     </p>
 
@@ -260,7 +261,7 @@ export default function ContactPage() {
                     </div>
 
                     {state === "error" && (
-                      <p role="alert" className="font-mono text-[10px] text-[var(--red)] bg-[rgba(255,68,68,0.08)] px-3 py-2 rounded border border-[rgba(255,68,68,0.2)]">
+                      <p role="alert" className="font-mono cf-fs-data text-[var(--red)] bg-[rgba(255,68,68,0.08)] px-3 py-2 rounded border border-[rgba(255,68,68,0.2)]">
                         {error}
                       </p>
                     )}

@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/casefile/ThemeToggle";
 import { Magnetic } from "@/components/casefile/Magnetic";
+import { EASE_DRAWER, EASE_OUT } from "@/components/casefile/motion";
 
 /**
  * One raw bar (Nov 2026 brutalist rebuild). Bare logo left, six primary
@@ -86,7 +87,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="cf-scope cf-load-fade">
+      <header className="cf-scope cf-load-fade cf-nav">
         <div className="cf-wrap">
           <div className="relative flex items-center gap-6 h-[64px]" style={{ borderBottom: "3px solid var(--cf-ink)" }}>
             <Link href="/" aria-label="raghv.dev home" className="flex items-center gap-3.5 shrink-0 min-h-[44px]" style={{ color: "var(--cf-ink)" }}>
@@ -148,6 +149,7 @@ export default function Navbar() {
               <Magnetic strength={14} className="hidden md:inline-block">
                 <Link
                   href="/contact"
+                  aria-current={pathname === "/contact" ? "page" : undefined}
                   className="inline-flex items-center whitespace-nowrap"
                   style={{
                     fontFamily: "var(--cf-caps)",
@@ -155,7 +157,11 @@ export default function Navbar() {
                     fontWeight: 700,
                     letterSpacing: "0.18em",
                     textTransform: "uppercase",
-                    background: "var(--cf-red)",
+                    /* U6 (upscale pass): on /contact the CTA itself carries the
+                       current-page state: an ink fill instead of red, so the
+                       one element that never joined the sliding-rule system
+                       still says where you are. */
+                    background: pathname === "/contact" ? "var(--cf-ink)" : "var(--cf-red)",
                     color: "#F4F1EC",
                     padding: "11px 20px",
                     minHeight: 44,
@@ -168,14 +174,31 @@ export default function Navbar() {
                 </Link>
               </Magnetic>
               <button
-                className="lg:hidden -mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                className="lg:hidden -mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center relative"
                 style={{ color: "var(--cf-ink)" }}
                 onClick={() => setOpen(!open)}
                 aria-label={open ? "Close menu" : "Open menu"}
                 aria-expanded={open}
                 aria-controls="mobile-menu"
               >
-                {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {/* U5 (upscale pass): the icon swap crossfades/rotates in
+                    place instead of cutting. Reduced motion: instant. */}
+                <motion.span
+                  aria-hidden="true"
+                  className="absolute inset-0 grid place-items-center"
+                  animate={{ rotate: open ? 90 : 0, opacity: open ? 0 : 1 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.18, ease: EASE_OUT }}
+                >
+                  <Menu className="w-5 h-5" />
+                </motion.span>
+                <motion.span
+                  aria-hidden="true"
+                  className="absolute inset-0 grid place-items-center"
+                  animate={{ rotate: open ? 0 : -90, opacity: open ? 1 : 0 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.18, ease: EASE_OUT }}
+                >
+                  <X className="w-5 h-5" />
+                </motion.span>
               </button>
             </div>
             <ScrollProgress />
@@ -195,7 +218,7 @@ export default function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.26, ease: [0.23, 1, 0.32, 1] }}
+            transition={{ duration: reduceMotion ? 0 : 0.3, ease: EASE_DRAWER }}
             className="fixed inset-0 z-50 flex flex-col"
             style={{
               background: "#141414",
@@ -231,7 +254,7 @@ export default function Navbar() {
                       key={link.href}
                       initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.04 + i * 0.04, duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
+                      transition={{ delay: 0.02 + i * 0.016, duration: 0.22, ease: EASE_OUT }}
                     >
                       <Link
                         href={link.href}

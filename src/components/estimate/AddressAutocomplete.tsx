@@ -125,7 +125,7 @@ export function AddressAutocomplete({ value, onChange }: { value: Address; onCha
         <input aria-label="Country" placeholder="Country" value={value.country ?? ""} onChange={set("country")} className={`${inputClass} sm:col-span-2`} autoComplete="country-name" />
       </div>
       {!API_KEY && (
-        <p className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+        <p className="flex items-center gap-1.5 cf-fs-label text-[var(--text-muted)]">
           <MapPin className="w-3 h-3" aria-hidden="true" /> Optional. Helps me know your market and time zone.
         </p>
       )}

@@ -17,7 +17,10 @@ export function ErrorShell({
   actions?: ReactNode;
 }) {
   return (
-    <main className="min-h-[80vh] flex items-center justify-center px-4 py-16">
+    /* U6 (upscale pass): a div, not a second <main>: the root layout already
+       wraps every page in <main id="content">, and the error pages nested
+       a second main landmark inside it. */
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-16">
       <div
         className="w-full max-w-xl text-center"
         style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)", padding: "44px 32px 40px" }}
@@ -37,7 +40,7 @@ export function ErrorShell({
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">{actions}</div>
       </div>
-    </main>
+    </div>
   );
 }
 

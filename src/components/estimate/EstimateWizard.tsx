@@ -13,6 +13,7 @@ import { formatDollars, priceEstimate, type EstimateResult, type PricingItem } f
 import { BUDGET_LABELS, TIMELINE_LABELS } from "@/lib/estimator/schema";
 
 import { AddressAutocomplete, type Address } from "./AddressAutocomplete";
+import { EASE_OUT } from "@/components/casefile/motion";
 
 const STEPS = ["Project", "Size", "Features", "Integrations", "Hosting", "Details"] as const;
 
@@ -135,7 +136,7 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
             initial={{ opacity: 0, x: direction * 28 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: direction * -28 }}
-            transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.34, ease: EASE_OUT }}
             className="mt-8"
           >
             {step === 0 && (
@@ -165,14 +166,14 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
                       <motion.p key={form.pages} initial={{ scale: 0.85, opacity: 0.4 }} animate={{ scale: 1, opacity: 1 }} className="cf-display text-[64px] leading-none text-[var(--cf-ink)] tabular-nums">
                         {form.pages}
                       </motion.p>
-                      <p className="font-mono text-[10px] tracking-widest text-[var(--cf-muted)] mt-2">PAGE{form.pages === 1 ? "" : "S"}</p>
+                      <p className="font-mono cf-fs-data tracking-widest text-[var(--cf-muted)] mt-2">PAGE{form.pages === 1 ? "" : "S"}</p>
                     </div>
                     <button type="button" aria-label="More pages" onClick={() => set("pages", Math.min(200, form.pages + 1))} className="size-11 rounded-full border border-[var(--cf-faint)] grid place-items-center text-[var(--cf-ink)] hover:border-[var(--cf-ink)] hover:text-[var(--cf-red)] transition-colors">
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
                   <input type="range" min={1} max={60} value={Math.min(form.pages, 60)} onChange={(e) => set("pages", Number(e.target.value))} aria-label="Number of pages" className="w-full mt-8 accent-[var(--cf-gold)]" />
-                  <div className="flex justify-between font-mono text-[10px] text-[var(--cf-muted)] mt-1"><span>1</span><span>60+</span></div>
+                  <div className="flex justify-between font-mono cf-fs-data text-[var(--cf-muted)] mt-1"><span>1</span><span>60+</span></div>
                   <p className="text-xs text-[var(--cf-muted)] mt-6">Typical pages: Home, About, Services, each service page, Contact, Blog, FAQ, Privacy.</p>
                 </div>
               </StepFrame>
@@ -300,7 +301,7 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
 function Progress({ step, onJump }: { step: number; onJump: (i: number) => void }) {
   return (
     <div>
-      <div className="flex items-center justify-between font-mono text-[10px] tracking-wider text-[var(--cf-muted)]">
+      <div className="flex items-center justify-between font-mono cf-fs-data tracking-wider text-[var(--cf-muted)]">
         <span>STEP {step + 1} / {STEPS.length}</span>
         <span className="text-[var(--cf-red)] font-bold">{STEPS[step].toUpperCase()}</span>
       </div>
@@ -308,9 +309,11 @@ function Progress({ step, onJump }: { step: number; onJump: (i: number) => void 
         {STEPS.map((label, i) => (
           <button key={label} type="button" onClick={() => onJump(i)} aria-label={`Go to ${label}`} className="group py-1">
             <span className="block h-1 overflow-hidden bg-[var(--cf-faint)]">
-              <motion.span className="block h-full bg-[var(--cf-red)]" initial={false} animate={{ width: i <= step ? "100%" : "0%" }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }} />
+              {/* U4 (upscale pass): the step fill scales on X instead of
+                  animating width. */}
+              <motion.span className="block h-full w-full bg-[var(--cf-red)]" style={{ transformOrigin: "left center" }} initial={false} animate={{ scaleX: i <= step ? 1 : 0 }} transition={{ duration: 0.4, ease: EASE_OUT }} />
             </span>
-            <span className={`hidden sm:block mt-1.5 text-left font-mono text-[9px] tracking-wider ${i === step ? "text-[var(--cf-ink)] font-bold" : "text-[var(--cf-muted)] group-hover:text-[var(--cf-ink)]"}`}>{label.toUpperCase()}</span>
+            <span className={`hidden sm:block mt-1.5 text-left font-mono cf-fs-data tracking-wider ${i === step ? "text-[var(--cf-ink)] font-bold" : "text-[var(--cf-muted)] group-hover:text-[var(--cf-ink)]"}`}>{label.toUpperCase()}</span>
           </button>
         ))}
       </div>
@@ -342,8 +345,8 @@ function OptionCard({ item, selected, onClick, price }: { item: PricingItem; sel
         <Icon name={item.icon} className="w-4.5 h-4.5" />
       </span>
       <span className="block text-sm font-semibold leading-snug">{item.label}</span>
-      <span className="block text-[11px] text-[var(--cf-muted)] mt-1 leading-relaxed line-clamp-2">{item.description}</span>
-      <span className="block font-mono text-[10px] text-[var(--cf-gold)] mt-3">{price}</span>
+      <span className="block cf-fs-label text-[var(--cf-muted)] mt-1 leading-relaxed line-clamp-2">{item.description}</span>
+      <span className="block font-mono cf-fs-data text-[var(--cf-gold)] mt-3">{price}</span>
     </motion.button>
   );
 }
@@ -368,9 +371,9 @@ function ToggleCard({ item, selected, onClick, radio }: { item: PricingItem; sel
       <span className="min-w-0 flex-1">
         <span className="flex items-start justify-between gap-2">
           <span className="text-sm font-semibold">{item.label}</span>
-          <span className="shrink-0 font-mono text-[10px] text-[var(--cf-gold)] mt-0.5">{price}</span>
+          <span className="shrink-0 font-mono cf-fs-data text-[var(--cf-gold)] mt-0.5">{price}</span>
         </span>
-        <span className="block text-[11px] text-[var(--cf-muted)] mt-1 leading-relaxed">{item.description}</span>
+        <span className="block cf-fs-label text-[var(--cf-muted)] mt-1 leading-relaxed">{item.description}</span>
       </span>
     </motion.button>
   );
@@ -403,8 +406,8 @@ function EstimatePanel({ estimate, categoryLabel, pages }: { estimate: EstimateR
     <aside className="lg:sticky lg:top-8">
       <div style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
         <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: "3px double var(--cf-ink)" }}>
-          <span className="font-mono text-[10px] tracking-widest text-[var(--cf-red)] font-bold">LIVE ESTIMATE</span>
-          <span className="font-mono text-[10px] text-[var(--cf-muted)]">CAD</span>
+          <span className="font-mono cf-fs-data tracking-widest text-[var(--cf-red)] font-bold">LIVE ESTIMATE</span>
+          <span className="font-mono cf-fs-data text-[var(--cf-muted)]">CAD</span>
         </div>
         <div className="p-5">
           {!estimate ? (
@@ -412,21 +415,21 @@ function EstimatePanel({ estimate, categoryLabel, pages }: { estimate: EstimateR
           ) : (
             <>
               <p className="text-xs text-[var(--cf-muted)]">{categoryLabel} · {pages} page{pages === 1 ? "" : "s"}</p>
-              <p className="mt-4 font-mono text-[9px] tracking-wider text-[var(--cf-muted)] uppercase">{estimatorConfig.marketLabel}</p>
+              <p className="mt-4 font-mono cf-fs-data tracking-wider text-[var(--cf-muted)] uppercase">{estimatorConfig.marketLabel}</p>
               <p className="mt-1 text-lg text-[var(--cf-muted)] line-through decoration-[var(--cf-red)] decoration-2 tabular-nums">
                 {formatDollars(estimate.oneTimeLowCents)} – {formatDollars(estimate.oneTimeHighCents)}
               </p>
-              <p className="mt-4 font-mono text-[9px] tracking-wider text-[var(--cf-gold)] uppercase">{estimatorConfig.myPriceLabel}</p>
-              <motion.p key={`${estimate.myLowCents}-${estimate.myHighCents}`} initial={{ opacity: 0.4, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.4 }} className="cf-display mt-1 text-[32px] leading-tight text-[var(--cf-ink)] tabular-nums">
+              <p className="mt-4 font-mono cf-fs-data tracking-wider text-[var(--cf-gold)] uppercase">{estimatorConfig.myPriceLabel}</p>
+              <motion.p key={`${estimate.myLowCents}-${estimate.myHighCents}`} initial={{ opacity: 0.4, y: 4 }} animate={{ opacity: 1, y: 0 }} transition={{ ease: EASE_OUT, duration: 0.4 }} className="cf-display mt-1 text-[32px] leading-tight text-[var(--cf-ink)] tabular-nums">
                 {formatDollars(estimate.myLowCents)}<span className="text-[var(--cf-muted)]"> – </span>{formatDollars(estimate.myHighCents)}
               </motion.p>
               {estimate.monthlyCents > 0 && <p className="mt-1 text-sm text-[var(--cf-gold)]">+ {formatDollars(estimate.monthlyCents)}/month hosting</p>}
-              <p className="mt-3 text-[11px] leading-relaxed text-[var(--cf-muted)]">{estimatorConfig.pitch}</p>
-              <p className="mt-5 font-mono text-[9px] tracking-wider text-[var(--cf-muted)] uppercase">Market estimate breakdown</p>
+              <p className="mt-3 cf-fs-label leading-relaxed text-[var(--cf-muted)]">{estimatorConfig.pitch}</p>
+              <p className="mt-5 font-mono cf-fs-data tracking-wider text-[var(--cf-muted)] uppercase">Market estimate breakdown</p>
               <ul className="mt-2 space-y-2 pt-3" style={{ borderTop: "1px solid var(--cf-faint)" }}>
                 <AnimatePresence initial={false}>
                   {estimate.lines.map((line) => (
-                    <motion.li key={line.label} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.3 }} className="flex justify-between gap-3 text-xs">
+                    <motion.li key={line.label} layout initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ ease: EASE_OUT, duration: 0.3 }} className="flex justify-between gap-3 text-xs">
                       <span className="text-[var(--cf-muted)] truncate">{line.label}</span>
                       <span className="text-[var(--cf-ink)] tabular-nums shrink-0">
                         {line.oneTimeCents ? formatDollars(line.oneTimeCents) : ""}
@@ -437,7 +440,7 @@ function EstimatePanel({ estimate, categoryLabel, pages }: { estimate: EstimateR
                   ))}
                 </AnimatePresence>
               </ul>
-              <p className="mt-5 text-[10px] leading-relaxed text-[var(--cf-muted)]">An estimate, not a quote. Final price depends on content and design detail. Taxes extra.</p>
+              <p className="mt-5 cf-fs-data leading-relaxed text-[var(--cf-muted)]">An estimate, not a quote. Final price depends on content and design detail. Taxes extra.</p>
             </>
           )}
         </div>
@@ -448,18 +451,18 @@ function EstimatePanel({ estimate, categoryLabel, pages }: { estimate: EstimateR
 
 function Submitted({ reference, result, emailed, email }: { reference: string; result: EstimateResult; emailed: boolean; email: string }) {
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.45 }} className="max-w-xl mx-auto text-center p-8 sm:p-10" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
+    <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ ease: EASE_OUT, duration: 0.45 }} className="max-w-xl mx-auto text-center p-8 sm:p-10" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
       <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.1 }} className="mx-auto size-14 grid place-items-center" style={{ border: "2px solid var(--cf-green)" }}>
         <CheckCircle2 className="w-7 h-7 text-[var(--cf-green)]" />
       </motion.div>
-      <p className="mt-6 font-mono text-[10px] tracking-widest text-[var(--cf-red)] font-bold">ESTIMATE {reference}</p>
+      <p className="mt-6 font-mono cf-fs-data tracking-widest text-[var(--cf-red)] font-bold">ESTIMATE {reference}</p>
       <p className="mt-4 text-sm text-[var(--cf-muted)] line-through decoration-[var(--cf-red)]">
         Market: {formatDollars(result.oneTimeLowCents)} – {formatDollars(result.oneTimeHighCents)}
       </p>
       <h2 className="cf-display mt-1 text-[40px] leading-tight text-[var(--cf-ink)]">
         {formatDollars(result.myLowCents)} – {formatDollars(result.myHighCents)}
       </h2>
-      <p className="font-mono text-[10px] tracking-wider text-[var(--cf-gold)] mt-1">MY PRICE · CAD</p>
+      <p className="font-mono cf-fs-data tracking-wider text-[var(--cf-gold)] mt-1">MY PRICE · CAD</p>
       {result.monthlyCents > 0 && <p className="mt-1 text-[var(--cf-gold)]">+ {formatDollars(result.monthlyCents)}/month hosting</p>}
       <p className="mt-5 text-sm text-[var(--cf-muted)] leading-relaxed">
         {emailed ? (

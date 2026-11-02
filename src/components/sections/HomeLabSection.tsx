@@ -6,6 +6,7 @@ import { Server, Shield, Terminal, Globe, CheckCircle, Activity } from "lucide-r
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { TypeLog } from "@/components/casefile/TypeLog";
+import { EASE_OUT } from "@/components/casefile/motion";
 
 /**
  * The home lab, merged into /cybersecurity (round 2) as the #home-lab
@@ -245,7 +246,7 @@ export function HomeLabSection() {
             SIEM, generating authentic blue team experience.
           </p>
           <span className="absolute -top-5 right-2 sm:right-8">
-            <Stamp tone="red" r={-3.4} s={1.06} o={0.94} bw={2.2} delay={250} className="text-[11px]">
+            <Stamp tone="red" r={-3.4} s={1.06} o={0.94} bw={2.2} delay={250} className="cf-fs-label">
               4 nodes online
             </Stamp>
           </span>
@@ -261,7 +262,7 @@ export function HomeLabSection() {
               onClick={() => setSelected(node.id)}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: NODES.indexOf(node) * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ delay: NODES.indexOf(node) * 0.1, ease: EASE_OUT }}
               className="p-3 text-left"
               style={{
                 background: selected === node.id ? "var(--cf-paper-2)" : "transparent",
@@ -271,12 +272,12 @@ export function HomeLabSection() {
             >
               <div className="flex items-center gap-2 mb-1">
                 <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: node.status === "CONTROLLED" ? "var(--red)" : "var(--cf-ink)" }} />
-                <span className="cf-mono text-[8px]" style={{ color: node.status === "CONTROLLED" ? "var(--red)" : "var(--cf-ink)" }}>
+                <span className="cf-mono cf-fs-data" style={{ color: node.status === "CONTROLLED" ? "var(--red)" : "var(--cf-ink)" }}>
                   {node.status}
                 </span>
               </div>
               <p className="cf-display text-sm" style={{ color: node.color }}>{node.id}</p>
-              <p className="cf-mono text-[9px] text-[var(--cf-muted)]">{node.role}</p>
+              <p className="cf-mono cf-fs-data text-[var(--cf-muted)]">{node.role}</p>
             </motion.button>
           ))}
         </div>
@@ -289,23 +290,23 @@ export function HomeLabSection() {
           <div className="lg:col-span-2 p-6" style={{ border: "2px solid var(--cf-ink)", background: "transparent" }}>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="cf-mono text-[9px] tracking-wider mb-0.5" style={{ color: "var(--cf-gold)" }}>NETWORK TOPOLOGY</p>
+                <p className="cf-mono cf-fs-data tracking-wider mb-0.5" style={{ color: "var(--cf-gold)" }}>NETWORK TOPOLOGY</p>
                 <h3 className="cf-display text-sm text-[var(--cf-ink)]">HOMELAB.CORP · 192.168.10.0/24</h3>
               </div>
               <div className="flex items-center gap-1.5">
                 <Activity className="w-3.5 h-3.5" style={{ color: "var(--cf-red)" }} />
-                <span className="cf-mono text-[9px]" style={{ color: "var(--cf-red)" }}>LIVE</span>
+                <span className="cf-mono cf-fs-data" style={{ color: "var(--cf-red)" }}>LIVE</span>
               </div>
             </div>
             <NetworkDiagram selected={selected} onSelect={setSelected} />
             <div className="mt-3 flex flex-wrap gap-4">
               <div className="flex items-center gap-1.5">
                 <div className="w-6 h-px" style={{ background: "rgba(154,116,16,0.55)" }} />
-                <span className="cf-mono text-[9px] text-[var(--cf-muted)]">SIEM Log Flow</span>
+                <span className="cf-mono cf-fs-data text-[var(--cf-muted)]">SIEM Log Flow</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="w-6 h-px" style={{ borderBottom: "1px dashed rgba(179,35,27,0.55)" }} />
-                <span className="cf-mono text-[9px] text-[var(--cf-muted)]">Attack Traffic</span>
+                <span className="cf-mono cf-fs-data text-[var(--cf-muted)]">Attack Traffic</span>
               </div>
             </div>
             <p className="cf-margin-note" style={{ marginTop: 18 }}>
@@ -325,10 +326,10 @@ export function HomeLabSection() {
                     </div>
                     <div>
                       <p className="cf-display text-sm" style={{ color: activeNode.color }}>{activeNode.id}</p>
-                      <p className="cf-mono text-[9px] text-[var(--cf-muted)]">{activeNode.role}</p>
+                      <p className="cf-mono cf-fs-data text-[var(--cf-muted)]">{activeNode.role}</p>
                     </div>
                   </div>
-                  <div className="cf-mono text-[9px] text-[var(--cf-muted)] space-y-0.5">
+                  <div className="cf-mono cf-fs-data text-[var(--cf-muted)] space-y-0.5">
                     <p>OS: {activeNode.os}</p>
                     <p>IP: {activeNode.ip}</p>
                     <p>HW: {activeNode.specs}</p>
@@ -336,24 +337,24 @@ export function HomeLabSection() {
                 </div>
 
                 <div className="p-5 flex-1 overflow-y-auto">
-                  <p className="cf-mono text-[9px] tracking-wider mb-2" style={{ color: "var(--cf-gold)" }}>SERVICES</p>
+                  <p className="cf-mono cf-fs-data tracking-wider mb-2" style={{ color: "var(--cf-gold)" }}>SERVICES</p>
                   <div className="flex flex-wrap gap-1 mb-4">
-                    {activeNode.services.map((s) => <span key={s} className="tag text-[9px]">{s}</span>)}
+                    {activeNode.services.map((s) => <span key={s} className="tag cf-fs-data">{s}</span>)}
                   </div>
 
-                  <p className="cf-mono text-[9px] tracking-wider text-[var(--cf-muted)] mb-2">CONFIGURATION NOTES</p>
+                  <p className="cf-mono cf-fs-data tracking-wider text-[var(--cf-muted)] mb-2">CONFIGURATION NOTES</p>
                   <div className="space-y-1.5">
                     {activeNode.details.map((d) => (
                       <div key={d} className="flex items-start gap-1.5">
                         <CheckCircle className="w-2.5 h-2.5 mt-0.5 shrink-0" style={{ color: "var(--cf-ink)" }} />
-                        <p className="cf-mono text-[9px] text-[var(--cf-ink-soft)]">{d}</p>
+                        <p className="cf-mono cf-fs-data text-[var(--cf-ink-soft)]">{d}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-[var(--cf-muted)] cf-mono text-[10px]">
+              <div className="flex items-center justify-center h-full text-[var(--cf-muted)] cf-mono cf-fs-data">
                 Select a node
               </div>
             )}
@@ -385,7 +386,7 @@ export function HomeLabSection() {
           {Object.entries(SEV_COLOR).map(([sev, color]) => (
             <div key={sev} className="flex items-center gap-1.5">
               <span className="w-2 h-2" style={{ background: color }} />
-              <span className="cf-mono text-[9px] text-[var(--cf-muted)]">{sev}</span>
+              <span className="cf-mono cf-fs-data text-[var(--cf-muted)]">{sev}</span>
             </div>
           ))}
         </div>

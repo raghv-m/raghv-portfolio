@@ -8,6 +8,7 @@ import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { RailFill } from "@/components/casefile/RailFill";
 import { CareerSection } from "@/components/sections/CareerSection";
+import { EASE_OUT } from "@/components/casefile/motion";
 
 
 const ROLES = [
@@ -179,19 +180,20 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
       ref={ref}
       initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.5, delay: 0.05, ease: EASE_OUT }}
       className="cf-tl-item"
       style={{ paddingBottom: 34 }}
     >
-      {/* Node on the rail: red while the role is still running; it pops
-          in with a spring as its frame arrives */}
+      {/* Node on the rail: red while the role is still running.
+          U5 (upscale pass): the arrival starts at 0.92 scale with a
+          critically-damped settle, not a 0.3 rubber-band pop. */}
       <motion.span
         className="cf-tl-node"
         data-hot={role.active ? "true" : undefined}
         aria-hidden="true"
-        initial={reduce ? false : { scale: 0.3 }}
-        animate={inView ? { scale: 1 } : {}}
-        transition={{ type: "spring", stiffness: 480, damping: 19, delay: 0.12 }}
+        initial={reduce ? false : { scale: 0.92, opacity: 0 }}
+        animate={inView ? { scale: 1, opacity: 1 } : {}}
+        transition={{ type: "spring", stiffness: 380, damping: 26, delay: 0.12 }}
       />
 
       {/* Date block: left of the rail on desktop, stacked on mobile */}
@@ -199,11 +201,11 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
         <p className="cf-display" style={{ fontSize: 30, lineHeight: 1, color: "var(--cf-ink)" }}>
           {startYear(role.period)}
         </p>
-        <p className="cf-mono text-[10px] mt-2" style={{ color: "var(--cf-red)" }}>
+        <p className="cf-mono cf-fs-data mt-2" style={{ color: "var(--cf-red)" }}>
           FRAME {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
         </p>
-        <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">{role.period}</p>
-        <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">{role.location}</p>
+        <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-1">{role.period}</p>
+        <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-1">{role.location}</p>
       </div>
 
       {/* Storyboard panel */}
@@ -230,7 +232,7 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
               <div>
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <span
-                    className="cf-mono text-[9px] tracking-[0.2em] px-2 py-0.5"
+                    className="cf-mono cf-fs-data tracking-[0.2em] px-2 py-0.5"
                     style={{ color: "var(--cf-ink)", background: "transparent", border: "1px solid var(--cf-faint)" }}
                   >
                     {role.type}
@@ -243,7 +245,7 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
                       o={STAMP_O[index % STAMP_O.length]}
                       bw={STAMP_BW[index % STAMP_BW.length]}
                       delay={120 + index * 110}
-                      className="text-[9px] px-2 py-0.5"
+                      className="cf-fs-data px-2 py-0.5"
                     >
                       Active
                     </Stamp>
@@ -267,7 +269,7 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
           {/* Evidence chips */}
           <div className="flex flex-wrap gap-1.5 mt-4">
             {role.tags.map((t) => (
-              <span key={t} className="tag text-[9px]">{t}</span>
+              <span key={t} className="tag cf-fs-data">{t}</span>
             ))}
           </div>
 
@@ -275,7 +277,7 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
           <button
             onClick={() => setOpen(!open)}
             aria-expanded={open}
-            className="cf-mono text-[10px] tracking-widest mt-5 flex items-center gap-2"
+            className="cf-mono cf-fs-data tracking-widest mt-5 flex items-center gap-2"
             style={{ color: "var(--cf-red)" }}
           >
             {open ? "CLOSE FRAME" : "FULL FRAME — DUTIES + SKILL TRANSFER"}
@@ -292,7 +294,7 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.3, ease: EASE_OUT }}
               className="overflow-hidden"
             >
               <div
@@ -300,7 +302,7 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
                 style={{ borderTop: "1px solid var(--cf-faint)" }}
               >
                 <div>
-                  <p className="cf-mono text-[10px] tracking-[0.2em] mb-3" style={{ color: "var(--cf-ink)" }}>
+                  <p className="cf-mono cf-fs-data tracking-[0.2em] mb-3" style={{ color: "var(--cf-ink)" }}>
                     RESPONSIBILITIES
                   </p>
                   <ul className="space-y-2.5">
@@ -309,7 +311,7 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
                         key={i}
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ delay: i * 0.05, ease: EASE_OUT }}
                         className="flex items-start gap-3 text-[var(--cf-ink-soft)] text-sm"
                       >
                         <span
@@ -326,12 +328,12 @@ function FramePanel({ role, index, total }: { role: typeof ROLES[0]; index: numb
                   className="p-4"
                   style={{ background: "var(--cf-paper)", border: "1px solid var(--cf-faint)" }}
                 >
-                  <p className="cf-mono text-[10px] tracking-[0.2em] mb-3" style={{ color: "var(--cf-ink)" }}>
+                  <p className="cf-mono cf-fs-data tracking-[0.2em] mb-3" style={{ color: "var(--cf-ink)" }}>
                     CYBERSECURITY SKILL TRANSFER
                   </p>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {role.transfer.map((t, i) => (
-                      <div key={i} className="flex items-center gap-2 text-[11px] cf-mono">
+                      <div key={i} className="flex items-center gap-2 cf-fs-label cf-mono">
                         <span className="text-[var(--cf-muted)]">{t.from}</span>
                         <ArrowRight className="w-3 h-3 shrink-0" style={{ color: "var(--cf-red)" }} />
                         <span style={{ color: "var(--cf-ink)" }}>{t.to}</span>
@@ -371,7 +373,7 @@ export default function ExperiencePage() {
             o={0.9}
             bw={2.6}
             delay={350}
-            className="absolute -top-4 right-4 sm:right-10 z-10 text-[11px]"
+            className="absolute -top-4 right-4 sm:right-10 z-10 cf-fs-label"
           >
             On file
           </Stamp>
@@ -388,7 +390,7 @@ export default function ExperiencePage() {
                 }}
               >
                 <p className="cf-display text-2xl" style={{ color: "var(--cf-ink)" }}>{s.value}</p>
-                <p className="cf-mono text-[9px] text-[var(--cf-muted)] tracking-wider mt-1 uppercase">{s.label}</p>
+                <p className="cf-mono cf-fs-data text-[var(--cf-muted)] tracking-wider mt-1 uppercase">{s.label}</p>
               </div>
             ))}
           </div>
@@ -408,19 +410,19 @@ export default function ExperiencePage() {
                 className="cf-tl-node"
                 data-hot="true"
                 aria-hidden="true"
-                initial={{ scale: 0.3 }}
-                whileInView={{ scale: 1 }}
+                initial={{ scale: 0.92, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ type: "spring", stiffness: 480, damping: 19, delay: 0.12 }}
+                transition={{ type: "spring", stiffness: 380, damping: 26, delay: 0.12 }}
               />
               <div className="cf-tl-date">
                 <p className="cf-display" style={{ fontSize: 30, lineHeight: 1, color: "var(--cf-red)" }}>
                   2026
                 </p>
-                <p className="cf-mono text-[10px] mt-2" style={{ color: "var(--cf-red)" }}>
+                <p className="cf-mono cf-fs-data mt-2" style={{ color: "var(--cf-red)" }}>
                   FRAME {String(FRAMES.length + 1).padStart(2, "0")} / {String(FRAMES.length + 1).padStart(2, "0")}
                 </p>
-                <p className="cf-mono text-[10px] text-[var(--cf-muted)] mt-1">Target: 2025–2026</p>
+                <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-1">Target: 2025–2026</p>
               </div>
               <div
                 className="cf-panel"
@@ -432,7 +434,7 @@ export default function ExperiencePage() {
               >
                 <div className="h-[4px] w-full" style={{ background: "var(--cf-red)" }} />
                 <div className="p-6">
-                <p className="cf-mono text-[9px] tracking-[0.2em] mb-2" style={{ color: "var(--cf-red)" }}>
+                <p className="cf-mono cf-fs-data tracking-[0.2em] mb-2" style={{ color: "var(--cf-red)" }}>
                   NEXT FRAME — NOT YET SHOT
                 </p>
                 <h3 className="cf-display text-xl text-[var(--cf-ink)]">SOC Analyst, Tier 1</h3>

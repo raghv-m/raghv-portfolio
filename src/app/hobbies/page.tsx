@@ -103,7 +103,7 @@ export default function HobbiesPage() {
                 frame when it is actually there.
               </p>
               <span className="absolute -top-5 right-2 sm:right-8">
-                <Stamp tone="red" r={2.4} s={1.02} o={0.93} bw={2.8} delay={300} className="text-[11px]">
+                <Stamp tone="red" r={2.4} s={1.02} o={0.93} bw={2.8} delay={300} className="cf-fs-label">
                   Featured — Edmonton Valley Zoo
                 </Stamp>
               </span>

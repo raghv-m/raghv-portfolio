@@ -109,7 +109,7 @@ export function HudHero() {
           <p className="cf-hud-dim text-[10.5px] mt-1">Web developer + SOC analyst</p>
         </div>
         <p
-          className="cf-mono uppercase text-[11px] font-bold flex items-center gap-2.5"
+          className="cf-mono uppercase cf-fs-label font-bold flex items-center gap-2.5"
           style={{ letterSpacing: "0.18em", color: "#F4F1EC" }}
           role="status"
         >
@@ -120,7 +120,7 @@ export function HudHero() {
           Status: Open to SOC roles
         </p>
         <div className="cf-mono uppercase sm:text-right" style={{ letterSpacing: "0.12em" }}>
-          <p className="text-[11px]" style={{ color: "#F4F1EC" }}>
+          <p className="cf-fs-label" style={{ color: "#F4F1EC" }}>
             Edmonton 53.5461° N / 113.4938° W
           </p>
           <p className="cf-hud-dim text-[10.5px] mt-1">
@@ -180,11 +180,20 @@ export function HudHero() {
             <span style={{ color: "var(--cf-red)" }}>Mahajan</span>
           </h1>
 
+          {/* U1 (upscale pass): one outcome + audience line directly under
+              the name. Copy is the audit's draft line, pending the owner's
+              approval; it states no fact the site does not already print. */}
+          <p className="cf-lede" style={{ color: "#D8D3C6", marginTop: 18, maxWidth: "34ch" }}>
+            Websites for Edmonton businesses, built and defended by the same person.
+          </p>
+
           <nav className="cf-hud-nav mt-7" aria-label="Sections">
             {NAV.map((item) => (
               <Link key={item.href} href={item.href}>
                 <span className="cf-hud-nav-no">{item.no}</span>
-                {item.label}
+                {/* U4: the label is wrapped so the hover slide can be an
+                    inner translateX (a bare text node cannot transform). */}
+                <span className="cf-hud-nav-label">{item.label}</span>
                 <span className="cf-hud-nav-arrow" aria-hidden="true">
                   →
                 </span>
@@ -192,35 +201,38 @@ export function HudHero() {
             ))}
           </nav>
 
+          {/* U1 (upscale pass): ONE primary action. The estimator is the
+              only filled block; the resume is the ghost secondary; the
+              email, previously a second red block competing with it, is
+              demoted to a plain mono link in the same row. */}
           <div className="flex flex-wrap items-center gap-4 mt-8">
+            <Link
+              href="/estimate"
+              className="cf-btn cf-btn-red"
+              style={{ boxShadow: "5px 5px 0 #F4F1EC" }}
+            >
+              Run the estimator
+            </Link>
+            <a
+              href="/resume.pdf"
+              download="Raghav_Mahajan_Resume.pdf"
+              className="cf-btn-ghost"
+              style={{ borderColor: "#F4F1EC", color: "#F4F1EC", boxShadow: "5px 5px 0 var(--cf-red)" }}
+            >
+              Resume ↓
+            </a>
             <a
               href="mailto:hello@raghv.dev"
               className="cf-mono font-bold text-[13.5px] uppercase"
               style={{
-                background: "var(--cf-red)",
                 color: "#F4F1EC",
                 letterSpacing: "0.1em",
-                padding: "13px 18px",
-                boxShadow: "5px 5px 0 #F4F1EC",
-                textDecoration: "none",
+                textDecoration: "underline",
+                textDecorationThickness: 2,
+                textUnderlineOffset: 4,
               }}
             >
               hello@raghv.dev
-            </a>
-            <a
-              href="/resume.pdf"
-              download="Raghav_Mahajan_Resume.pdf"
-              className="cf-mono font-bold text-[13.5px] uppercase"
-              style={{
-                background: "#F4F1EC",
-                color: "#141414",
-                letterSpacing: "0.1em",
-                padding: "13px 18px",
-                boxShadow: "5px 5px 0 var(--cf-red)",
-                textDecoration: "none",
-              }}
-            >
-              Resume ↓
             </a>
           </div>
           <p className="cf-mono cf-hud-dim text-[10.5px] uppercase mt-5" style={{ letterSpacing: "0.1em" }}>

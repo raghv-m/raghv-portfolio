@@ -46,7 +46,7 @@ const LEGAL = [
 
 export default function Footer() {
   return (
-    <footer className="cf-scope" style={{ borderTop: "3px solid var(--cf-ink)" }}>
+    <footer className="cf-scope cf-footer" style={{ borderTop: "3px solid var(--cf-ink)" }}>
       <div className="cf-wrap pt-12 pb-8">
         <div className="grid lg:grid-cols-2 gap-12 mb-12">
           {/* Talk block */}
@@ -92,7 +92,7 @@ export default function Footer() {
 
         {/* Link columns */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10 pt-8" style={{ borderTop: "2px solid var(--cf-ink)" }}>
-          <p className="cf-mono text-[11px] uppercase leading-loose" style={{ letterSpacing: "0.09em", color: "var(--cf-muted)" }}>
+          <p className="cf-mono cf-fs-label uppercase leading-loose" style={{ letterSpacing: "0.09em", color: "var(--cf-muted)" }}>
             Index:
             <br />
             Work, proof,

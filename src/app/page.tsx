@@ -13,6 +13,40 @@ import { SpotWrap } from "@/components/casefile/SpotWrap";
 import { BlockRule } from "@/components/casefile/Ornaments";
 import { HudHero } from "@/components/casefile/HudHero";
 import { CountUp } from "@/components/casefile/CountUp";
+import { TaglineReveal } from "@/components/casefile/TaglineReveal";
+import { Faq } from "@/components/casefile/Faq";
+import { RailFill } from "@/components/casefile/RailFill";
+
+/* U2(a) (upscale pass): the build process as three outcome steps. Every
+   claim is from the real terms: fixed quote at signing, the 40-40-20
+   split (signing / design approval / launch), the client portal, and
+   the 30-day warranty. */
+const STEPS = [
+  {
+    no: "01",
+    title: "Scope and fixed quote",
+    body: "The estimator sets the range, a short questionnaire pins the scope, and the quote is fixed when you sign. The number in the agreement is the number you pay.",
+  },
+  {
+    no: "02",
+    title: "Build, on the 40-40-20 split",
+    body: "40% at signing, 40% when the design is approved. You watch the build happen in your client portal instead of waiting for a reveal at the end.",
+  },
+  {
+    no: "03",
+    title: "Launch and handover",
+    body: "The final 40% lands at launch, the site goes live on your domain, and a 30-day warranty covers defects from day one.",
+  },
+];
+
+/* U2(b): the risk-reversal strip. His real terms only: fixed quote,
+   40-40-20, no GST (small supplier), invoices net 14. */
+const TERMS: [string, string][] = [
+  ["Fixed quote", "Set at signing, in the agreement"],
+  ["40 · 40 · 20", "Signing, design approval, launch"],
+  ["No GST", "Small supplier: it is not charged"],
+  ["Net 14", "Invoices due fourteen days after issue"],
+];
 
 const LOG_LINES = [
   <>** Alert 1791978824.294411: - syslog,sshd,authentication_failed,</>,
@@ -194,6 +228,78 @@ export default function HomePage() {
           </div>
           </ParallaxLayer>
         </Reveal>
+
+        {/* U2(b): the risk-reversal strip, directly under the price machine */}
+        <Reveal className="mt-8">
+          <div className="cf-cells" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
+            {TERMS.map(([term, line]) => (
+              <div key={term}>
+                <p className="cf-display" style={{ fontSize: 19, color: "var(--cf-red)" }}>
+                  {term}
+                </p>
+                <p className="cf-mono cf-fs-label mt-1.5" style={{ color: "var(--cf-muted)" }}>
+                  {line}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ── U3: the tagline band (full-bleed ink) ──────────────────── */}
+      <div className="mt-16">
+        <TaglineReveal />
+      </div>
+
+      {/* ── U2(a): how a build runs ────────────────────────────────── */}
+      <section className="pt-16">
+        <Reveal variant="wipe">
+          <div className="cf-sec-head">
+            <h2 className="cf-h2">How a build runs</h2>
+          </div>
+        </Reveal>
+        <div className="cf-tl">
+          <RailFill />
+          {STEPS.map((step, i) => (
+            <div key={step.no} className="cf-tl-item" style={{ paddingBottom: i < STEPS.length - 1 ? 30 : 0 }}>
+              <span className="cf-tl-node" data-hot={i === 0 ? "true" : undefined} aria-hidden="true" />
+              <div className="cf-tl-date">
+                <p className="cf-display" style={{ fontSize: 30, lineHeight: 1, color: "var(--cf-ink)" }}>
+                  {step.no}
+                </p>
+                <p className="cf-mono cf-fs-label mt-2" style={{ color: "var(--cf-red)" }}>
+                  STEP {step.no} / 03
+                </p>
+              </div>
+              <Reveal variant="left">
+                <div
+                  className="cf-panel"
+                  style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}
+                >
+                  <div className="h-[3px] w-full" style={{ background: "var(--cf-ink)" }} />
+                  <div className="p-6">
+                    <h3 className="cf-display" style={{ fontSize: 22, letterSpacing: "0.02em" }}>
+                      {step.title}
+                    </h3>
+                    <p className="cf-body mt-3">{step.body}</p>
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── U2(c): the FAQ ─────────────────────────────────────────── */}
+      <section className="pt-16">
+        <Reveal variant="wipe">
+          <div className="cf-sec-head">
+            <h2 className="cf-h2">Questions, answered straight</h2>
+          </div>
+        </Reveal>
+        <Reveal>
+          <Faq />
+        </Reveal>
       </section>
 
       {/* ── Credentials + the actual document ─────────────────────── */}
@@ -258,6 +364,30 @@ export default function HomePage() {
 
       {/* ── Exhibit IV: the pinned document examination ────────────── */}
       <PinnedDocs />
+
+      {/* ── U2(d): the closing CTA band, immediately before Contents ── */}
+      <section className="pt-16">
+        <Reveal>
+          <div className="cf-machine flex flex-wrap items-center justify-between gap-6 p-8 sm:p-11">
+            <div>
+              <p className="cf-display" style={{ fontSize: "clamp(28px, 4vw, 44px)", lineHeight: 1.05 }}>
+                Start with the number.
+              </p>
+              <p className="cf-mono cf-fs-label mt-3" style={{ color: "var(--cf-muted)" }}>
+                Six questions. A real range in about a minute.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-4">
+              <Link href="/estimate" className="cf-btn cf-btn-red">
+                Run the estimator
+              </Link>
+              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="cf-btn-ghost">
+                Resume ↓
+              </a>
+            </div>
+          </div>
+        </Reveal>
+      </section>
 
       {/* ── Contents of this file ─────────────────────────────────── */}
       <section className="pt-16 pb-20">

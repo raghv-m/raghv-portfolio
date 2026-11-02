@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-mot
 import Link from "next/link";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
+import { EASE_OUT } from "@/components/casefile/motion";
 
 /**
  * The career roadmap, merged into /experience (round 2). Formerly the whole
@@ -166,7 +167,7 @@ function NodeGraph() {
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.5, delay: i * 0.08, ease: EASE_OUT }}
             >
               {/* Node connector marker (desktop center) */}
               <div className="hidden sm:flex justify-center mb-2">
@@ -193,7 +194,7 @@ function NodeGraph() {
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-3 mb-2">
                         <span
-                          className="cf-mono text-[9px] tracking-widest px-2 py-0.5"
+                          className="cf-mono cf-fs-data tracking-widest px-2 py-0.5"
                           style={{ color: style.text, background: "transparent", border: "1px solid var(--cf-faint)" }}
                         >
                           {node.label}
@@ -206,12 +207,12 @@ function NodeGraph() {
                             o={STAMP_O[i % STAMP_O.length]}
                             bw={STAMP_BW[i % STAMP_BW.length]}
                             delay={140 + i * 100}
-                            className="text-[9px] px-2 py-0.5"
+                            className="cf-fs-data px-2 py-0.5"
                           >
                             {stampText}
                           </Stamp>
                         )}
-                        <span className="cf-mono text-[9px] text-[var(--cf-muted)] ml-auto">{node.timeline}</span>
+                        <span className="cf-mono cf-fs-data text-[var(--cf-muted)] ml-auto">{node.timeline}</span>
                       </div>
                       <h3 className="text-base sm:text-lg font-bold text-[var(--cf-ink)]">{node.title}</h3>
                     </div>
@@ -228,7 +229,7 @@ function NodeGraph() {
                   {/* Certs preview */}
                   <div className="flex flex-wrap gap-1.5 mt-3">
                     {node.certs.map((c) => (
-                      <span key={c} className="tag text-[9px]">{c}</span>
+                      <span key={c} className="tag cf-fs-data">{c}</span>
                     ))}
                   </div>
                 </div>
@@ -240,7 +241,7 @@ function NodeGraph() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.3, ease: EASE_OUT }}
                       className="overflow-hidden border-t"
                       style={{ borderColor: "var(--cf-faint)" }}
                     >
@@ -248,7 +249,7 @@ function NodeGraph() {
                         <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed">{node.desc}</p>
 
                         <div>
-                          <p className="cf-mono text-[9px] tracking-wider mb-2" style={{ color: style.text }}>KEY SKILLS</p>
+                          <p className="cf-mono cf-fs-data tracking-wider mb-2" style={{ color: style.text }}>KEY SKILLS</p>
                           <div className="flex flex-wrap gap-1.5">
                             {node.skills.map((s) => <span key={s} className="tag">{s}</span>)}
                           </div>
@@ -311,19 +312,22 @@ function SkillBars() {
           initial={{ opacity: 0, x: -16 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ delay: i * 0.05, ease: EASE_OUT }}
         >
           <div className="flex justify-between items-baseline mb-1.5">
             <span className="text-sm font-semibold text-[var(--cf-ink)]">{skill.name}</span>
-            <span className="cf-mono text-[10px]" style={{ color: "var(--cf-gold)" }}><CountUp value={skill.pct} />%</span>
+            <span className="cf-mono cf-fs-data" style={{ color: "var(--cf-gold)" }}><CountUp value={skill.pct} />%</span>
           </div>
           <div className="h-1.5 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
+            {/* U4 (upscale pass): scaleX from the left edge, not a width
+                animation. The count-up beside it keeps the same timing. */}
             <motion.div
-              initial={{ width: 0 }}
-              whileInView={{ width: `${skill.pct}%` }}
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: skill.pct / 100 }}
               viewport={{ once: true }}
-              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: i * 0.05 + 0.2 }}
-              className="h-full progress-bar"
+              transition={{ duration: 1.2, ease: EASE_OUT, delay: i * 0.05 + 0.2 }}
+              className="h-full w-full progress-bar"
+              style={{ transformOrigin: "left center" }}
             />
           </div>
         </motion.div>
@@ -352,10 +356,10 @@ function CertTimeline() {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: i * 0.07, ease: EASE_OUT }}
                 className="flex flex-col items-center gap-2"
               >
-                <div className="cf-mono text-[8px] text-[var(--cf-muted)] text-center w-20">{cert.status.replace("_", " ")}</div>
+                <div className="cf-mono cf-fs-data text-[var(--cf-muted)] text-center w-20">{cert.status.replace("_", " ")}</div>
                 <div
                   className="w-16 h-16 flex flex-col items-center justify-center relative"
                   style={{
@@ -372,11 +376,11 @@ function CertTimeline() {
                       role="img"
                     />
                   )}
-                  <span className="cf-mono text-[10px] font-bold text-center leading-tight" style={{ color: s.text }}>
+                  <span className="cf-mono cf-fs-data font-bold text-center leading-tight" style={{ color: s.text }}>
                     {cert.abbr}
                   </span>
                 </div>
-                <div className="cf-mono text-[8px] text-center w-20 leading-tight" style={{ color: s.text }}>{cert.name}</div>
+                <div className="cf-mono cf-fs-data text-center w-20 leading-tight" style={{ color: s.text }}>{cert.name}</div>
               </motion.div>
 
               {/* Connector */}
@@ -410,7 +414,7 @@ export function CareerSection() {
               o={0.89}
               bw={2.8}
               delay={300}
-              className="absolute -top-5 right-2 sm:right-8 text-[11px]"
+              className="absolute -top-5 right-2 sm:right-8 cf-fs-label"
             >
               Filed plan
             </Stamp>
@@ -421,7 +425,7 @@ export function CareerSection() {
           style={{ background: "var(--cf-paper-2)", border: "2px solid var(--cf-ink)" }}
         >
           <span className="w-2.5 h-2.5 flex-none" style={{ background: "var(--cf-red)" }} aria-hidden="true" />
-          <span className="cf-mono text-[11px] tracking-wider" style={{ color: "var(--cf-ink)" }}>OSCP IS THE NORTH STAR</span>
+          <span className="cf-mono cf-fs-label tracking-wider" style={{ color: "var(--cf-ink)" }}>OSCP IS THE NORTH STAR</span>
         </div>
         <NodeGraph />
       </section>

@@ -109,11 +109,13 @@ function PinDoc({
   index,
   total,
   progress,
+  blurEnabled,
 }: {
   doc: Doc;
   index: number;
   total: number;
   progress: MotionValue<number>;
+  blurEnabled: boolean;
 }) {
   const w = windows(index, total);
   const opacity = useTransform(progress, (p) => track(p, w.p, w.o));
@@ -121,17 +123,20 @@ function PinDoc({
   const scale = useTransform(progress, (p) => track(p, w.p, w.s));
   // Blur-masked crossfade (Emil Kowalski's seam technique): at the
   // handover moment the eye would otherwise read two documents swapping;
-  // a 2.5px blur peak exactly at the crossover blends them into one
-  // perceived transformation. Zero while a document holds the stage.
+  // a blur peak exactly at the crossover blends them into one perceived
+  // transformation. Zero while a document holds the stage.
+  // U4 (upscale pass): the peak is capped at 1.5px (was 2.5px), and the
+  // filter is dropped entirely below a 1440px viewport, where three
+  // full-stage filtered layers cost more than the seam is worth.
   const blurIn = index === 0 ? [0, ...w.p.slice(1)] : w.p;
   const blurOut =
-    index === 0 ? [0, 0, 2.5] : index === total - 1 ? [2.5, 0, 0] : [2.5, 0, 0, 2.5];
+    index === 0 ? [0, 0, 1.5] : index === total - 1 ? [1.5, 0, 0] : [1.5, 0, 0, 1.5];
   const blur = useTransform(progress, (p) => track(p, blurIn, blurOut));
   const filter = useTransform(blur, (v) => `blur(${v.toFixed(2)}px)`);
   return (
     <motion.figure
       className="cf-pin-doc"
-      style={{ opacity, y, scale, rotate: doc.rot, filter }}
+      style={{ opacity, y, scale, rotate: doc.rot, filter: blurEnabled ? filter : undefined }}
     >
       <Image src={doc.src} alt={doc.alt} width={doc.w} height={doc.h} sizes="(max-width: 720px) 100vw, 620px" />
     </motion.figure>
@@ -154,7 +159,7 @@ function PinCap({
   const y = useTransform(progress, (p) => track(p, w.p, w.y) / 2);
   return (
     <motion.div className="cf-pin-cap" style={{ opacity, y }}>
-      <p className="cf-mono text-[11px] tracking-[0.18em]" style={{ color: "var(--cf-red)" }}>
+      <p className="cf-mono cf-fs-label tracking-[0.18em]" style={{ color: "var(--cf-red)" }}>
         DOCUMENT {index + 1} OF {total}
       </p>
       <p className="cf-display" style={{ fontSize: "clamp(24px, 3.4vw, 36px)", lineHeight: 1.05, marginTop: 8 }}>
@@ -189,17 +194,25 @@ function PinBar({
 export function PinnedDocs() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [enhanced, setEnhanced] = useState(false);
+  // U4: the crossover blur filter only exists on wide viewports.
+  const [blurWide, setBlurWide] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
     const rm = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setEnhanced(mq.matches && !rm.matches);
+    const wide = window.matchMedia("(min-width: 1440px)");
+    const update = () => {
+      setEnhanced(mq.matches && !rm.matches);
+      setBlurWide(wide.matches);
+    };
     update();
     mq.addEventListener("change", update);
     rm.addEventListener("change", update);
+    wide.addEventListener("change", update);
     return () => {
       mq.removeEventListener("change", update);
       rm.removeEventListener("change", update);
+      wide.removeEventListener("change", update);
     };
   }, []);
 
@@ -224,7 +237,7 @@ export function PinnedDocs() {
             {head}
             <div className="cf-pin-docs">
               {DOCS.map((d, i) => (
-                <PinDoc key={d.src} doc={d} index={i} total={DOCS.length} progress={scrollYProgress} />
+                <PinDoc key={d.src} doc={d} index={i} total={DOCS.length} progress={scrollYProgress} blurEnabled={blurWide} />
               ))}
             </div>
             <div className="cf-pin-caps">

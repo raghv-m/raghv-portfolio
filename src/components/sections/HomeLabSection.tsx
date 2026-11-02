@@ -309,6 +309,11 @@ export function HomeLabSection() {
                 <span className="cf-mono cf-fs-data text-[var(--cf-muted)]">Attack Traffic</span>
               </div>
             </div>
+            {/* Forensic-fix: the node states are display states for the
+                diagram, labelled as such next to the topology. */}
+            <p className="cf-mono cf-fs-data text-[var(--cf-muted)]" style={{ marginTop: 10 }}>
+              Home lab display states — not a live feed.
+            </p>
             <p className="cf-margin-note" style={{ marginTop: 18 }}>
               Click a node in the diagram or the status cards above to read its file.
             </p>
@@ -362,8 +367,14 @@ export function HomeLabSection() {
         </div>
       </Reveal>
 
-      {/* Wazuh alerts, as a captured log */}
+      {/* Wazuh alerts, as a captured log. Forensic-fix: these rows are a
+          scripted sample set for a lab exercise session, so the feed is
+          labelled simulated where it renders — the real capture is the
+          homepage Exhibit B / LAB-001. */}
       <Reveal delay={0.05}>
+        <p className="cf-mono cf-fs-data tracking-widest text-[var(--cf-muted)]" style={{ marginBottom: 10 }}>
+          SIMULATED FEED
+        </p>
         <TypeLog
           head="Wazuh SIEM · Recent alerts"
           headRight="Lab exercise session · 12:43 UTC"

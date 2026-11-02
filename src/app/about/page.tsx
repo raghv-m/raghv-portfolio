@@ -95,7 +95,7 @@ Every OWASP vulnerability I studied became concrete when I was the one patching 
     period: "2024–Present",
     color: "var(--gold)",
     accent: "var(--gold)",
-    narrative: `This is where everything converged. ISC2 CC. Google Cybersecurity. CompTIA Security+. A home lab running on real hardware: a Windows Server 2022 domain controller, Ubuntu web server, Kali Linux attack box, Wazuh SIEM. Not a virtual sandbox. A production-grade simulation lab I built myself.
+    narrative: `This is where everything converged. ISC2 CC (2026). Google Cybersecurity (Jan 2026). CompTIA Security+ (Jun 2026). A home lab running on real hardware: a Windows Server 2022 domain controller, Ubuntu web server, Kali Linux attack box, Wazuh SIEM. Not a virtual sandbox. A production-grade simulation lab I built myself.
 
 I'm running Wazuh agents on every endpoint. I write detection rules. I generate attack traffic and watch it hit the SIEM. I run Nmap, Hydra, and Gobuster against my own network and see exactly what the defender sees on the other side.
 

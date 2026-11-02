@@ -48,6 +48,14 @@ export function SiteJsonLd() {
             jobTitle: "Web Developer & SOC Analyst",
             address: { "@type": "PostalAddress", addressLocality: site.city, addressRegion: site.region, addressCountry: site.country },
             knowsAbout: ["Web development", "Next.js", "React", "Cybersecurity", "Security operations", "Incident response", "SIEM", "Wazuh", "Splunk", "Active Directory", "Linux", "IT support"],
+            // Forensic-fix: the earned credentials, names only — no
+            // verification URLs are published, so none are claimed here.
+            // Dates live on /certifications, the source of truth.
+            hasCredential: [
+              { "@type": "EducationalOccupationalCredential", name: "CompTIA Security+ (SY0-701)" },
+              { "@type": "EducationalOccupationalCredential", name: "ISC2 Certified in Cybersecurity (CC)" },
+              { "@type": "EducationalOccupationalCredential", name: "Google Cybersecurity Professional Certificate" },
+            ],
             sameAs: site.sameAs,
           },
           {

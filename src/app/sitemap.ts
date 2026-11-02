@@ -24,6 +24,7 @@ const PAGES: { path: string; updated: string }[] = [
   { path: "/cybersecurity", updated: "2026-11-02" },
   { path: "/experience", updated: "2026-11-02" },
   { path: "/roadmap", updated: "2026-11-02" },
+  { path: "/investigations/lab-001-ssh-brute-force", updated: "2026-11-02" },
   { path: "/certifications", updated: "2026-11-02" },
   { path: "/hobbies", updated: "2026-11-02" },
   { path: "/privacy", updated: "2026-11-01" },

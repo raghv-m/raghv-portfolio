@@ -1,15 +1,33 @@
-# raghv.dev
+# Raghav Mahajan — raghv.dev
 
 > Personal site of Raghav Mahajan, a web developer and SOC analyst in Edmonton, Alberta, Canada. He builds secure websites and web apps for small businesses, works in security operations, and publishes the Blue Team Brief cybersecurity newsletter.
 
-## Main sections
+Website: https://www.raghv.dev/
+Contact: hello@raghv.dev
+Location: Edmonton, Alberta, Canada
+
+## Professional focus
+
+- SOC analysis and security operations
+- Blue team monitoring and detection
+- Wazuh SIEM in a four-node home lab
+- Linux system administration
+- Active Directory and Windows Server
+- Network security and packet analysis
+- Python security automation
+- Web application security
+- Full-stack web development for small businesses
+
+## Pages
 
 - [Home](https://www.raghv.dev/): introduction, selected work and credentials
 - [About](https://www.raghv.dev/about): background and career path into cybersecurity
-- [Portfolio](https://www.raghv.dev/portfolio): websites, web apps and security projects
-- [Cybersecurity](https://www.raghv.dev/cybersecurity): SOC analyst skills, blue team work and home lab
 - [Experience](https://www.raghv.dev/experience): roles in web development, security operations and IT
-- [Certifications](https://www.raghv.dev/certifications): CompTIA Security+, ISC2 CC, Google certificates and First Aid
+- [Cybersecurity](https://www.raghv.dev/cybersecurity): SOC analyst skills, blue team work, MITRE ATT&CK detection coverage and the home lab
+- [Portfolio](https://www.raghv.dev/portfolio): websites, web apps and security projects
+- [Certifications](https://www.raghv.dev/certifications): CompTIA Security+, ISC2 CC, Google certificates and First Aid — the certification dates on this page are the source of truth
+- [Roadmap](https://www.raghv.dev/roadmap): career roadmap and certification track — Security+ and ISC2 CC earned; SC-200 and TryHackMe SOC L1 in progress
+- [LAB-001 — SSH Brute Force Detection](https://www.raghv.dev/investigations/lab-001-ssh-brute-force): investigation of a captured Wazuh SSH brute-force detection in the home lab, Oct 14, 2026 (rules 5710 and 5712)
 - [Estimate](https://www.raghv.dev/estimate): instant website cost estimate
 - [Contact](https://www.raghv.dev/contact): get in touch
 
@@ -18,3 +36,12 @@
 - [Blog](https://www.raghv.dev/blog): web development and security writeups
 - [Blue Team Brief](https://www.raghv.dev/newsletter): cybersecurity newsletter archive
 - [Security news](https://www.raghv.dev/news): top security stories, updated daily
+
+## Hiring
+
+Raghav Mahajan is open to SOC analyst roles in Edmonton and elsewhere in Canada, including remote and relocation opportunities.
+Contact: hello@raghv.dev
+
+## Evidence policy
+
+Lab-generated activity on this site is labelled as lab activity. Historical captures are distinguished from live telemetry, and simulated displays are labelled simulated. Certification dates should be taken from the Certifications page and employment dates from the Experience page; those pages are the source of truth.

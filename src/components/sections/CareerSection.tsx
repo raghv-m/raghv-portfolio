@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useInView, useReducedMotion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
@@ -183,40 +183,13 @@ function NodeGraph() {
 }
 
 /**
- * The percentage beside a skill bar, counting up in step with the bar's own
- * 1.2s fill when it scrolls into view. Reduced motion (or MotionConfig's
- * user setting) shows the final number immediately.
+ * Skills as evidence, not percentages (forensic-fix pass): the
+ * self-assessed pct numbers and bars are gone. Each skill prints as a
+ * label plus the one line of proof behind it, from careerData's SKILLS.
  */
-function CountUp({ value }: { value: number }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true });
-  const reduce = useReducedMotion();
-  // Server render and no-JS show the real number; the count-up only takes
-  // over (from 0, in step with the bar) once the bar scrolls into view.
-  const [display, setDisplay] = useState(value);
-
-  useEffect(() => {
-    if (!inView) return;
-    // Reduced motion: display already holds the final value (see useState),
-    // so there is nothing to animate and nothing to set.
-    if (reduce) return;
-    let raf = 0;
-    const t0 = performance.now();
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - t0) / 1200);
-      setDisplay(Math.round(value * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [inView, value, reduce]);
-
-  return <span ref={ref}>{display}</span>;
-}
-
-function SkillBars() {
+function SkillEvidence() {
   return (
-    <div className="max-w-3xl mx-auto grid sm:grid-cols-2 gap-x-10 gap-y-5">
+    <div className="max-w-3xl mx-auto grid sm:grid-cols-2 gap-x-10 gap-y-6">
       {SKILLS.map((skill, i) => (
         <motion.div
           key={skill.name}
@@ -225,22 +198,8 @@ function SkillBars() {
           viewport={{ once: true }}
           transition={{ delay: i * 0.05, ease: EASE_OUT }}
         >
-          <div className="flex justify-between items-baseline mb-1.5">
-            <span className="text-sm font-semibold text-[var(--cf-ink)]">{skill.name}</span>
-            <span className="cf-mono cf-fs-data" style={{ color: "var(--cf-gold)" }}><CountUp value={skill.pct} />%</span>
-          </div>
-          <div className="h-1.5 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
-            {/* U4 (upscale pass): scaleX from the left edge, not a width
-                animation. The count-up beside it keeps the same timing. */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: skill.pct / 100 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.2, ease: EASE_OUT, delay: i * 0.05 + 0.2 }}
-              className="h-full w-full progress-bar"
-              style={{ transformOrigin: "left center" }}
-            />
-          </div>
+          <p className="text-sm font-semibold text-[var(--cf-ink)]">{skill.name}</p>
+          <p className="text-sm leading-relaxed mt-1" style={{ color: "var(--cf-ink-soft)" }}>{skill.evidence}</p>
         </motion.div>
       ))}
     </div>
@@ -341,16 +300,16 @@ export function CareerSection() {
         <NodeGraph />
       </section>
 
-      {/* Skill bars */}
+      {/* Skills as evidence lines (forensic-fix: percentages removed) */}
       <section className="pt-20">
         <Reveal delay={0.05}>
           <div className="cf-sec-head">
             <p className="cf-kicker">Current proficiency</p>
-            <h2 className="cf-h2 mt-2">Skill Progress</h2>
+            <h2 className="cf-h2 mt-2">Skills, with the evidence</h2>
           </div>
         </Reveal>
         <Reveal delay={0.08}>
-          <SkillBars />
+          <SkillEvidence />
         </Reveal>
       </section>
 

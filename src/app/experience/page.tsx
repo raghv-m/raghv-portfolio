@@ -394,6 +394,10 @@ export default function ExperiencePage() {
               </div>
             ))}
           </div>
+          {/* Forensic-fix: the 100+ figure, defined. The number itself is unchanged. */}
+          <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-3">
+            100+ incidents documented — incident reports filed across his physical security roles since 2023.
+          </p>
         </Reveal>
 
         {/* Storyboard rail */}

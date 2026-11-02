@@ -94,16 +94,16 @@ export const NODES: CareerNode[] = [
 ];
 
 export const SKILLS = [
-  { name: "Network Security", pct: 65 },
-  { name: "LAN Setup & Networking (Home Lab)", pct: 65 },
-  { name: "SIEM & Log Analysis", pct: 60 },
-  { name: "Incident Response", pct: 55 },
-  { name: "Linux Administration", pct: 72 },
-  { name: "Active Directory", pct: 60 },
-  { name: "Python & Scripting", pct: 72 },
-  { name: "Threat Detection", pct: 55 },
-  { name: "Web Application Security", pct: 62 },
-  { name: "Offensive Security", pct: 35 },
+  { name: "Network Security", evidence: "Built the lab network: subnets, DHCP, DNS, NAT, firewall rules." },
+  { name: "LAN Setup & Networking (Home Lab)", evidence: "The 4-node lab network, built from zero." },
+  { name: "SIEM & Log Analysis", evidence: "Wazuh home lab, own detection rules, 50+ documented attack runs." },
+  { name: "Incident Response", evidence: "A written report for every lab run; incident reports filed in security jobs." },
+  { name: "Linux Administration", evidence: "Ubuntu servers run for client sites: firewall, SSL, patching." },
+  { name: "Active Directory", evidence: "Home lab domain controller (users, GPO); account work at his security site." },
+  { name: "Python & Scripting", evidence: "Security log parser and automation scripts on GitHub." },
+  { name: "Threat Detection", evidence: "Lab detections mapped to MITRE ATT&CK (see the Cybersecurity heatmap)." },
+  { name: "Web Application Security", evidence: "Client sites shipped with CSRF/XSS protections and input validation." },
+  { name: "Offensive Security", evidence: "Kali attack platform in the lab; TryHackMe SOC L1 in progress (65%)." },
 ];
 
 export type CertStatus = "DONE" | "IN_PROGRESS" | "PLANNED" | "GOAL" | "FUTURE";

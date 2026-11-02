@@ -8,6 +8,7 @@ import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { HomeLabSection } from "@/components/sections/HomeLabSection";
+import { SKILLS } from "@/components/sections/careerData";
 import { JsonLd, faqPageSchema } from "@/components/seo/JsonLd";
 import { EASE_OUT } from "@/components/casefile/motion";
 
@@ -120,15 +121,31 @@ const TOOL_GROUPS = [
   },
 ];
 
-const SKILL_DOMAINS = [
-  { name: "Threat Detection", pct: 55, color: "var(--gold)", desc: "SIEM rule writing, alert triage, IOC identification" },
-  { name: "Network Security", pct: 65, color: "var(--blue)", desc: "Packet analysis, firewall rules, port scanning; home-lab LAN: subnetting, DHCP, DNS, NAT" },
-  { name: "Active Directory", pct: 60, color: "var(--gold)", desc: "Domain management, GPO, authentication protocols" },
-  { name: "Incident Response", pct: 50, color: "var(--blue)", desc: "IR lifecycle, documentation, escalation procedures" },
-  { name: "Linux Administration", pct: 70, color: "var(--blue)", desc: "Server hardening, service management, log analysis" },
-  { name: "Python / Scripting", pct: 72, color: "var(--gold)", desc: "Security automation, log parsing, tool development" },
+/*
+ * Avatar-upgrade pass (item 0b): percentages out here too, same treatment
+ * as CareerSection (forensic-fix item B). Each domain prints its one
+ * evidence line, resolved VERBATIM from careerData's SKILLS — the single
+ * source — never retyped. "GRC / Compliance" has no honest match among
+ * the ten approved lines, so it keeps its self-assessed bar for now and
+ * is flagged in the build report rather than given invented proof.
+ */
+const evidenceFor = (careerName: string) => SKILLS.find((s) => s.name === careerName)?.evidence;
+
+const SKILL_DOMAINS: {
+  name: string;
+  pct?: number;
+  color: string;
+  desc: string;
+  evidence?: string;
+}[] = [
+  { name: "Threat Detection", color: "var(--gold)", desc: "SIEM rule writing, alert triage, IOC identification", evidence: evidenceFor("Threat Detection") },
+  { name: "Network Security", color: "var(--blue)", desc: "Packet analysis, firewall rules, port scanning; home-lab LAN: subnetting, DHCP, DNS, NAT", evidence: evidenceFor("Network Security") },
+  { name: "Active Directory", color: "var(--gold)", desc: "Domain management, GPO, authentication protocols", evidence: evidenceFor("Active Directory") },
+  { name: "Incident Response", color: "var(--blue)", desc: "IR lifecycle, documentation, escalation procedures", evidence: evidenceFor("Incident Response") },
+  { name: "Linux Administration", color: "var(--blue)", desc: "Server hardening, service management, log analysis", evidence: evidenceFor("Linux Administration") },
+  { name: "Python / Scripting", color: "var(--gold)", desc: "Security automation, log parsing, tool development", evidence: evidenceFor("Python & Scripting") },
   { name: "GRC / Compliance", pct: 45, color: "var(--text-muted)", desc: "Risk frameworks, policy writing, audit documentation" },
-  { name: "Web App Security", pct: 62, color: "var(--blue)", desc: "OWASP Top 10, secure SDLC, authentication patterns" },
+  { name: "Web App Security", color: "var(--blue)", desc: "OWASP Top 10, secure SDLC, authentication patterns", evidence: evidenceFor("Web Application Security") },
 ];
 
 function ToolCard({ tool, color, code, index }: {
@@ -338,10 +355,12 @@ export default function CybersecurityPage() {
               </div>
             </motion.div>
           </div>
-          <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-3">Select any cell — its file opens here.</p>
+          <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-3">Coverage is self-assessed from home-lab exercises. Select any cell — its lab readout opens here.</p>
         </section>
 
-        {/* Skill bars */}
+        {/* Skill domains: evidence lines in place of percentages
+            (item 0b). Only GRC / Compliance still renders its bar —
+            it has no approved evidence line; see SKILL_DOMAINS. */}
         <Reveal>
           <section
             className="p-6 mb-12"
@@ -350,29 +369,37 @@ export default function CybersecurityPage() {
             <p className="cf-kicker" style={{ marginBottom: 8 }}>Skill Domains</p>
             <h2 className="cf-h2" style={{ marginBottom: 24 }}>Current Proficiency</h2>
             <div className="grid sm:grid-cols-2 gap-x-10 gap-y-5">
-              {SKILL_DOMAINS.map((skill, i) => (
-                <div key={skill.name}>
-                  <div className="flex justify-between mb-1.5">
-                    <div>
-                      <span className="cf-display text-sm text-[var(--cf-ink)]">{skill.name}</span>
-                      <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-0.5">{skill.desc}</p>
+              {SKILL_DOMAINS.map((skill, i) =>
+                skill.evidence ? (
+                  <div key={skill.name}>
+                    <span className="cf-display text-sm text-[var(--cf-ink)]">{skill.name}</span>
+                    <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-0.5">{skill.desc}</p>
+                    <p className="text-sm leading-relaxed mt-1.5" style={{ color: "var(--cf-ink-soft)" }}>{skill.evidence}</p>
+                  </div>
+                ) : (
+                  <div key={skill.name}>
+                    <div className="flex justify-between mb-1.5">
+                      <div>
+                        <span className="cf-display text-sm text-[var(--cf-ink)]">{skill.name}</span>
+                        <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-0.5">{skill.desc}</p>
+                      </div>
+                      <span className="cf-mono cf-fs-label shrink-0 ml-4" style={{ color: skill.color }}>{skill.pct}%</span>
                     </div>
-                    <span className="cf-mono cf-fs-label shrink-0 ml-4" style={{ color: skill.color }}>{skill.pct}%</span>
+                    <div className="h-1.5 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
+                      {/* U4 (upscale pass): scaleX from the left edge, not a
+                          width animation. */}
+                      <motion.div
+                        initial={{ scaleX: 0 }}
+                        whileInView={{ scaleX: (skill.pct ?? 0) / 100 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.2, ease: EASE_OUT, delay: i * 0.05 }}
+                        className="h-full w-full progress-bar"
+                        style={{ transformOrigin: "left center" }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-1.5 overflow-hidden" style={{ background: "var(--cf-paper-3)" }}>
-                    {/* U4 (upscale pass): scaleX from the left edge, not a
-                        width animation. */}
-                    <motion.div
-                      initial={{ scaleX: 0 }}
-                      whileInView={{ scaleX: skill.pct / 100 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1.2, ease: EASE_OUT, delay: i * 0.05 }}
-                      className="h-full w-full progress-bar"
-                      style={{ transformOrigin: "left center" }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ),
+              )}
             </div>
           </section>
         </Reveal>
@@ -424,7 +451,9 @@ export default function CybersecurityPage() {
         <Reveal className="mt-10">
           <p className="cf-note">
             Cross-references: the detections above run in the{" "}
-            <a href="#home-lab" className="cf-ulink">home lab</a> below, and the write-ups land on the{" "}
+            <a href="#home-lab" className="cf-ulink">home lab</a> below. The first investigation,{" "}
+            <Link href="/investigations/lab-001-ssh-brute-force" className="cf-ulink">LAB-001 — SSH brute force detection</Link>,
+            is filed in full, and the write-ups land on the{" "}
             <Link href="/blog" className="cf-ulink">blog</Link> and in{" "}
             <Link href="/newsletter" className="cf-ulink">Blue Team Brief</Link>.
           </p>

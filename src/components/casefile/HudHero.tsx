@@ -189,11 +189,13 @@ export function HudHero() {
             <span style={{ color: "var(--cf-red)" }}>Mahajan</span>
           </h1>
 
-          {/* U1 (upscale pass): one outcome + audience line directly under
-              the name. Copy is the audit's draft line, pending the owner's
-              approval; it states no fact the site does not already print. */}
-          <p className="cf-lede" style={{ color: "#D8D3C6", marginTop: 18, maxWidth: "34ch" }}>
-            Websites for Edmonton businesses, built and defended by the same person.
+          {/* J1 (forensic-fix pass, owner decision — reverses U1): the
+              outcome line is SOC-first. Every fact in it is printed
+              elsewhere on this page: the four-node Wazuh lab (bottom
+              strip), the documented runs (homepage), and the open-to-SOC
+              status (top strip). */}
+          <p className="cf-lede" style={{ color: "#D8D3C6", marginTop: 18, maxWidth: "46ch" }}>
+            I investigate attacks in a four-node home SOC lab and document every run. Open to SOC roles across Canada.
           </p>
 
           <nav className="cf-hud-nav mt-7" aria-label="Sections">
@@ -210,17 +212,19 @@ export function HudHero() {
             ))}
           </nav>
 
-          {/* U1 (upscale pass): ONE primary action. The estimator is the
-              only filled block; the resume is the ghost secondary; the
-              email, previously a second red block competing with it, is
-              demoted to a plain mono link in the same row. */}
+          {/* J1 (forensic-fix pass, owner decision — reverses U1): ONE
+              primary action, SOC-first. The filled block is now the
+              featured investigation (LAB-001); the resume stays the ghost
+              secondary; the estimator is demoted to the small mono text
+              link the email used to occupy, so the business path stays
+              one click away without competing. */}
           <div className="flex flex-wrap items-center gap-4 mt-8">
             <Link
-              href="/estimate"
+              href="/investigations/lab-001-ssh-brute-force"
               className="cf-btn cf-btn-red"
               style={{ boxShadow: "5px 5px 0 #F4F1EC" }}
             >
-              Run the estimator
+              Read the investigation
             </Link>
             <a
               href="/resume.pdf"
@@ -230,8 +234,8 @@ export function HudHero() {
             >
               Resume ↓
             </a>
-            <a
-              href="mailto:hello@raghv.dev"
+            <Link
+              href="/estimate"
               className="cf-mono font-bold text-[13.5px] uppercase"
               style={{
                 color: "#F4F1EC",
@@ -241,8 +245,8 @@ export function HudHero() {
                 textUnderlineOffset: 4,
               }}
             >
-              hello@raghv.dev
-            </a>
+              Need a website? Run the estimator →
+            </Link>
           </div>
           <p className="cf-mono cf-hud-dim text-[10.5px] uppercase mt-5" style={{ letterSpacing: "0.1em" }}>
             ↑ Recruiters: the resume is one click. No form. No funnel.

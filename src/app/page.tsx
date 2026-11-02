@@ -156,7 +156,18 @@ export default function HomePage() {
       {/* ── Exhibit II: the captured log ──────────────────────────── */}
       <Reveal className="mt-12">
         <ParallaxLayer range={30}>
+          {/* Forensic-fix: the exhibit is labelled as what it is — a real
+              capture of a self-run lab attack, not a live feed — and it
+              links to the full investigation file (LAB-001). */}
+          <p className="cf-plate" style={{ marginBottom: 12 }}>
+            Exhibit B · Captured — lab attack, Oct 14, 2026
+          </p>
           <TypeLog head="Homelab — live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} sessionKey="home-capture" />
+          <p className="mt-4">
+            <Link href="/investigations/lab-001-ssh-brute-force" className="cf-ulink">
+              Read the investigation →
+            </Link>
+          </p>
         </ParallaxLayer>
       </Reveal>
 
@@ -369,25 +380,31 @@ export default function HomePage() {
       {/* ── Exhibit IV: the pinned document examination ────────────── */}
       <PinnedDocs />
 
-      {/* ── U2(d): the closing CTA band, immediately before Contents ── */}
+      {/* ── Closing CTA band, immediately before Contents. U2(d) built it
+          estimator-led; the forensic-fix pass (owner decision, item J2)
+          flips it SOC-led: the resume is the primary action, the
+          investigation the secondary, and the estimator survives as one
+          small mono line for business visitors. ── */}
       <section className="pt-16">
         <Reveal>
           <div className="cf-machine flex flex-wrap items-center justify-between gap-6 p-8 sm:p-11">
             <div>
               <p className="cf-display" style={{ fontSize: "clamp(28px, 4vw, 44px)", lineHeight: 1.05 }}>
-                Start with the number.
+                Open to SOC roles across Canada.
               </p>
               <p className="cf-mono cf-fs-label mt-3" style={{ color: "var(--cf-muted)" }}>
-                Six questions. A real range in about a minute.
+                <Link href="/estimate" className="cf-ulink">
+                  Building a business site instead? Run the estimator →
+                </Link>
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4">
-              <Link href="/estimate" className="cf-btn cf-btn-red">
-                Run the estimator
-              </Link>
-              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="cf-btn-ghost">
-                Resume ↓
+              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="cf-btn cf-btn-red">
+                Download the resume
               </a>
+              <Link href="/investigations/lab-001-ssh-brute-force" className="cf-btn-ghost">
+                Read the investigation
+              </Link>
             </div>
           </div>
         </Reveal>

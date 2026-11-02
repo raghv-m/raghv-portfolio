@@ -214,16 +214,25 @@ const ACTS = [
     id: "kitchen",
     title: "Act I: The Kitchen",
     line: "Line cook, then kitchen supervisor, then assistant kitchen manager. The years that taught speed, standards, and running a team when it gets loud.",
+    scene: "/images/storyboard/chef.webp",
+    sceneAlt: "Illustration of Raghav as a chef working the line in a commercial kitchen, tossing a flaming pan",
+    sceneCaption: "SCENE 01 / THE LINE",
   },
   {
     id: "security",
     title: "Act II: The Security Officer",
     line: "The uniform years: retail loss prevention, screening at a hospital and a vehicle auction, and a county hall site of his own to run at night.",
+    scene: "/images/storyboard/security.webp",
+    sceneAlt: "Illustration of Raghav as a security officer in uniform, watching a bank of CCTV monitors",
+    sceneCaption: "SCENE 02 / THE POST",
   },
   {
     id: "cyber",
     title: "Act III: The Turn to Cyber",
     line: "Client sites by day and a home SOC lab by night: the same watchfulness, pointed at networks instead of doors.",
+    scene: "/images/storyboard/soc.webp",
+    sceneAlt: "Illustration of Raghav as a SOC analyst with a headset, seated at a three-monitor desk",
+    sceneCaption: "SCENE 03 / THE DESK",
   },
 ];
 
@@ -508,6 +517,18 @@ export default function ExperiencePage() {
                     <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed mt-2" style={{ maxWidth: "62ch" }}>
                       {act.line}
                     </p>
+                    <div
+                      className="cf-panel mt-5"
+                      style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}
+                    >
+                      <img src={act.scene} alt={act.sceneAlt} className="block w-full" loading="lazy" />
+                      <p
+                        className="cf-mono cf-fs-data px-4 py-2.5"
+                        style={{ color: "var(--cf-red)", borderTop: "2px solid var(--cf-ink)" }}
+                      >
+                        {act.sceneCaption}
+                      </p>
+                    </div>
                   </div>
                 </div>
                 {act.frames.map((role, j) => (

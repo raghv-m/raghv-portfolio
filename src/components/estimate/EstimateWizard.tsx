@@ -70,6 +70,27 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<"name" | "email" | "consent", string>>>({});
   const [submitted, setSubmitted] = useState<{ reference: string; result: EstimateResult; emailed: boolean } | null>(null);
+  // One idempotency key per submission session, kept in sessionStorage:
+  // a retry after a timeout, a double click, or a resubmit after
+  // navigating back carries the SAME key, and the server returns the
+  // first save instead of creating a duplicate estimate. A successful
+  // submit rotates the key (see submit()).
+  const [idemKey, setIdemKey] = useState<string>(() => {
+    const fresh = () =>
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `est-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    try {
+      const stored = window.sessionStorage.getItem("cf-estimate-key");
+      if (stored) return stored;
+      const key = fresh();
+      window.sessionStorage.setItem("cf-estimate-key", key);
+      return key;
+    } catch {
+      return fresh();
+    }
+  });
+
   const [pending, startTransition] = useTransition();
 
   const estimate = form.category ? priceEstimate(catalog, form, estimatorConfig.myPriceRatio) : null;
@@ -114,8 +135,21 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
         company: form.company || undefined,
         phone: form.phone || undefined,
         description: form.description || undefined,
+        idempotencyKey: idemKey,
       });
       if (result.ok) {
+        // Rotate the key: this estimate is saved, so the next one is a
+        // new submission, not a retry of this one.
+        const nextKey =
+          typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `est-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        try {
+          window.sessionStorage.setItem("cf-estimate-key", nextKey);
+        } catch {
+          /* the rotated state value below still applies */
+        }
+        setIdemKey(nextKey);
         setSubmitted(result);
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else setError(result.error);

@@ -432,7 +432,7 @@ export default function ExperiencePage() {
                 className="cf-panel"
                 data-hot="true"
                 style={{
-                  border: "3px solid var(--cf-ink)",
+                  border: "3px dashed var(--cf-ink)",
                   background: "transparent",
                 }}
               >

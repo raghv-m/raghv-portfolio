@@ -20,6 +20,7 @@ const ROLES = [
     location: "Nisku & Edmonton, AB",
     period: "Apr 2023 – Present",
     startKey: "2023-04-b",
+    act: "security",
     color: "var(--gold)",
     accentHex: "#AD0117",
     type: "SECURITY OPS",
@@ -43,11 +44,12 @@ const ROLES = [
   {
     icon: Shield,
     company: "Impact Security",
-    role: "Tactical Security Guard: Surveillance & Incident Response",
-    clients: "Retail Locations",
+    role: "Loss Prevention Supervisor",
+    clients: "Dollarama",
     location: "Edmonton, AB",
     period: "Apr 2023 – Present",
     startKey: "2023-04-a",
+    act: "security",
     color: "var(--gold)",
     accentHex: "#AD0117",
     type: "SECURITY OPS",
@@ -74,6 +76,7 @@ const ROLES = [
     location: "Edmonton, AB",
     period: "Aug 2022 – Present",
     startKey: "2022-08",
+    act: "cyber",
     color: "var(--blue)",
     accentHex: "#141414",
     type: "SECURE DEV",
@@ -103,6 +106,7 @@ const ROLES = [
     location: "Edmonton, AB",
     period: "Feb 2025 – Jul 2025",
     startKey: "2025-02",
+    act: "kitchen",
     color: "var(--text-muted)",
     accentHex: "#666",
     type: "LEADERSHIP",
@@ -129,6 +133,7 @@ const ROLES = [
     location: "Edmonton, AB",
     period: "Sep 2022 – Dec 2025",
     startKey: "2022-09",
+    act: "kitchen",
     color: "var(--text-muted)",
     accentHex: "#555",
     type: "OPERATIONS",
@@ -145,15 +150,98 @@ const ROLES = [
     ],
     tags: ["Operations", "Process Documentation", "Compliance", "Team Coordination"],
   },
+  {
+    icon: Shield,
+    company: "GardaWorld",
+    role: "Site Supervisor",
+    clients: "Strathcona County Hall",
+    location: "Sherwood Park, AB",
+    period: "Sep 2026 \u2013 Present",
+    startKey: "2026-09",
+    act: "security",
+    color: "var(--gold)",
+    accentHex: "#AD0117",
+    type: "SECURITY OPS",
+    active: true,
+    summary: "Running a municipal government site on the night shift: supervising the guard team, sorting shift coverage, and keeping the post to audit standard.",
+    bullets: [
+      "Run daily site operations and supervise guards on shift",
+      "Create, track and close tickets in GTrack; handle Active Directory user accounts",
+      "Monitor Avigilon CCTV, work in Polaris and the mobile dispatch apps, respond to alarms",
+      "Write shift handover and incident reports that hold up to an audit",
+    ],
+    transfer: [
+      { from: "AD account work", to: "Identity and access basics" },
+      { from: "Ticket handling", to: "SOC ticketing" },
+      { from: "Incident reports", to: "IR documentation" },
+    ],
+    tags: ["Team Supervision", "Active Directory", "Ticketing", "CCTV"],
+  },
+  {
+    icon: Shield,
+    company: "HomeLab Corp (Home Lab)",
+    role: "Security Operations Analyst, Home SOC Lab",
+    clients: "Self-directed lab",
+    location: "Edmonton, AB",
+    period: "2024 \u2013 Present",
+    startKey: "2024-01",
+    act: "cyber",
+    color: "var(--gold)",
+    accentHex: "#AD0117",
+    type: "CYBER LAB",
+    active: true,
+    summary: "A full SOC built at home: Wazuh watching a four-machine network, detection rules written and tuned by hand, and 50+ practice attacks, every one written up.",
+    bullets: [
+      "Built the lab network from zero: Windows domain, web server, Kali attack box, Wazuh in Docker",
+      "Write and tune SIEM detection rules; worked the false positives down",
+      "Ran 50+ attack simulations and mapped each one to MITRE ATT&CK",
+      "Documented every run on GitHub with diagrams and setup notes",
+    ],
+    transfer: [
+      { from: "Lab alerts", to: "Alert triage" },
+      { from: "Attack write-ups", to: "Incident reports" },
+      { from: "Detection rules", to: "SIEM rule authoring" },
+    ],
+    tags: ["Wazuh", "Detection Rules", "MITRE ATT&CK", "Log Analysis"],
+  },
 ];
 
-/* Storyboard order: chronological by start date, earliest frame first. The
-   story runs forward to the present, then closes on the target frame. */
-const FRAMES = [...ROLES].sort((a, b) => a.startKey.localeCompare(b.startKey));
+/* Storyboard order: the story in three acts, the kitchen, the security
+   officer years, the turn to cyber, chronological inside each act. The
+   board runs forward to the present, then closes on the target frame. */
+const ACTS = [
+  {
+    id: "kitchen",
+    title: "Act I: The Kitchen",
+    line: "Line cook, then kitchen supervisor, then assistant kitchen manager. The years that taught speed, standards, and running a team when it gets loud.",
+  },
+  {
+    id: "security",
+    title: "Act II: The Security Officer",
+    line: "The uniform years: retail loss prevention, screening at a hospital and a vehicle auction, and a county hall site of his own to run at night.",
+  },
+  {
+    id: "cyber",
+    title: "Act III: The Turn to Cyber",
+    line: "Client sites by day and a home SOC lab by night: the same watchfulness, pointed at networks instead of doors.",
+  },
+];
+
+const STORY = (() => {
+  let next = 0;
+  return ACTS.map((act) => {
+    const frames = ROLES.filter((r) => r.act === act.id).sort((a, b) => a.startKey.localeCompare(b.startKey));
+    const startIndex = next;
+    next += frames.length;
+    return { ...act, frames, startIndex };
+  });
+})();
+
+const TOTAL_FRAMES = ROLES.length;
 
 const STATS = [
   { value: "3+", label: "Years in Security" },
-  { value: "5", label: "Roles Held" },
+  { value: "7", label: "Roles Held" },
   { value: "100+", label: "Incidents Documented" },
   { value: "2026", label: "SOC Target" },
 ];
@@ -361,7 +449,7 @@ export default function ExperiencePage() {
               Operator <span className="cf-u-red">History</span>
             </>
           }
-          lede="The work history as a storyboard: five frames on one rail, in the order they happened. Each frame carries the story, the evidence chips, and the full duty list one click down."
+          lede="The work history as a storyboard in three acts: the kitchen, the security officer years, and the turn to cyber. Seven frames on one rail, in story order as you scroll. Each frame carries the story, the evidence chips, and the full duty list one click down."
         />
 
         {/* Stats: a mono ruled strip, with a stamp sitting on its top rule */}
@@ -404,8 +492,28 @@ export default function ExperiencePage() {
         <Reveal delay={0.05} className="mt-16">
           <div className="cf-tl">
             <RailFill />
-            {FRAMES.map((role, i) => (
-              <FramePanel key={role.startKey} role={role} index={i} total={FRAMES.length + 1} />
+            {STORY.map((act) => (
+              <div key={act.id}>
+                <div className="cf-tl-item" style={{ paddingBottom: 6 }}>
+                  <span className="cf-tl-node" aria-hidden="true" />
+                  <div className="cf-tl-date">
+                    <p className="cf-mono cf-fs-data" style={{ color: "var(--cf-red)" }}>
+                      THE STORY
+                    </p>
+                  </div>
+                  <div>
+                    <h2 className="cf-display text-2xl" style={{ color: "var(--cf-ink)" }}>
+                      {act.title}
+                    </h2>
+                    <p className="text-[var(--cf-ink-soft)] text-sm leading-relaxed mt-2" style={{ maxWidth: "62ch" }}>
+                      {act.line}
+                    </p>
+                  </div>
+                </div>
+                {act.frames.map((role, j) => (
+                  <FramePanel key={role.startKey} role={role} index={act.startIndex + j} total={TOTAL_FRAMES + 1} />
+                ))}
+              </div>
             ))}
 
             {/* Closing frame: the target the whole board points at */}
@@ -424,7 +532,7 @@ export default function ExperiencePage() {
                   2026
                 </p>
                 <p className="cf-mono cf-fs-data mt-2" style={{ color: "var(--cf-red)" }}>
-                  FRAME {String(FRAMES.length + 1).padStart(2, "0")} / {String(FRAMES.length + 1).padStart(2, "0")}
+                  FRAME {String(TOTAL_FRAMES + 1).padStart(2, "0")} / {String(TOTAL_FRAMES + 1).padStart(2, "0")}
                 </p>
                 <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-1">Target: 2025–2026</p>
               </div>

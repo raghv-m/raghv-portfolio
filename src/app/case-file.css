@@ -933,20 +933,22 @@ html[data-theme="dark"] .cf-spot::before {
 @media (min-width: 1024px) {
   .cf-hud-main { border-top: none; border-left: 2px solid #3A3A38; }
 }
-/* The slow red scan sweep: one 2px line crossing the whole panel on an
-   8s loop. Transform-only; the panel clips it. */
-.cf-hud-scan {
-  position: absolute; left: 0; right: 0; top: 0; height: 2px; z-index: 5;
+/* The slow red scan sweep, confined to the subject photograph only
+   (owner's call, Nov 3, 2026): one 2px line crossing the photo frame on
+   an 8s loop. It lives inside .cf-scanlines, which clips it; top runs
+   from just above the frame to its bottom edge at any photo height. */
+.cf-photo-scan {
+  position: absolute; left: 0; right: 0; top: -4px; height: 2px; z-index: 3;
   background: var(--cf-red); opacity: 0.55; pointer-events: none;
-  animation: cf-scan 8s linear infinite;
+  animation: cf-photo-scan 8s linear infinite;
 }
-@keyframes cf-scan {
-  from { transform: translateY(-4px); }
-  to { transform: translateY(1150px); }
+@keyframes cf-photo-scan {
+  from { top: -4px; }
+  to { top: 100%; }
 }
 /* Scanline texture over the HUD photograph: hard-stop repeating stripes,
    the print/screen texture the reference card wears. */
-.cf-scanlines { position: relative; }
+.cf-scanlines { position: relative; overflow: hidden; }
 .cf-scanlines::after {
   content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none;
   background: repeating-linear-gradient(0deg, rgba(20, 20, 20, 0.22) 0 1px, transparent 1px 3px);
@@ -1040,7 +1042,7 @@ html[data-theme="dark"] .cf-spot::before {
   .cf-page-enter { animation: none !important; }
   .cf-live-dot { animation: none !important; }
   .cf-spot::before { display: none !important; }
-  .cf-hud-scan { display: none !important; }
+  .cf-photo-scan { display: none !important; }
   .cf-companion-tag i { animation: none !important; }
   .cf-rv[data-variant="wipe"][data-cf="pre"] { clip-path: none !important; }
 }

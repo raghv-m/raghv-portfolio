@@ -104,7 +104,6 @@ export function HudHero() {
 
   return (
     <section className="cf-hud" aria-label="Raghav Mahajan — readout">
-      <div className="cf-hud-scan" aria-hidden="true" />
 
       {/* ── Top strip: corner readouts ─────────────────────────────── */}
       <div
@@ -155,6 +154,7 @@ export function HudHero() {
               style={{ aspectRatio: "4 / 4.6", objectFit: "cover", objectPosition: "50% 32%" }}
               priority
             />
+            <div className="cf-photo-scan" aria-hidden="true" />
           </div>
           <div className="cf-mono uppercase mt-6 space-y-2.5 text-[10.5px]" style={{ letterSpacing: "0.1em" }}>
             <p className="cf-hud-dim">Subject: Raghav Mahajan — Edmonton, AB</p>

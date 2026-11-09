@@ -18,6 +18,9 @@ import { Faq } from "@/components/casefile/Faq";
 import { FAQS } from "@/components/casefile/faqData";
 import { JsonLd, faqPageSchema } from "@/components/seo/JsonLd";
 import { RailFill } from "@/components/casefile/RailFill";
+import { BootLoader } from "@/components/motion/BootLoader";
+import { DetectionTicker } from "@/components/motion/DetectionTicker";
+import { Reveal as MotionReveal } from "@/components/motion/Reveal";
 
 /* U2(a) (upscale pass): the build process as three outcome steps. Every
    claim is from the real terms: fixed quote at signing, the 40-40-20
@@ -123,9 +126,18 @@ const CONTENTS = [
 export default function HomePage() {
   return (
     <div className="cf-wrap">
+      {/* ── Boot loader: home-only overlay, once per session, never a
+          gate — the page renders in full underneath it. ────────────── */}
+      <BootLoader />
+
       {/* ── Hero: the HUD readout panel ────────────────────────────── */}
       <div className="pt-10">
         <HudHero />
+      </div>
+
+      {/* ── Live detection ticker: LAB-001 facts on a CSS marquee ──── */}
+      <div className="mt-6">
+        <DetectionTicker />
       </div>
 
       {/* ── Lead art: the newsletter cover at full width ───────────── */}
@@ -175,9 +187,12 @@ export default function HomePage() {
       <section className="pt-16">
         <Reveal variant="wipe">
           <div className="cf-sec-head">
-            <h2 className="cf-h2">What Raghav actually does</h2>
+            <MotionReveal sweep>
+              <h2 className="cf-h2">What Raghav actually does</h2>
+            </MotionReveal>
           </div>
         </Reveal>
+        <MotionReveal delay={0.05}>
         <div className="grid md:grid-cols-2 gap-12">
           <Reveal delay={0.05}>
             <h3 className="cf-kicker" style={{ color: "var(--cf-ink)" }}>Web builds</h3>
@@ -201,14 +216,18 @@ export default function HomePage() {
             </p>
           </Reveal>
         </div>
+        </MotionReveal>
       </section>
 
       {/* ── Exhibit III: the price machine ─────────────────────────── */}
       <section className="pt-16">
         <Reveal variant="wipe">
           <div className="cf-sec-head">
-            <h2 className="cf-h2">The price machine</h2>
+            <MotionReveal sweep>
+              <h2 className="cf-h2">The price machine</h2>
+            </MotionReveal>
           </div>
+          <MotionReveal>
           <ParallaxLayer range={28}>
           <div className="cf-machine grid lg:grid-cols-[7fr_5fr] gap-10 items-center p-8 sm:p-11">
             <div>
@@ -240,6 +259,7 @@ export default function HomePage() {
             </div>
           </div>
           </ParallaxLayer>
+          </MotionReveal>
         </Reveal>
 
         {/* U2(b): the risk-reversal strip, directly under the price machine */}

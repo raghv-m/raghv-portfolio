@@ -319,3 +319,104 @@ body {
   .section-sm  { padding: 2.5rem 1rem; }
   img, video, canvas, svg { max-width: 100%; }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   HERO ANIMATION SYSTEM (feat/hero-animation-2026-11)
+   The boot loader's wipe and the hero/scroll reveals are framer-motion
+   (src/components/motion/, src/components/casefile/HudHero.tsx); the
+   pieces that are pure CSS live here: the boot panels' positioning,
+   the detection ticker marquee, its pulsing LIVE dot, and the red scan
+   sweep bar. Colours come from the site tokens above (--red, --bg).
+   Everything in this block stops under prefers-reduced-motion.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Boot loader panels (BootLoader.tsx) ── */
+.rv-boot-panel {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ── Detection ticker (DetectionTicker.tsx) ── */
+@keyframes rv-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes rv-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.55); }
+  50%      { opacity: 0.55; box-shadow: 0 0 0 6px rgba(255, 68, 68, 0); }
+}
+.rv-ticker {
+  display: flex;
+  align-items: stretch;
+  background: #141414;
+  border-top: 1px solid #2b2b2b;
+  border-bottom: 1px solid #2b2b2b;
+  color: var(--text);
+  font-family: var(--font-jetbrains), "Courier New", monospace;
+}
+.rv-ticker-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 10px 14px;
+  border-right: 1px solid #2b2b2b;
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.rv-ticker-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  background: var(--red);
+  animation: rv-pulse 1.6s ease-in-out infinite;
+}
+.rv-ticker-viewport {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+}
+.rv-ticker-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: rv-marquee 38s linear infinite;
+}
+.rv-ticker:hover .rv-ticker-track { animation-play-state: paused; }
+.rv-ticker-chunk { display: flex; align-items: center; }
+.rv-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 0 10px 22px;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: #d8d3c6;
+}
+.rv-ticker-sep { padding-left: 22px; color: var(--red); font-weight: 700; }
+
+/* ── Red scan sweep (motion/Reveal.tsx, sweep prop) ── */
+.rv-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 3px;
+  background: var(--red);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+/* Reduced motion: the ticker becomes a static line, the dot rests, and
+   the sweep never draws (the framer-motion pieces disable themselves). */
+@media (prefers-reduced-motion: reduce) {
+  .rv-ticker-track { animation: none; }
+  .rv-ticker-dot { animation: none; }
+  .rv-sweep { display: none; }
+}

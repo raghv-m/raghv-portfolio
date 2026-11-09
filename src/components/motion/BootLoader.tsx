@@ -38,6 +38,10 @@ export function BootLoader() {
   const [show, setShow] = useState(false);
   const [count, setCount] = useState(0);
   const [linesShown, setLinesShown] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const doneRef = useRef(false);
 
   const finish = useCallback(() => {
@@ -82,6 +86,10 @@ export function BootLoader() {
     };
   }, [show]);
 
+  // The portal target (document.body) does not exist during server
+  // prerendering, and calling createPortal there fails the build.
+  // The loader only ever shows after mount, so render nothing first.
+  if (!mounted) return null;
   return createPortal(
     <AnimatePresence>
       {show && (

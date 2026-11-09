@@ -29,6 +29,24 @@ export function faqPageSchema(faqs: { q: string; a: string }[]): Record<string, 
   };
 }
 
+/**
+ * BreadcrumbList schema from an ordered trail of { name, path } pairs,
+ * Home first. Paths are site-relative ("/" is the homepage); the same
+ * shape the blog post template already emits inline.
+ */
+export function breadcrumbSchema(items: { name: string; path: string }[]): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.path === "/" ? site.url : `${site.url}${item.path}`,
+    })),
+  };
+}
+
 /** Site-wide graph: the person, the business they run, and the website. */
 export function SiteJsonLd() {
   const personId = `${site.url}/#person`;

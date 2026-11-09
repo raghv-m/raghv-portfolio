@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { PageHead } from "@/components/casefile/PageHead";
+import { JsonLd, breadcrumbSchema } from "@/components/seo/JsonLd";
+import { site } from "@/config/site";
 import { Reveal } from "@/components/casefile/Reveal";
 
 /**
@@ -69,6 +71,30 @@ function SectionHead({ kicker, title }: { kicker: string; title: string }) {
 export default function Lab001Page() {
   return (
     <div className="pb-24">
+      {/* TechArticle schema for the investigation. datePublished is the
+          capture date the page itself prints (Oct 14, 2026); the page
+          exposes no separate publication date. */}
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          headline: "LAB-001 — SSH Brute Force Detection",
+          description:
+            "One detection from the home lab, filed as an investigation: the captured telemetry, what the two rules mean, the order of events the capture shows, and the limits of a single lab capture.",
+          url: `${site.url}/investigations/lab-001-ssh-brute-force`,
+          mainEntityOfPage: `${site.url}/investigations/lab-001-ssh-brute-force`,
+          datePublished: "2026-10-14",
+          author: { "@id": `${site.url}/#person`, name: site.person },
+          publisher: { "@id": `${site.url}/#person` },
+          about: ["SSH brute force detection", "Wazuh", "SIEM", "Home SOC lab"],
+        }}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "LAB-001 — SSH Brute Force Detection", path: "/investigations/lab-001-ssh-brute-force" },
+        ])}
+      />
       <div className="cf-wrap">
         <PageHead
           kicker="Investigation — home lab"

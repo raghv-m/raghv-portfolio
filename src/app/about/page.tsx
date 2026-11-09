@@ -7,7 +7,7 @@ import { PageHead } from "@/components/casefile/PageHead";
 import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { SubjectAvatar } from "@/components/casefile/SubjectAvatar";
-import { JsonLd } from "@/components/seo/JsonLd";
+import { JsonLd, breadcrumbSchema } from "@/components/seo/JsonLd";
 import { site } from "@/config/site";
 import { EASE_OUT } from "@/components/casefile/motion";
 
@@ -294,6 +294,12 @@ export default function AboutPage() {
           "@type": "ProfilePage",
           mainEntity: { "@id": `${site.url}/#person` },
         }}
+      />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "About", path: "/about" },
+        ])}
       />
       <div className="cf-wrap">
         <PageHead

@@ -27,6 +27,7 @@ import { CfScope } from "@/components/casefile/CfScope";
 import { AvatarCompanion } from "@/components/casefile/AvatarCompanion";
 import { CommandMenu } from "@/components/casefile/CommandMenu";
 import { SiteJsonLd } from "@/components/seo/JsonLd";
+import { PageviewTracker } from "@/components/analytics/PageviewTracker";
 import { site } from "@/config/site";
 
 const inter = Inter({
@@ -187,6 +188,9 @@ gtag('config', '${GA_ID}');`}
         </PublicChrome>
         <Analytics />
         <SpeedInsights />
+        {/* GA4 pageviews for client-side route changes (the config call
+            above only counts the initial load). */}
+        <PageviewTracker />
       </body>
     </html>
   );

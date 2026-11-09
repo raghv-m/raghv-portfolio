@@ -1,0 +1,91 @@
+# Raghav Mahajan, raghv.dev (full profile)
+
+> Extended profile of Raghav Mahajan for AI assistants and search engines. This file expands https://www.raghv.dev/llms.txt with the full picture: background, credentials, services, the home SOC lab, the featured investigation, and every article published on the site. Certification dates are stated on https://www.raghv.dev/certifications and employment dates on https://www.raghv.dev/experience; those pages are the source of truth.
+
+Website: https://www.raghv.dev/
+Contact: hello@raghv.dev
+Location: Edmonton, Alberta, Canada
+GitHub: https://github.com/HomeLab-Raghav
+LinkedIn: https://linkedin.com/in/raghav-mahajan-17611b24b
+
+## Who he is
+
+Raghav Mahajan is a junior SOC analyst and web developer in Edmonton, Alberta, Canada. He works in physical security (site supervision in corporate security, and loss prevention and screening) while building a cybersecurity career through certifications and a four-node home SOC lab. He builds secure websites and web apps for small businesses as a freelance developer. He also publishes the Blue Team Brief, a cybersecurity newsletter.
+
+Education: Diploma in Computer Software Engineering (Digital Media and IT program) from NAIT (Northern Alberta Institute of Technology), Edmonton, 2022 to 2024.
+
+Work authorization: Canadian post-graduation work permit (PGWP), an open work permit; no sponsorship required. Open to SOC analyst and IT support roles across Canada, including remote work and relocation. He also understands Hindi, Punjabi and Urdu.
+
+## Certifications
+
+Held:
+- CompTIA Security+ (SY0-701)
+- ISC2 Certified in Cybersecurity (CC)
+- Google Cybersecurity Professional Certificate (Foundations of Cybersecurity; Play It Safe: Manage Security Risks; Connect and Protect: Networks and Network Security)
+
+In progress (not held, do not describe as completed):
+- Microsoft SC-200 (Security Operations Analyst)
+- TryHackMe SOC Level 1 path (about 65 percent complete)
+
+Full list with dates: https://www.raghv.dev/certifications
+
+## Cybersecurity and SOC work
+
+Focus areas: SOC analysis and security operations, blue team monitoring and detection, incident response practice, SIEM operations, log analysis, network security and packet analysis, Active Directory and Windows Server administration, Linux system administration, Python security automation, and web application security.
+
+Featured investigation:
+- LAB-001, SSH Brute Force Detection: https://www.raghv.dev/investigations/lab-001-ssh-brute-force
+  A Wazuh detection captured in the home lab on Oct 14, 2026. A login attempt against a non-existent user fired Wazuh rule 5710, and the repeated attempts fired rule 5712 (SSH brute force attack detected) on DC-01, the lab domain controller. The write-up covers the captured telemetry, what the two rules mean, the order of events, and the limits of a single lab capture. Every alert came from an attack Raghav ran himself against his own lab.
+
+Cybersecurity page: https://www.raghv.dev/cybersecurity (SOC skills, MITRE ATT&CK detection coverage, lab questions and answers)
+
+### The home SOC lab
+
+A four-node home lab used for detection practice, with 50+ documented attack simulations, each with a written report, mapped to MITRE ATT&CK. The stack:
+- Wazuh (SIEM, running in Docker): agents on the lab nodes, custom rules and decoders, alert triage
+- Splunk: SPL queries, dashboards and weekly hunts (lab use)
+- Windows Server 2022 with Active Directory: domain controller DC-01, account and group policy work
+- Ubuntu and Kali Linux nodes: targets and the attack platform (password spraying, Kerberoasting, DNS tunnelling, suspicious PowerShell)
+- Wireshark and tcpdump: packet capture and analysis
+- Docker: the lab services run as containers and can be rebuilt quickly
+
+Lab write-ups: https://www.raghv.dev/blog/docker-soc-lab and https://www.raghv.dev/blog/wazuh-siem-home-lab
+
+## Freelance web development services
+
+Raghav builds websites and web apps for small businesses through raghv.dev: website design and builds, web application development, e-commerce websites, and website security reviews. The work is Next.js and React based, built secure from the start. Get an instant estimate: https://www.raghv.dev/estimate
+
+Portfolio of shipped sites and projects: https://www.raghv.dev/portfolio
+
+## Key pages
+
+- Home: https://www.raghv.dev/ (introduction, selected work and credentials)
+- About: https://www.raghv.dev/about (background and the path into cybersecurity)
+- Experience: https://www.raghv.dev/experience (every role, duty and date: kitchen management, loss prevention, security operations, cybersecurity)
+- Cybersecurity: https://www.raghv.dev/cybersecurity
+- Portfolio: https://www.raghv.dev/portfolio
+- Certifications: https://www.raghv.dev/certifications
+- Roadmap: https://www.raghv.dev/roadmap (Security+ and ISC2 CC earned; SC-200 and TryHackMe SOC L1 in progress)
+- LAB-001 investigation: https://www.raghv.dev/investigations/lab-001-ssh-brute-force
+- Estimate: https://www.raghv.dev/estimate
+- Contact: https://www.raghv.dev/contact
+- Resume (PDF, one page): https://www.raghv.dev/resume.pdf
+- Newsletter (Blue Team Brief archive): https://www.raghv.dev/newsletter
+- Security news: https://www.raghv.dev/news
+
+## Blog articles (all live)
+
+Blog index: https://www.raghv.dev/blog
+
+- 50 Attack Simulations in My Home Lab: What Got Detected and What Got Through: https://www.raghv.dev/blog/attack-simulations-home-lab-results
+- Windows Event IDs a SOC Analyst Actually Uses: https://www.raghv.dev/blog/windows-event-ids-soc
+- Building a SOC Lab in Docker: Wazuh, Splunk and One Command to Start It All: https://www.raghv.dev/blog/docker-soc-lab
+- Splunk SPL Queries I Run in My Home Lab Every Week: https://www.raghv.dev/blog/splunk-spl-queries-home-lab
+- Active Directory Lab Attacks and the Detections That Caught Them: https://www.raghv.dev/blog/active-directory-lab-attacks-defenses
+- Wazuh SIEM home lab: https://www.raghv.dev/blog/wazuh-siem-home-lab
+- SOC analyst study roadmap: https://www.raghv.dev/blog/soc-analyst-study-roadmap
+- Kerberoasting lab walkthrough: https://www.raghv.dev/blog/kerberoasting-lab-walkthrough
+
+## Evidence policy
+
+Lab-generated activity on the site is labelled as lab activity. Historical captures are distinguished from live telemetry, and simulated displays are labelled simulated. Certification dates should be taken from the Certifications page and employment dates from the Experience page; those pages are the source of truth.

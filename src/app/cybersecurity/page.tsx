@@ -9,7 +9,7 @@ import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { HomeLabSection } from "@/components/sections/HomeLabSection";
 import { SKILLS } from "@/components/sections/careerData";
-import { JsonLd, faqPageSchema } from "@/components/seo/JsonLd";
+import { JsonLd, faqPageSchema, breadcrumbSchema } from "@/components/seo/JsonLd";
 import { EASE_OUT } from "@/components/casefile/motion";
 
 /*
@@ -216,6 +216,12 @@ export default function CybersecurityPage() {
     <div className="pb-32">
       {/* Audit-fix: FAQPage schema for the lab Q&A at the foot of the page. */}
       <JsonLd data={faqPageSchema(LAB_FAQS)} />
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Cybersecurity", path: "/cybersecurity" },
+        ])}
+      />
       <div className="cf-wrap">
         <PageHead
           kicker="Cybersecurity"

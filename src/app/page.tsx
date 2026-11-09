@@ -117,7 +117,6 @@ const CONTENTS = [
   { no: "05", href: "/certifications", title: "Certifications", desc: "The full credential list, earned and in progress" },
   { no: "06", href: "/blog", title: "Blog: field notes", desc: "Writeups from the lab and the study desk" },
   { no: "07", href: "/newsletter", title: "Newsletter: Blue Team Brief", desc: "The week's real attacks in plain English, every edition archived" },
-  { no: "08", href: "/news", title: "Daily security news", desc: "The top 3 stories worth your time, every day" },
   { no: "09", href: "/hobbies", title: "Hobbies", desc: "Strange GitHub repositories and a camera: the off-duty side" },
   { no: "10", href: "/estimate", title: "Get an estimate", desc: "Six steps, a real price range, straight into his pipeline" },
   { no: "11", href: "/contact", title: "Contact", desc: "Roles, projects, collaborations" },

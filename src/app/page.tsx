@@ -187,9 +187,7 @@ export default function HomePage() {
       <section className="pt-16">
         <Reveal variant="wipe">
           <div className="cf-sec-head">
-            <MotionReveal sweep>
-              <h2 className="cf-h2">What Raghav actually does</h2>
-            </MotionReveal>
+            <h2 className="cf-h2">What Raghav actually does</h2>
           </div>
         </Reveal>
         <MotionReveal delay={0.05}>

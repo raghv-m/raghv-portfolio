@@ -57,7 +57,7 @@ export function BootLoader() {
       // Ease-out-expo counter: fast off the line, settles onto 100.
       const eased = t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
       setCount(Math.round(eased * 100));
-      setLinesShown(Math.min(LINES.length, Math.floor(t * (LINES.length + 0.6))));
+      setLinesShown(Math.min(LINES.length, Math.floor((now - start) / 240)));
       if (t < 1) raf = requestAnimationFrame(step);
       else finish();
     };
@@ -90,7 +90,7 @@ export function BootLoader() {
           <motion.div
             key="rv-boot-red"
             className="rv-boot-panel"
-            style={{ background: "var(--red)", zIndex: 99 }}
+            style={{ background: "var(--red)", zIndex: 890 }}
             exit={{ y: "-100%" }}
             transition={{ duration: 0.6, ease: EASE_OUT, delay: 0.09 }}
             aria-hidden="true"
@@ -98,7 +98,7 @@ export function BootLoader() {
           <motion.div
             key="rv-boot"
             className="rv-boot-panel"
-            style={{ background: "#0A0A0A", zIndex: 100 }}
+            style={{ background: "#0A0A0A", zIndex: 900 }}
             exit={{ y: "-100%" }}
             transition={{ duration: 0.6, ease: EASE_OUT }}
             onClick={finish}

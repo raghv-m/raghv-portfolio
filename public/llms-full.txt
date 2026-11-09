@@ -71,7 +71,6 @@ Portfolio of shipped sites and projects: https://www.raghv.dev/portfolio
 - Contact: https://www.raghv.dev/contact
 - Resume (PDF, one page): https://www.raghv.dev/resume.pdf
 - Newsletter (Blue Team Brief archive): https://www.raghv.dev/newsletter
-- Security news: https://www.raghv.dev/news
 
 ## Blog articles (all live)
 

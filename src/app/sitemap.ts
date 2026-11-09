@@ -20,7 +20,6 @@ const PAGES: { path: string; updated: string }[] = [
   { path: "/contact", updated: "2026-11-02" },
   { path: "/blog", updated: "2026-11-02" },
   { path: "/newsletter", updated: "2026-11-01" },
-  { path: "/news", updated: "2026-11-02" },
   { path: "/cybersecurity", updated: "2026-11-02" },
   { path: "/experience", updated: "2026-11-02" },
   { path: "/roadmap", updated: "2026-11-02" },

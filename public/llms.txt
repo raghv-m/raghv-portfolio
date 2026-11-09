@@ -39,7 +39,6 @@ Location: Edmonton, Alberta, Canada
 - [Kerberoasting lab walkthrough](https://www.raghv.dev/blog/kerberoasting-lab-walkthrough): a hands-on Active Directory attack and detection walkthrough
 - [Resume (PDF, one page)](https://www.raghv.dev/resume.pdf): current resume with all roles and certifications
 - [Blue Team Brief](https://www.raghv.dev/newsletter): cybersecurity newsletter archive
-- [Security news](https://www.raghv.dev/news): top security stories, updated daily
 
 ## Hiring
 

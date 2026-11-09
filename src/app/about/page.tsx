@@ -17,7 +17,7 @@ const STAGES = [
     id: 1,
     label: "STAGE 01",
     title: "The Kitchen",
-    period: "2022–2025",
+    period: "2022-2025",
     color: "var(--text-muted)",
     accent: "#8a6914",
     narrative: `I learned how to operate under pressure long before I ever opened a terminal. Running a kitchen line during Friday dinner rush, with orders stacking, tickets flying and three timers in your head at once. That's where operational discipline gets hard-wired.
@@ -43,7 +43,7 @@ I didn't know it then, but I was already developing the incident response mindse
     id: 2,
     label: "STAGE 02",
     title: "The Guard",
-    period: "2023–Present",
+    period: "2023-Present",
     color: "var(--gold-muted)",
     accent: "var(--gold)",
     narrative: `Getting my Alberta Security Guard license was the first time I wore a professional identity I could build on. Impact Security, ADESA Auction, Covenant Health. I was monitoring systems, managing access, and writing incident reports. The work was physical, but the thinking was analytical.
@@ -65,7 +65,7 @@ The 5 W's framework I used to write incident reports (Who, What, When, Where, Wh
     id: 3,
     label: "STAGE 03",
     title: "The Developer",
-    period: "2022–Present",
+    period: "2022-Present",
     color: "var(--blue)",
     accent: "var(--blue)",
     narrative: `I taught myself to code during the pandemic and never stopped. What started as curiosity became a freelance practice: building full-stack applications for clients, managing Ubuntu servers, and learning the hard way that security has to be designed in, not bolted on.
@@ -92,10 +92,10 @@ Every OWASP vulnerability I studied became concrete when I was the one patching 
     id: 4,
     label: "STAGE 04",
     title: "The Analyst",
-    period: "2024–Present",
+    period: "2024-Present",
     color: "var(--gold)",
     accent: "var(--gold)",
-    narrative: `This is where everything converged. ISC2 CC (2026). Google Cybersecurity (Jan 2026). CompTIA Security+ (Jun 2026). A home lab running on real hardware: a Windows Server 2022 domain controller, Ubuntu web server, Kali Linux attack box, Wazuh SIEM. Not a virtual sandbox. A production-grade simulation lab I built myself.
+    narrative: `This is where everything converged. ISC2 CC (2026). Google Cybersecurity (Jan 2026). CompTIA Security+ (Jun 2026). A home lab running on real hardware: a Windows Server 2022 domain controller, Ubuntu web server, Kali Linux attack box, Wazuh SIEM. A simulation lab I built myself. Real hardware, real domain, the same Wazuh and Splunk tooling a working SOC runs.
 
 I'm running Wazuh agents on every endpoint. I write detection rules. I generate attack traffic and watch it hit the SIEM. I run Nmap, Hydra, and Gobuster against my own network and see exactly what the defender sees on the other side.
 
@@ -120,7 +120,7 @@ Security+ is earned. TryHackMe SOC Level 1 is 65% complete. Every lab builds the
     id: 5,
     label: "STAGE 05",
     title: "The SOC Analyst",
-    period: "Target: 2025–2026",
+    period: "Target: 2025-2026",
     color: "var(--green)",
     accent: "var(--green)",
     narrative: `This is the role I'm building toward. SOC Analyst, Tier 1, at a company in Edmonton, or remote. Every cert I'm earning, every lab I'm running, every detection rule I'm writing is aimed at this exact outcome.
@@ -236,7 +236,7 @@ function StageSection({ stage, index, nextTitle }: { stage: typeof STAGES[0]; in
 
           {/* Transition to the next leg of the journey */}
           <p className="cf-mono cf-fs-data tracking-widest" style={{ color: "var(--cf-red)" }}>
-            {nextTitle ? `▼ NEXT LEG — ${nextTitle.toUpperCase()}` : "■ FINAL LEG — TARGET LOCKED"}
+            {nextTitle ? `▼ NEXT LEG · ${nextTitle.toUpperCase()}` : "■ FINAL LEG · TARGET LOCKED"}
           </p>
         </motion.div>
 
@@ -303,7 +303,7 @@ export default function AboutPage() {
       />
       <div className="cf-wrap">
         <PageHead
-          kicker="About — the path in"
+          kicker="About · the path in"
           title={
             <>
               The Story Behind<br />

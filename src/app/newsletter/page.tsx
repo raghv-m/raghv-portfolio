@@ -33,7 +33,7 @@ export default function NewsletterPage() {
   return (
     <div className="cf-wrap pb-24">
       <PageHead
-        kicker="Newsletter — Blue Team Brief"
+        kicker="Newsletter · Blue Team Brief"
         title="Blue Team Brief"
         lede="The week's real attacks in plain English. What happened, why it matters, what to hunt for. One edition most weeks, written from Edmonton, read by defenders across Canada and beyond."
       />

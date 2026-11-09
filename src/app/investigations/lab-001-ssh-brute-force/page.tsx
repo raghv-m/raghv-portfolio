@@ -6,7 +6,7 @@ import { site } from "@/config/site";
 import { Reveal } from "@/components/casefile/Reveal";
 
 /**
- * LAB-001 — SSH Brute Force Detection (forensic-fix pass).
+ * LAB-001 · SSH Brute Force Detection (forensic-fix pass).
  *
  * The first investigation file: the homepage Exhibit B capture, written
  * up in the standard investigation structure. EVERY factual statement on
@@ -16,7 +16,7 @@ import { Reveal } from "@/components/casefile/Reveal";
  * from an attack he ran himself, with a written report for every run.
  * Nothing else is claimed: no containment steps, no commands, no times
  * beyond the ones the capture itself prints, no outcomes beyond the
- * alerts firing. The response detail stays where it lives — in the
+ * alerts firing. The response detail stays where it lives, in the
  * unpublished per-run incident report.
  */
 
@@ -36,7 +36,7 @@ const FILE_ROWS: { label: string; body: string }[] = [
 
 const TIMELINE: string[] = [
   "A login attempt against the non-existent user \u201cadmin\u201d reaches DC-01 from 192.168.56.102 and fires rule 5710 (level 5).",
-  "The same source, the same invalid user: rule 5712 (level 10) fires \u2014 SSH brute force attack detected.",
+  "The same source, the same invalid user: rule 5712 (level 10) fires: SSH brute force attack detected.",
   "In the same capture, WEB01 logs a PAM authentication failure (rule 5503, level 5).",
 ];
 
@@ -78,7 +78,7 @@ export default function Lab001Page() {
         data={{
           "@context": "https://schema.org",
           "@type": "TechArticle",
-          headline: "LAB-001 — SSH Brute Force Detection",
+          headline: "LAB-001 · SSH Brute Force Detection",
           description:
             "One detection from the home lab, filed as an investigation: the captured telemetry, what the two rules mean, the order of events the capture shows, and the limits of a single lab capture.",
           url: `${site.url}/investigations/lab-001-ssh-brute-force`,
@@ -92,15 +92,15 @@ export default function Lab001Page() {
       <JsonLd
         data={breadcrumbSchema([
           { name: "Home", path: "/" },
-          { name: "LAB-001 — SSH Brute Force Detection", path: "/investigations/lab-001-ssh-brute-force" },
+          { name: "LAB-001 · SSH Brute Force Detection", path: "/investigations/lab-001-ssh-brute-force" },
         ])}
       />
       <div className="cf-wrap">
         <PageHead
-          kicker="Investigation — home lab"
+          kicker="Investigation · home lab"
           title={
             <>
-              LAB-001 — SSH Brute Force <span className="cf-u-red">Detection</span>
+              LAB-001 · SSH Brute Force <span className="cf-u-red">Detection</span>
             </>
           }
           lede="One detection from the home lab, filed as an investigation: the captured telemetry, what the two rules mean, the order of events the capture shows, and the limits of a single lab capture."
@@ -139,7 +139,7 @@ export default function Lab001Page() {
                   <i />
                   <i />
                 </span>
-                <span className="cf-term-title">wazuh — docker-soc — alerts.log</span>
+                <span className="cf-term-title">wazuh · docker-soc · alerts.log</span>
                 <span className="cf-term-rec" aria-hidden="true">
                   <i />
                   Rec
@@ -147,7 +147,7 @@ export default function Lab001Page() {
               </div>
               <div className="cf-term-status">
                 <span>Telemetry</span>
-                <span>Captured — lab attack, Oct 14, 2026</span>
+                <span>Captured · lab attack, Oct 14, 2026</span>
               </div>
               <div className="cf-term-body">
                 <div className="cf-log-line">** Alert 1791978824.294411: - syslog,sshd,authentication_failed,</div>
@@ -183,14 +183,14 @@ export default function Lab001Page() {
             <Panel>
               <div className="space-y-5">
                 <div>
-                  <FieldLabel>Rule 5710 — level 5</FieldLabel>
+                  <FieldLabel>Rule 5710 · level 5</FieldLabel>
                   <p className="text-[var(--cf-ink-soft)] text-[15px] leading-relaxed mt-1.5" style={{ maxWidth: "68ch" }}>
                     Fires when a login is attempted with a user that does not exist. In this capture the
                     attempt was against the user &ldquo;admin&rdquo; on DC-01, from 192.168.56.102, decoded by sshd.
                   </p>
                 </div>
                 <div>
-                  <FieldLabel>Rule 5712 — level 10</FieldLabel>
+                  <FieldLabel>Rule 5712 · level 10</FieldLabel>
                   <p className="text-[var(--cf-ink-soft)] text-[15px] leading-relaxed mt-1.5" style={{ maxWidth: "68ch" }}>
                     The brute-force alert. It fired from the same source IP and the same invalid user as the
                     5710 alert: repeated authentication failures, until the pattern itself is the event.
@@ -241,7 +241,7 @@ export default function Lab001Page() {
             <Panel>
               <p className="text-[var(--cf-ink-soft)] text-[15px] leading-relaxed" style={{ maxWidth: "68ch" }}>
                 The attack was self-run, inside the lab, against his own machines, and the detection fired at
-                level 10. A full incident report exists for this run — he writes one for every run — but the
+                level 10. A full incident report exists for this run (he writes one for every run), but the
                 report is not published. It is available on request.
               </p>
             </Panel>
@@ -265,7 +265,7 @@ export default function Lab001Page() {
                   <FieldLabel>Limitations</FieldLabel>
                   <p className="text-[var(--cf-ink-soft)] text-[15px] leading-relaxed mt-1.5" style={{ maxWidth: "68ch" }}>
                     This is a single lab capture. No production environment was involved, and the response
-                    detail lives in the unpublished per-run incident report — so this page shows the detection
+                    detail lives in the unpublished per-run incident report, so this page shows the detection
                     and the capture, and nothing past them.
                   </p>
                 </div>
@@ -277,7 +277,7 @@ export default function Lab001Page() {
         {/* ── Cross-references ────────────────────────────────────── */}
         <Reveal className="mt-12">
           <p className="cf-note">
-            Filed under: <Link href="/cybersecurity" className="cf-ulink">Cybersecurity</Link> — the lab this
+            Filed under: <Link href="/cybersecurity" className="cf-ulink">Cybersecurity</Link>. The lab this
             ran in is documented there, and the capture itself sits on the{" "}
             <Link href="/" className="cf-ulink">homepage</Link> as Exhibit B.
           </p>

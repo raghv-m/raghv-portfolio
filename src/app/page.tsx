@@ -127,7 +127,7 @@ export default function HomePage() {
   return (
     <div className="cf-wrap">
       {/* ── Boot loader: home-only overlay, once per session, never a
-          gate — the page renders in full underneath it. ────────────── */}
+          gate, the page renders in full underneath it. ────────────── */}
       <BootLoader />
 
       {/* ── Hero: the HUD readout panel ────────────────────────────── */}
@@ -159,7 +159,7 @@ export default function HomePage() {
         </ParallaxLayer>
         <p className="cf-caption" style={{ marginTop: 16 }}>
           <b>Blue Team Brief.</b> His plain-English cybersecurity newsletter. Written, designed, and
-          shipped by the subject. <CountUp to={284} /> subscribers and counting.
+          shipped by the subject. <CountUp to={303} /> subscribers and counting.
         </p>
       </Reveal>
 
@@ -168,13 +168,13 @@ export default function HomePage() {
       {/* ── Exhibit II: the captured log ──────────────────────────── */}
       <Reveal className="mt-12">
         <ParallaxLayer range={30}>
-          {/* Forensic-fix: the exhibit is labelled as what it is — a real
-              capture of a self-run lab attack, not a live feed — and it
+          {/* Forensic-fix: the exhibit is labelled as what it is: a real
+              capture of a self-run lab attack, not a live feed, and it
               links to the full investigation file (LAB-001). */}
           <p className="cf-plate" style={{ marginBottom: 12 }}>
-            Exhibit B · Captured — lab attack, Oct 14, 2026
+            Exhibit B · Captured · lab attack, Oct 14, 2026
           </p>
-          <TypeLog head="Homelab — live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} sessionKey="home-capture" />
+          <TypeLog head="Homelab · live capture" headRight="Wazuh 4.9 · Docker SOC" lines={LOG_LINES} sessionKey="home-capture" />
           <p className="mt-4">
             <Link href="/investigations/lab-001-ssh-brute-force" className="cf-ulink">
               Read the investigation →

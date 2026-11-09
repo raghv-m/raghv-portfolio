@@ -102,7 +102,7 @@ function NodePanel({ node, index, total }: { node: CareerNode; index: number; to
 }
 
 /* DONE stamps: every instance gets its own rotation, scale, opacity and
-   border weight, keyed by row index — the house stamp rule. */
+   border weight, keyed by row index, the house stamp rule. */
 const DONE_STAMP_R = [-3.1, 1.6, -1.9];
 const DONE_STAMP_S = [1.03, 0.96, 1.06];
 const DONE_STAMP_O = [0.92, 0.87, 0.95];
@@ -191,7 +191,7 @@ export default function RoadmapPage() {
         {/* The board's legend, in the file's own mono */}
         <Reveal delay={0.05}>
           <p className="cf-mono cf-fs-label mt-10" style={{ color: "var(--cf-muted)", letterSpacing: "0.08em" }}>
-            HOW TO READ THIS BOARD — <span style={{ color: "var(--cf-ink)" }}>INK STAMP: DONE</span> ·{" "}
+            HOW TO READ THIS BOARD · <span style={{ color: "var(--cf-ink)" }}>INK STAMP: DONE</span> ·{" "}
             <span style={{ color: "var(--cf-red)" }}>RED MARKER: CURRENT / IN PROGRESS</span> ·{" "}
             <span>DASHED OUTLINE: PLANNED / GOAL / FUTURE</span>
           </p>
@@ -213,7 +213,7 @@ export default function RoadmapPage() {
             <div className="cf-sec-head relative">
               <p className="cf-kicker">Certification track</p>
               <h2 className="cf-h2 mt-2">Earned, in progress, planned</h2>
-              <p className="cf-note mt-2">OSCP is the milestone that changes the trajectory.</p>
+              <p className="cf-note mt-2">OSCP is the goal the rest of this board points at.</p>
               <Stamp
                 tone="ink"
                 r={-2.4}
@@ -249,7 +249,7 @@ export default function RoadmapPage() {
               Currently targeting <span className="cf-u-red">SOC Analyst roles</span>
             </h2>
             <p className="cf-body mb-8 max-w-md">
-              Edmonton, AB. Open to remote and relocation. Every role on this path is a step toward OSCP and beyond.
+              Edmonton, AB. Open to remote and relocation. Every role on this path is a step toward OSCP.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/contact" className="cf-btn">Get in Touch</Link>

@@ -1,6 +1,6 @@
 /**
  * The career roadmap data, shared by CareerSection (on /experience) and
- * the /roadmap progression board (audit-fix pass). Data only — each
+ * the /roadmap progression board (audit-fix pass). Data only: each
  * surface keeps its own presentation. States are printed as they stand:
  * certs earned are DONE with their real dates, work under way is
  * IN PROGRESS or CURRENT/NEXT, and everything else stays PLANNED, GOAL
@@ -28,8 +28,8 @@ export const NODES: CareerNode[] = [
   {
     id: "current",
     label: "NOW",
-    title: "Screening Officer + Active Learner",
-    timeline: "Apr 2023 – Present",
+    title: "Site Supervisor, GardaWorld (Sep 2026 - Present) · Screening Officer + Active Learner",
+    timeline: "Apr 2023 - Present",
     status: "CURRENT",
     color: "var(--green)",
     badge: "YOU ARE HERE",
@@ -55,14 +55,14 @@ export const NODES: CareerNode[] = [
     id: "soc2",
     label: "2027",
     title: "SOC Analyst T2 / Threat Hunter",
-    timeline: "2027–2028",
+    timeline: "2027-2028",
     status: "PLANNED",
     color: "var(--blue)",
     badge: null,
     desc: "Deeper investigation, malware triage, threat hunting across the environment. Building the adversarial mindset that bridges blue to red, understanding how attackers think by watching them in action in the SIEM.",
     skills: ["Threat Hunting", "Malware Triage", "IR Lead", "SIEM Rule Authoring", "MITRE ATT&CK", "Threat Intelligence"],
     certs: ["CySA+", "CASP+"],
-    note: "This stage builds the offensive intuition essential for penetration testing.",
+    note: "This stage builds the offensive intuition needed for penetration testing.",
   },
   {
     id: "pentest",
@@ -75,8 +75,8 @@ export const NODES: CareerNode[] = [
     isMilestone: true,
     desc: "The long-term target. Offensive security assessments: identifying and exploiting vulnerabilities before real attackers do. Web app testing, network pentesting, Active Directory attacks, professional report writing.",
     skills: ["Vulnerability Assessment", "Exploit Development", "Metasploit", "Burp Suite", "Custom Tooling", "Professional Report Writing", "Client Communication"],
-    certs: ["OSCP (north star certification)", "CEH", "eJPT"],
-    note: "OSCP is the milestone that unlocks this role. Everything I'm building (the lab, the certs, the scripting) feeds directly into this.",
+    certs: ["OSCP (target certification)", "CEH", "eJPT"],
+    note: "OSCP is the milestone for this role. Everything I'm building (the lab, the certs, the scripting) feeds directly into this.",
   },
   {
     id: "senior",
@@ -86,7 +86,7 @@ export const NODES: CareerNode[] = [
     status: "VISION",
     color: "var(--gold-muted)",
     badge: null,
-    desc: "Independent assessments, specialized domain expertise, and leading red team engagements. Web app, network, Active Directory, and cloud penetration testing at the highest level.",
+    desc: "Independent assessments, specialized domain expertise, and leading red team engagements. Web app, network, Active Directory, and cloud penetration testing.",
     skills: ["Web App PenTest", "Network PenTest", "AD & Cloud PenTest", "Red Team Leadership", "Security Research"],
     certs: ["OSED", "OSEP", "CRTO", "CISSP"],
     note: "International ambitions: Dubai, Australia, or senior Canadian engagements.",
@@ -131,7 +131,7 @@ export const CERTS: CertEntry[] = [
 
 /**
  * The full certification track for the /roadmap board: the CERTS above
- * with their true dates, plus the two tracks actually in progress —
+ * with their true dates, plus the two tracks actually in progress:
  * TryHackMe SOC L1 (65% per the About narrative) and Microsoft SC-200.
  */
 export const ROADMAP_CERTS: CertEntry[] = [

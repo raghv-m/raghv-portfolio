@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  * A captured log, presented as a terminal window: square window controls, the
  * capture's filename as the title, a REC marker, and a blinking block cursor
  * at the end of the stream. When it scrolls into view, the lines reveal one
- * by one at a 60ms stagger — inside the 40–80ms "live tail" band the audit
+ * by one at a 60ms stagger, inside the 40-80ms "live tail" band the audit
  * asked for (audit-fix pass; it was 130ms, a typewriter feel). Note the
  * arithmetic: the homepage capture has 14 lines, so first-to-last spans
  * ~780ms; a ~400ms total cascade cannot coexist with a ≥40ms stagger past
@@ -21,7 +21,7 @@ export function TypeLog({
   head,
   headRight,
   lines,
-  title = "wazuh — docker-soc — alerts.log",
+  title = "wazuh · docker-soc · alerts.log",
   className = "",
   sessionKey,
 }: {

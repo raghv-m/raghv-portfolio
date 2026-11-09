@@ -47,7 +47,7 @@ const LAB_FAQS: { q: string; a: string }[] = [
   },
 ];
 
-// MITRE ATT&CK techniques simplified — 12 tactics, select techniques per tactic
+// MITRE ATT&CK techniques simplified: 12 tactics, select techniques per tactic
 const ATTACK_MATRIX = [
   { tactic: "Reconnaissance", id: "TA0043", techniques: ["T1595", "T1592", "T1590"], coverage: 0.7 },
   { tactic: "Resource Dev", id: "TA0042", techniques: ["T1583", "T1586"], coverage: 0.4 },
@@ -124,8 +124,8 @@ const TOOL_GROUPS = [
 /*
  * Avatar-upgrade pass (item 0b): percentages out here too, same treatment
  * as CareerSection (forensic-fix item B). Each domain prints its one
- * evidence line, resolved VERBATIM from careerData's SKILLS — the single
- * source — never retyped. "GRC / Compliance" had no honest match among
+ * evidence line, resolved VERBATIM from careerData's SKILLS, the single
+ * source, never retyped. "GRC / Compliance" had no honest match among
  * the ten approved lines; the owner ordered the row dropped entirely
  * (Nov 2, 2026) rather than keep an unproven percentage, so the bar
  * renderer went with it.
@@ -169,7 +169,7 @@ function ToolCard({ tool, color, code, index }: {
         className="relative w-full h-full"
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Front: HUD readout — name, data tag, and the usage line on the face */}
+        {/* Front: HUD readout, name, data tag, and the usage line on the face */}
         <div
           className="absolute inset-0 flex"
           style={{ backfaceVisibility: "hidden", background: "var(--cf-paper-2)", border: "2px solid var(--cf-ink)" }}
@@ -184,7 +184,7 @@ function ToolCard({ tool, color, code, index }: {
             </div>
             <p className="cf-mono cf-fs-data tracking-widest mt-1" style={{ color }}>{tool.tag}</p>
             <p className="text-[var(--cf-ink-soft)] cf-fs-data leading-snug mt-2">{tool.use}</p>
-            <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-auto">▸ TAP — FULL FILE</p>
+            <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-auto">▸ TAP · FULL FILE</p>
           </div>
         </div>
         {/* Back: the full file */}
@@ -194,7 +194,7 @@ function ToolCard({ tool, color, code, index }: {
         >
           <div style={{ width: 5, background: color, flexShrink: 0 }} />
           <div className="p-3 overflow-hidden">
-            <p className="cf-mono cf-fs-data tracking-widest mb-1.5" style={{ color }}>{tool.tag} — FILE</p>
+            <p className="cf-mono cf-fs-data tracking-widest mb-1.5" style={{ color }}>{tool.tag} · FILE</p>
             <p className="text-[var(--cf-ink-soft)] cf-fs-data leading-relaxed">{tool.desc}</p>
           </div>
         </div>
@@ -276,7 +276,7 @@ export default function CybersecurityPage() {
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2" role="group" aria-label="MITRE ATT&CK tactics — select one for its coverage readout">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2" role="group" aria-label="MITRE ATT&CK tactics · select one for its coverage readout">
             {ATTACK_MATRIX.map((tactic, i) => (
               <motion.button
                 key={tactic.id}
@@ -312,7 +312,7 @@ export default function CybersecurityPage() {
           </div>
 
           {/* Readout: the selected tactic's file. Keyed by tactic so a new
-              selection swaps instantly — no exit animation, no input lock;
+              selection swaps instantly, no exit animation, no input lock;
               hover, focus and tap all drive it. */}
           <div
             className="mt-3"
@@ -360,7 +360,7 @@ export default function CybersecurityPage() {
               </div>
             </motion.div>
           </div>
-          <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-3">Coverage is self-assessed from home-lab exercises. Select any cell — its lab readout opens here.</p>
+          <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-3">Coverage is self-assessed from home-lab exercises. Select any cell. Its lab readout opens here.</p>
         </section>
 
         {/* Skill domains: evidence lines in place of percentages
@@ -391,7 +391,7 @@ export default function CybersecurityPage() {
             <div className="cf-sec-head">
               <p className="cf-kicker" style={{ marginBottom: 8 }}>Toolstack</p>
               <h2 className="cf-h2">Click any card to flip</h2>
-              <p className="cf-mono cf-fs-data text-[var(--cf-muted)]" style={{ marginTop: 10 }}>The duty line is on the face of every card — flip for the full file</p>
+              <p className="cf-mono cf-fs-data text-[var(--cf-muted)]" style={{ marginTop: 10 }}>The duty line is on the face of every card. Flip for the full file.</p>
             </div>
           </Reveal>
 
@@ -433,7 +433,7 @@ export default function CybersecurityPage() {
           <p className="cf-note">
             Cross-references: the detections above run in the{" "}
             <a href="#home-lab" className="cf-ulink">home lab</a> below. The first investigation,{" "}
-            <Link href="/investigations/lab-001-ssh-brute-force" className="cf-ulink">LAB-001 — SSH brute force detection</Link>,
+            <Link href="/investigations/lab-001-ssh-brute-force" className="cf-ulink">LAB-001 · SSH brute force detection</Link>,
             is filed in full, and the write-ups land on the{" "}
             <Link href="/blog" className="cf-ulink">blog</Link> and in{" "}
             <Link href="/newsletter" className="cf-ulink">Blue Team Brief</Link>.

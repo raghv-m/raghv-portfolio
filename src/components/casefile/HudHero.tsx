@@ -33,8 +33,8 @@ import { bootLoaderWillPlay } from "../motion/bootGate";
  */
 const BOOT_LINES = [
   "> whoami .......... raghav mahajan",
-  "> lab ............. 4-node wazuh soc — online",
-  "> certs ........... security+ · isc2 cc — verified",
+  "> lab ............. 4-node wazuh soc · online",
+  "> certs ........... security+ · isc2 cc · verified",
 ];
 
 const NAV = [
@@ -106,7 +106,7 @@ export function HudHero() {
 
   // Boot sequence: retype the readout lines once on load. SSR and
   // reduced-motion keep the full text from the initial state. Audit-fix:
-  // the typing plays once per browser session — a return view in the same
+  // the typing plays once per browser session, a return view in the same
   // session keeps the full text instead of retyping (the flag is set when
   // the sequence starts; storage failures just let it replay).
   useEffect(() => {
@@ -147,7 +147,7 @@ export function HudHero() {
   return (
     <motion.section
       className="cf-hud"
-      aria-label="Raghav Mahajan — readout"
+      aria-label="Raghav Mahajan · readout"
       variants={heroContainerV}
       initial={false}
       animate={heroControls}
@@ -206,7 +206,7 @@ export function HudHero() {
             <div className="cf-photo-scan" aria-hidden="true" />
           </div>
           <div className="cf-mono uppercase mt-6 space-y-2.5 text-[10.5px]" style={{ letterSpacing: "0.1em" }}>
-            <p className="cf-hud-dim">Subject: Raghav Mahajan — Edmonton, AB</p>
+            <p className="cf-hud-dim">Subject: Raghav Mahajan · Edmonton, AB</p>
             <Meter label="TryHackMe SOC L1" on={7} note="65%" />
             <div className="flex items-baseline justify-between gap-3">
               <span className="cf-hud-dim">Microsoft SC-200</span>
@@ -250,7 +250,7 @@ export function HudHero() {
             </span>
           </motion.h1>
 
-          {/* J1 (forensic-fix pass, owner decision — reverses U1): the
+          {/* J1 (forensic-fix pass, owner decision: reverses U1): the
               outcome line is SOC-first. Every fact in it is printed
               elsewhere on this page: the four-node Wazuh lab (bottom
               strip), the documented runs (homepage), and the open-to-SOC
@@ -273,7 +273,7 @@ export function HudHero() {
             ))}
           </motion.nav>
 
-          {/* J1 (forensic-fix pass, owner decision — reverses U1): ONE
+          {/* J1 (forensic-fix pass, owner decision: reverses U1): ONE
               primary action, SOC-first. The filled block is now the
               featured investigation (LAB-001); the resume stays the ghost
               secondary; the estimator is demoted to the small mono text

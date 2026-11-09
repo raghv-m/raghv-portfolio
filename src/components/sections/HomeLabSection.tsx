@@ -242,8 +242,8 @@ export function HomeLabSection() {
           <p className="cf-kicker">Home Lab</p>
           <h2 className="cf-h2 mt-2">HomeLab Corp</h2>
           <p className="cf-body mt-3" style={{ maxWidth: 680 }}>
-            4-node enterprise security simulation. Real hardware. Real domain. Real attacks. Monitored by Wazuh
-            SIEM, generating authentic blue team experience.
+            4-node home security lab. Real hardware. Real domain. Real attacks. Monitored by Wazuh
+            SIEM, where every run is triaged and written up.
           </p>
           <span className="absolute -top-5 right-2 sm:right-8">
             <Stamp tone="red" r={-3.4} s={1.06} o={0.94} bw={2.2} delay={250} className="cf-fs-label">
@@ -312,7 +312,7 @@ export function HomeLabSection() {
             {/* Forensic-fix: the node states are display states for the
                 diagram, labelled as such next to the topology. */}
             <p className="cf-mono cf-fs-data text-[var(--cf-muted)]" style={{ marginTop: 10 }}>
-              Home lab display states — not a live feed.
+              Home lab display states, not a live feed.
             </p>
             <p className="cf-margin-note" style={{ marginTop: 18 }}>
               Click a node in the diagram or the status cards above to read its file.
@@ -369,7 +369,7 @@ export function HomeLabSection() {
 
       {/* Wazuh alerts, as a captured log. Forensic-fix: these rows are a
           scripted sample set for a lab exercise session, so the feed is
-          labelled simulated where it renders — the real capture is the
+          labelled simulated where it renders, the real capture is the
           homepage Exhibit B / LAB-001. */}
       <Reveal delay={0.05}>
         <p className="cf-mono cf-fs-data tracking-widest text-[var(--cf-muted)]" style={{ marginBottom: 10 }}>

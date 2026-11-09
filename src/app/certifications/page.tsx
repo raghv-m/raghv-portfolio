@@ -35,7 +35,7 @@ const CERTS = [
     glow: "rgba(0,255,136,0.2)",
   },
   {
-    name: "Google — Foundations of Cybersecurity",
+    name: "Google: Foundations of Cybersecurity",
     issuer: "Google / Coursera",
     status: "EARNED",
     date: "Jan 8, 2026",
@@ -44,7 +44,7 @@ const CERTS = [
     glow: "rgba(0,255,136,0.2)",
   },
   {
-    name: "Google — Play It Safe: Manage Security Risks",
+    name: "Google: Play It Safe: Manage Security Risks",
     issuer: "Google / Coursera",
     status: "EARNED",
     date: "Jan 18, 2026",
@@ -53,7 +53,7 @@ const CERTS = [
     glow: "rgba(0,255,136,0.2)",
   },
   {
-    name: "Google — Connect and Protect: Networks and Network Security",
+    name: "Google: Connect and Protect: Networks and Network Security",
     issuer: "Google / Coursera",
     status: "EARNED",
     date: "Jan 28, 2026",
@@ -148,8 +148,8 @@ export default function CertificationsPage() {
             <div className="cf-sec-head">
               <h2 className="cf-h2">The documents themselves</h2>
               <p className="cf-note" style={{ marginTop: 10, maxWidth: 620 }}>
-                Not badge icons — the actual certificates, rendered from the original files. All six earned
-                documents are on file.
+                Not badge icons, the actual certificates, rendered from the original files. Six earned
+                documents are on file below, plus the Alberta Security Guard License (2023), earned and current.
               </p>
             </div>
           </Reveal>
@@ -211,7 +211,7 @@ export default function CertificationsPage() {
           </div>
         </Reveal>
 
-        {/* Training — plainly labelled, not a certification */}
+        {/* Training: plainly labelled, not a certification */}
         <section style={{ marginTop: 56 }}>
           <Reveal>
             <div className="cf-sec-head">

@@ -89,7 +89,7 @@ export function SubjectAvatar() {
           marginTop: 12,
         }}
       >
-        Procedural portrait — generated in code
+        Procedural portrait · generated in code
       </div>
     </div>
   );

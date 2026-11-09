@@ -38,13 +38,13 @@ const PROJECTS: {
     id: 1,
     featured: true,
     title: "HomeLab Corp",
-    subtitle: "Enterprise Security Simulation",
+    subtitle: "Home Security Lab",
     category: "Security" as Category,
     status: "ACTIVE",
     statusColor: "var(--green)",
     stack: ["Windows Server 2022", "Ubuntu 22.04", "Wazuh", "Active Directory", "Kali Linux"],
     color: "var(--gold)",
-    description: "A 4-node enterprise network simulation built on real hardware. DC-01 runs Active Directory with full domain infrastructure. WEB01 hosts production web services behind Nginx. KALI01 runs attack exercises that generate real telemetry. WAZUH01 aggregates all logs, runs detection rules, and fires alerts. This is not a virtual sandbox. It's a production-grade simulation environment.",
+    description: "A 4-node enterprise network simulation built on real hardware. DC-01 runs Active Directory with full domain infrastructure. WEB01 hosts production web services behind Nginx. KALI01 runs attack exercises that generate real telemetry. WAZUH01 aggregates all logs, runs detection rules, and fires alerts. A working simulation lab on real hardware, not a virtual sandbox.",
     impact: ["12+ custom Wazuh detection rules deployed", "SSH brute force detection with IP blocking", "Real-time file integrity monitoring on all endpoints", "GPO-managed security baseline across domain"],
     github: "https://github.com/HomeLab-Raghav",
     icon: Server,
@@ -59,8 +59,8 @@ const PROJECTS: {
     statusColor: "var(--gold)",
     stack: ["Next.js 15", "React Three Fiber", "Zustand", "TypeScript", "Framer Motion"],
     color: "var(--blue)",
-    description: "An immersive SOC analyst training platform with a cyberpunk aesthetic. Features real-time alert queues, an interactive network topology map in 3D, case management workflows, and SIEM log analysis exercises. Designed to simulate the experience of a Tier 1 SOC shift without needing access to enterprise tooling.",
-    impact: ["3D network topology with Three.js", "Real-time alert simulation engine", "Case escalation workflow with state management", "Cyberpunk terminal UI with authentic SIEM aesthetics"],
+    description: "A SOC analyst training platform with a terminal interface. Features real-time alert queues, an interactive network topology map in 3D, case management workflows, and SIEM log analysis exercises. Designed to simulate the experience of a Tier 1 SOC shift without needing access to enterprise tooling.",
+    impact: ["3D network topology with Three.js", "Real-time alert simulation engine", "Case escalation workflow with state management", "Terminal UI modelled on a real SIEM"],
     github: "https://github.com/HomeLab-Raghav",
     icon: Shield,
   },
@@ -130,7 +130,7 @@ const PROJECTS: {
     statusColor: "var(--green)",
     stack: ["Three.js", "JavaScript", "WebGL", "Chess.js"],
     color: "var(--text-muted)",
-    description: "Browser-based 3D chess game built with Three.js. Full chess rules with check/checkmate detection via chess.js. Smooth piece animations, interactive camera rotation, and legal move highlighting. Used as a deep-dive into 3D graphics and WebGL rendering, directly applicable to security visualization work.",
+    description: "Browser-based 3D chess game built with Three.js. Full chess rules with check/checkmate detection via chess.js. Smooth piece animations, interactive camera rotation, and legal move highlighting. Built to learn 3D graphics and WebGL rendering.",
     impact: ["Custom 3D piece models in WebGL", "Full legal move validation engine", "Animated camera and piece movement system"],
     github: "https://github.com/raghv-m/chess",
     live: "https://chess-six-virid.vercel.app",
@@ -168,7 +168,7 @@ const PROJECTS: {
   {
     id: 9,
     title: "raghv.dev Portfolio",
-    subtitle: "This Site: Premium Cybersecurity Brand",
+    subtitle: "This Site: raghv.dev",
     category: "Development" as Category,
     status: "SHIPPED",
     statusColor: "var(--green)",
@@ -267,7 +267,7 @@ function FeaturedVic({ project }: { project: typeof PROJECTS[0] }) {
               className="cf-mono cf-fs-data tracking-widest px-2 py-0.5"
               style={{ background: "var(--cf-red)", color: "var(--cf-paper)" }}
             >
-              FEATURED — CLIENT WORK
+              FEATURED · CLIENT WORK
             </span>
             <Stamp tone="red" r={-2.7} s={1.0} o={0.92} bw={2.7} delay={150} className="cf-fs-data">
               {project.status}
@@ -443,7 +443,7 @@ export default function ProjectsPage() {
         <PageHead
           kicker="Projects"
           title={<>Operational <span className="cf-u-red">Evidence</span></>}
-          lede="12 projects spanning security engineering, full-stack development, and infrastructure operations, laid out as a storyboard: the live client site up top, then every case on one rail. Every project carries a working link out — live preview where one exists, source code where it does not."
+          lede="12 projects spanning security engineering, full-stack development, and infrastructure operations, laid out as a storyboard: the live client site up top, then every case on one rail. Every project carries a working link out, live preview where one exists, source code where it does not."
         >
           <div style={{ marginTop: 26 }}>
             <Stamp tone="red" r={-4.8} s={1.03} o={0.9} bw={2.9} delay={250}>
@@ -492,7 +492,7 @@ export default function ProjectsPage() {
         <Reveal className="mt-14">
           <div className="flex flex-wrap items-center justify-between gap-4 p-6" style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}>
             <p className="cf-body" style={{ maxWidth: "52ch" }}>
-              Want a site like one of these? The estimate takes two minutes and shows my price next to the market rate.
+              Want a site like one of these? The estimate takes about a minute and shows my price next to the market rate.
             </p>
             <Magnetic strength={18}>
               <Link href="/estimate" className="cf-btn">Start an estimate</Link>

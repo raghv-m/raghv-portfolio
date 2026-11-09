@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { EASE_OUT } from "@/components/casefile/motion";
@@ -57,7 +58,7 @@ export function BootLoader() {
       // Ease-out-expo counter: fast off the line, settles onto 100.
       const eased = t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
       setCount(Math.round(eased * 100));
-      setLinesShown(Math.min(LINES.length, Math.floor((now - start) / 240)));
+      setLinesShown(Math.min(LINES.length, Math.floor((now - start) / 130)));
       if (t < 1) raf = requestAnimationFrame(step);
       else finish();
     };
@@ -81,7 +82,7 @@ export function BootLoader() {
     };
   }, [show]);
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {show && (
         <>
@@ -165,6 +166,7 @@ export function BootLoader() {
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

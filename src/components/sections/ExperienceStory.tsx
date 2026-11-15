@@ -224,7 +224,7 @@ const CHAPTERS: Chapter[] = [
       {
         title: "Security Operations Analyst (Home SOC Lab)",
         org: "HomeLab Corp · Edmonton, AB",
-        period: "2024 - Present",
+        period: "2026 - Present",
         duties: [
           "Built a SOC lab from scratch: Wazuh, Splunk, Windows Server with AD, Ubuntu, Kali, all in Docker. I triage the alerts myself and write up what I find.",
           "Write and tune my own detection rules. Getting the false positives down took real work.",
@@ -234,7 +234,7 @@ const CHAPTERS: Chapter[] = [
       {
         title: "IT Lab Administrator (Home Lab)",
         org: "HomeLab Corp · Edmonton, AB",
-        period: "2024 - Present",
+        period: "2026 - Present",
         duties: [
           "Run a multi-machine Windows and Linux setup: AD domain, Group Policy, user accounts, DNS and DHCP, configured by hand.",
           "Automate the repetitive parts with PowerShell. Write procedures down so they only get figured out once.",

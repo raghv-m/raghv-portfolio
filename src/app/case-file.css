@@ -354,18 +354,32 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
    the sheen reads on paper and on ink alike. The block is wide (45%)
    and strong (0.32 filled, 0.28 ghost) and the sweep runs 0.75s, so
    the pass reads plainly instead of flashing past unseen.
+   Travel is just past the button's own width: the block parks fully
+   hidden at -120% (its skewed top corner clears the left edge) and ends
+   fully hidden at +240% (its skewed bottom corner clears the right
+   edge), so the band is ON the face for nearly the whole 0.75s. The
+   earlier -160%/+340% travel sent the block 550px across a ~250px
+   button, and the front-loaded ease spent most of the 0.75s with the
+   block off the face: pixel sampling showed it visible for only ~140ms,
+   which read as "no sheen at all" in hover checks. Do not widen the
+   travel again without re-checking the on-face window in pixels.
+   The timing is linear, not the system expo-out ease: a sweep must
+   cross at constant speed, and the fast-out ease compressed even the
+   shortened travel into the first third of the 0.75s (pixel-verified).
+   Linear keeps the band on the face, moving steadily, for the full
+   pass in both directions.
    Hover-capable pointers only; the reduced-motion kill switch hides it. */
 .cf-btn, .cf-btn-ghost { overflow: hidden; }
 .cf-btn-ghost { position: relative; }
 .cf-btn::after, .cf-btn-ghost::after {
   content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%;
   background: #F4F1EC; opacity: 0.32; pointer-events: none;
-  transform: translateX(-160%) skewX(-18deg);
-  transition: transform 0.75s var(--cf-ease);
+  transform: translateX(-120%) skewX(-18deg);
+  transition: transform 0.75s linear;
 }
 .cf-btn-ghost::after { background: var(--cf-red); opacity: 0.28; }
 @media (hover: hover) and (pointer: fine) {
-  .cf-btn:hover::after, .cf-btn-ghost:hover::after { transform: translateX(340%) skewX(-18deg); }
+  .cf-btn:hover::after, .cf-btn-ghost:hover::after { transform: translateX(240%) skewX(-18deg); }
 }
 
 .cf-ulink {

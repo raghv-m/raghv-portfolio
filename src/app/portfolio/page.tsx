@@ -8,6 +8,8 @@ import { Reveal } from "@/components/casefile/Reveal";
 import { Stamp } from "@/components/casefile/Stamp";
 import { Magnetic } from "@/components/casefile/Magnetic";
 import { RailFill } from "@/components/casefile/RailFill";
+import { SpotWrap } from "@/components/casefile/SpotWrap";
+import { TiltWrap } from "@/components/casefile/TiltWrap";
 import { EASE_OUT } from "@/components/casefile/motion";
 
 const GithubIcon = () => (
@@ -356,76 +358,80 @@ function ProjectFrame({ project, index }: { project: typeof PROJECTS[0]; index: 
         <p className="cf-mono cf-fs-data text-[var(--cf-muted)] mt-1">{project.status}</p>
       </div>
 
-      <article
-        className="cf-panel group relative"
-        data-hot={project.featured ? "true" : undefined}
-        style={{
-          background: "var(--cf-paper-2)",
-          border: project.featured ? "3px solid var(--cf-ink)" : "2px solid var(--cf-ink)",
-        }}
-      >
-        <div style={{ height: 4, background: project.color }} />
-        <div className="p-6">
-          <div className="flex items-start justify-between gap-2 mb-3">
-            <div>
-              <div className="flex items-center gap-2 mb-2 flex-wrap">
-                {project.featured && (
-                  <span className="cf-mono cf-fs-data tracking-widest px-1.5 py-0.5"
-                    style={{ color: "var(--cf-gold)", border: "1px solid var(--cf-gold)" }}>
-                    FEATURED
-                  </span>
-                )}
-                <Stamp
-                  tone={STATUS_TONE[project.status] ?? "ink"}
-                  r={STAMP_R[index % STAMP_R.length]}
-                  s={STAMP_S[index % STAMP_S.length]}
-                  o={STAMP_O[index % STAMP_O.length]}
-                  bw={STAMP_BW[index % STAMP_BW.length]}
-                  delay={index * 60}
-                  className="cf-fs-data"
+      <TiltWrap>
+        <SpotWrap>
+          <article
+            className="cf-panel group relative"
+            data-hot={project.featured ? "true" : undefined}
+            style={{
+              background: "var(--cf-paper-2)",
+              border: project.featured ? "3px solid var(--cf-ink)" : "2px solid var(--cf-ink)",
+            }}
+          >
+            <div style={{ height: 4, background: project.color }} />
+            <div className="p-6">
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <div>
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
+                    {project.featured && (
+                      <span className="cf-mono cf-fs-data tracking-widest px-1.5 py-0.5"
+                        style={{ color: "var(--cf-gold)", border: "1px solid var(--cf-gold)" }}>
+                        FEATURED
+                      </span>
+                    )}
+                    <Stamp
+                      tone={STATUS_TONE[project.status] ?? "ink"}
+                      r={STAMP_R[index % STAMP_R.length]}
+                      s={STAMP_S[index % STAMP_S.length]}
+                      o={STAMP_O[index % STAMP_O.length]}
+                      bw={STAMP_BW[index % STAMP_BW.length]}
+                      delay={index * 60}
+                      className="cf-fs-data"
+                    >
+                      {project.status}
+                    </Stamp>
+                  </div>
+                  <h2 className="cf-display text-xl text-[var(--cf-ink)] group-hover:text-[var(--cf-red)] transition-colors">
+                    {project.title}
+                  </h2>
+                  <p className="cf-mono cf-fs-data text-[var(--cf-muted)]">{project.subtitle}</p>
+                </div>
+                <div
+                  className="w-9 h-9 flex items-center justify-center shrink-0"
+                  style={{ background: "var(--cf-paper)", border: "1px solid var(--cf-ink)" }}
                 >
-                  {project.status}
-                </Stamp>
+                  <project.icon className="w-4 h-4" style={{ color: project.color }} />
+                </div>
               </div>
-              <h2 className="cf-display text-xl text-[var(--cf-ink)] group-hover:text-[var(--cf-red)] transition-colors">
-                {project.title}
-              </h2>
-              <p className="cf-mono cf-fs-data text-[var(--cf-muted)]">{project.subtitle}</p>
-            </div>
-            <div
-              className="w-9 h-9 flex items-center justify-center shrink-0"
-              style={{ background: "var(--cf-paper)", border: "1px solid var(--cf-ink)" }}
-            >
-              <project.icon className="w-4 h-4" style={{ color: project.color }} />
-            </div>
-          </div>
 
-          <p className="text-[var(--cf-ink-soft)] text-xs leading-relaxed mb-4" style={{ maxWidth: "78ch" }}>
-            {project.description}
-          </p>
+              <p className="text-[var(--cf-ink-soft)] text-xs leading-relaxed mb-4" style={{ maxWidth: "78ch" }}>
+                {project.description}
+              </p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-2 mb-4">
-            {project.impact.map((i) => (
-              <div key={i} className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 mt-1.5 shrink-0" style={{ background: "var(--cf-red)" }} />
-                <p className="cf-mono cf-fs-data text-[var(--cf-ink-soft)]">{i}</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-2 mb-4">
+                {project.impact.map((i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="w-1.5 h-1.5 mt-1.5 shrink-0" style={{ background: "var(--cf-red)" }} />
+                    <p className="cf-mono cf-fs-data text-[var(--cf-ink-soft)]">{i}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className="flex flex-wrap gap-1 mb-4">
-            {project.stack.map((s) => <span key={s} className="tag">{s}</span>)}
-          </div>
+              <div className="flex flex-wrap gap-1 mb-4">
+                {project.stack.map((s) => <span key={s} className="tag">{s}</span>)}
+              </div>
 
-          <div className="flex items-center gap-3 pt-3" style={{ borderTop: "1px solid var(--cf-faint)" }}>
-            <LinkRow project={project} />
-            <div className="flex-1" />
-            <span className="cf-mono cf-fs-data" style={{ color: "var(--cf-red)" }}>
-              # {String(project.id).padStart(2, "0")}
-            </span>
-          </div>
-        </div>
-      </article>
+              <div className="flex items-center gap-3 pt-3" style={{ borderTop: "1px solid var(--cf-faint)" }}>
+                <LinkRow project={project} />
+                <div className="flex-1" />
+                <span className="cf-mono cf-fs-data" style={{ color: "var(--cf-red)" }}>
+                  # {String(project.id).padStart(2, "0")}
+                </span>
+              </div>
+            </div>
+          </article>
+        </SpotWrap>
+      </TiltWrap>
     </motion.div>
   );
 }

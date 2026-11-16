@@ -10,9 +10,9 @@ import { ViewTransition } from "@/components/casefile/ViewTransition";
  * Page-to-page transition for the public site, on the real View Transitions
  * API: every navigation re-mounts this template, so the wrapper below is
  * the one element that exits the old page and enters the new one. The old
- * page fades and lifts in 140ms; the incoming page rises 14px, settles from
- * scale 0.994, and fades in over 280ms (the --cf-dur-page move the site has
- * always used, now with the exit phase the CSS-only entrance never had).
+ * page fades and lifts in 180ms; the incoming page rises 14px, settles from
+ * scale 0.994, and fades in over 400ms after a 40ms beat (the reference
+ * motion's timing, replacing the 280ms --cf-dur-page move).
  * The animations themselves are the ::view-transition rules in
  * src/app/ux-pass.css; the navbar is pinned there as a named participant.
  *

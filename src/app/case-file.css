@@ -340,6 +340,27 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
 }
 .cf-btn-ghost:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--cf-shadow); }
 
+/* ── Button sheen ──────────────────────────────────────────────────────
+   A hard-edged light block sweeping across the face on hover: the
+   reference motion's sheen, kept flat (no gradient) for the brutalist
+   system. The sweep is clipped by overflow: hidden on the button; the
+   hard offset shadow is unaffected (shadows ignore overflow). Filled
+   buttons sweep paper-white; ghost buttons sweep the poster's red, so
+   the sheen reads on paper and on ink alike. Hover-capable pointers
+   only; the reduced-motion kill switch hides it. */
+.cf-btn, .cf-btn-ghost { overflow: hidden; }
+.cf-btn-ghost { position: relative; }
+.cf-btn::after, .cf-btn-ghost::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 34%;
+  background: #F4F1EC; opacity: 0.16; pointer-events: none;
+  transform: translateX(-160%) skewX(-18deg);
+  transition: transform 0.55s var(--cf-ease);
+}
+.cf-btn-ghost::after { background: var(--cf-red); opacity: 0.14; }
+@media (hover: hover) and (pointer: fine) {
+  .cf-btn:hover::after, .cf-btn-ghost:hover::after { transform: translateX(340%) skewX(-18deg); }
+}
+
 .cf-ulink {
   color: var(--cf-ink); font-weight: 700;
   text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px;
@@ -785,28 +806,30 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
    no-JS and SSR renders are fully visible. Travel is LARGE on purpose
    (56px rise + a scale settle, or a full clip wipe for section heads):
    the owner has rejected invisible animation twice, so entrances here
-   are built to be seen from across the room. Variants share the reveal
-   duration token; only the pre-state pose differs. */
-.cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(56px) scale(0.96); }
-.cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(56px) scale(0.92); }
+   are built to be seen from across the room. The pre-state also blurs
+   5px and sharpens on arrival (the reference motion's blur-to-sharp).
+   Variants share the reveal duration token; only the pre-state pose
+   differs. */
+.cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(56px) scale(0.96); filter: blur(5px); }
+.cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(56px) scale(0.92); filter: blur(5px); }
 /* The "left" variant slides in laterally again: index and credential
    rows travel the x axis, 56px, no settle. */
-.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateX(-56px); }
+.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateX(-56px); filter: blur(5px); }
 /* Wipe: section heads are uncovered left-to-right while sliding in, like
    a poster being pasted up. */
 .cf-rv[data-variant="wipe"][data-cf="pre"] {
-  opacity: 0; transform: translateX(-40px);
+  opacity: 0; transform: translateX(-40px); filter: blur(5px);
   clip-path: inset(0 100% 0 0);
 }
 .cf-rv[data-cf="in"] {
-  opacity: 1; transform: translateY(0);
-  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease);
+  opacity: 1; transform: translateY(0); filter: blur(0);
+  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease), filter var(--cf-dur-reveal) var(--cf-ease);
   transition-delay: var(--cf-d, 0s);
 }
 .cf-rv[data-variant="wipe"][data-cf="in"] {
   transform: translateX(0);
   clip-path: inset(0 0 0 0);
-  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease), clip-path var(--cf-dur-reveal) var(--cf-ease);
+  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease), clip-path var(--cf-dur-reveal) var(--cf-ease), filter var(--cf-dur-reveal) var(--cf-ease);
   transition-delay: var(--cf-d, 0s);
 }
 /* A scale-variant reveal ends at scale(1), not translateY(0) alone. */
@@ -836,17 +859,19 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
   100% { transform: scale(1.9); opacity: 0; }
 }
 
-/* Pointer wash for document surfaces (credentials wall): a FLAT red tint
-   that follows the pointer BEHIND the documents (z-index -1 inside an
-   isolated wrapper), so text and paper never lose contrast. It was a soft
-   radial spotlight in earlier systems; the brutalist system admits no
-   gradients, so the wash is a hard-edged flat field clipped to a block
-   around the pointer. Set --mx/--my from JS; coarse pointers never see it. */
+/* Pointer wash for document surfaces (credentials wall, case cards): a
+   FLAT red tint that follows the pointer BEHIND the documents (z-index -1
+   inside an isolated wrapper), so text and paper never lose contrast. The
+   wash is a hard-edged 240px disc clipped by a hard-stop mask around the
+   pointer (--mx/--my, set by SpotWrap on rAF): flat colour, no gradient
+   falloff, so the brutalist rule holds. Coarse pointers never see it. */
 .cf-spot { position: relative; isolation: isolate; }
 .cf-spot::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   opacity: 0; transition: opacity var(--cf-dur-ui) var(--cf-ease);
   background: rgba(173, 1, 23, 0.07);
+  -webkit-mask-image: radial-gradient(circle 120px at var(--mx, 50%) var(--my, 50%), #000 0 119px, transparent 120px);
+  mask-image: radial-gradient(circle 120px at var(--mx, 50%) var(--my, 50%), #000 0 119px, transparent 120px);
 }
 html[data-theme="dark"] .cf-spot::before {
   background: rgba(173, 1, 23, 0.1);
@@ -920,10 +945,51 @@ html[data-theme="dark"] .cf-spot::before {
    come from the theme tokens, so on the dark ground it reads as a paper-
    framed block with a red offset. */
 .cf-hud {
-  position: relative; overflow: hidden;
+  /* isolation: the hero glow is a negative-z child and must paint above
+     this panel's own background, not behind it. */
+  position: relative; overflow: hidden; isolation: isolate;
   background: #141414; color: #F4F1EC;
   border: 3px solid var(--cf-ink);
   box-shadow: 14px 14px 0 var(--cf-shadow);
+}
+
+/* ── Hero glow + name shimmer (kenny-motion) ──────────────────────────
+   The reference motion's hero glow: a faint red radial wash behind the
+   HUD panel's top-right corner, fading in over 1.4s with the load
+   sequence. It is a negative-z child of the isolated .cf-hud, so it
+   paints above the panel's ink background and below every content
+   block, and overflow: hidden clips it to the panel. Under reduced
+   motion the kill switch snaps the fade to its end state: a static
+   wash, which is the point. */
+.cf-hero-glow {
+  position: absolute; z-index: -1; pointer-events: none;
+  width: 480px; height: 480px; right: -110px; top: -140px;
+  background: radial-gradient(closest-side, rgba(173, 1, 23, 0.22), rgba(173, 1, 23, 0) 72%);
+  animation: cf-glow-in 1.4s var(--cf-ease) 0.15s both;
+}
+@keyframes cf-glow-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Name shimmer: the reference motion's slow gradient sweep across the
+   clipped name text. The gradient is the name's own colour with one
+   lighter band, so the name reads its flat colour whenever the sweep
+   is off-screen. 7s loop, 1.2s delay, like the reference. The
+   reduced-motion kill switch removes the gradient and restores the
+   flat colours outright. */
+.cf-shimmer-paper, .cf-shimmer-red {
+  background-clip: text; -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  background-size: 200% 100%;
+  animation: cf-name-sweep 7s linear 1.2s infinite;
+}
+.cf-shimmer-paper {
+  background-image: linear-gradient(100deg, #F4F1EC 0%, #F4F1EC 40%, #FFFFFF 50%, #F4F1EC 60%, #F4F1EC 100%);
+}
+.cf-shimmer-red {
+  background-image: linear-gradient(100deg, var(--cf-red) 0%, var(--cf-red) 40%, #FF6B5E 50%, var(--cf-red) 60%, var(--cf-red) 100%);
+}
+@keyframes cf-name-sweep {
+  from { background-position: 200% 0; }
+  to { background-position: 0% 0; }
 }
 .cf-hud-dim { color: #9A968C; }
 .cf-hud-line { border-color: #3A3A38; }
@@ -1028,7 +1094,7 @@ html[data-theme="dark"] .cf-spot::before {
   }
   .cf-load, .cf-load-fade { opacity: 1 !important; animation: none !important; }
   .cf-rule-draw { transform: scaleX(1) !important; animation: none !important; }
-  .cf-rv[data-cf="pre"] { opacity: 1 !important; transform: none !important; }
+  .cf-rv[data-cf="pre"] { opacity: 1 !important; transform: none !important; filter: none !important; }
   .cf-stamp-slam { opacity: max(var(--o, 0.9), 0.9) !important; animation: none !important; }
   .cf-strike::after { transform: scaleX(1) !important; transition: none !important; }
   .cf-exhibit-frame { transition: none !important; }
@@ -1043,6 +1109,9 @@ html[data-theme="dark"] .cf-spot::before {
   .cf-live-dot { animation: none !important; }
   .cf-spot::before { display: none !important; }
   .cf-photo-scan { display: none !important; }
+  .cf-btn::after, .cf-btn-ghost::after { display: none !important; }
+  .cf-shimmer-paper { animation: none !important; background: none !important; color: #F4F1EC !important; -webkit-text-fill-color: #F4F1EC !important; }
+  .cf-shimmer-red { animation: none !important; background: none !important; color: var(--cf-red) !important; -webkit-text-fill-color: var(--cf-red) !important; }
   .cf-companion-tag i { animation: none !important; }
   .cf-rv[data-variant="wipe"][data-cf="pre"] { clip-path: none !important; }
 }

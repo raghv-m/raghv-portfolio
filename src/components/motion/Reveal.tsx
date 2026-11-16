@@ -8,8 +8,9 @@ import { EASE_OUT } from "@/components/casefile/motion";
 /**
  * Framer-motion scroll reveal for the home page's biggest sections,
  * layered inside the site's existing casefile Reveal system (which is
- * CSS/IntersectionObserver based): 40px of travel, a fade, 0.7s on the
- * shared expo-out curve, once, when a quarter of the block is in view.
+ * CSS/IntersectionObserver based): 40px of travel, a fade, a blur that
+ * sharpens, 0.7s on the shared expo-out curve, once, when a quarter of
+ * the block is in view.
  *
  * Degrades the same way the casefile system does: the hidden state only
  * exists after mount, so server renders and no-JS visits are fully
@@ -18,10 +19,11 @@ import { EASE_OUT } from "@/components/casefile/motion";
  * the same trigger (used on section heads in place of an eyebrow rule).
  */
 const itemV: Variants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 40, filter: "blur(6px)" },
   show: (delay: number) => ({
     opacity: 1,
     y: 0,
+    filter: "blur(0px)",
     transition: { duration: 0.7, ease: EASE_OUT, delay },
   }),
 };

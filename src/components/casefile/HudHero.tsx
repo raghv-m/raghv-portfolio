@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion, useAnimationControls, type Variants } from "framer-motion";
 
 import { ProgIndicator } from "./Prog";
+import { Magnetic } from "./Magnetic";
 import { EASE_OUT } from "./motion";
 import { bootLoaderWillPlay } from "../motion/bootGate";
 
@@ -51,7 +52,8 @@ function pad(n: number) {
 }
 
 /* Entrance choreography (feat/hero-animation-2026-11): the panel's
-   blocks rise 48px and fade in on the shared expo-out curve, staggered
+   blocks rise 48px, fade in, and sharpen from a 6px blur on the shared
+   expo-out curve, staggered
    a tenth of a second apart, and the two name lines uncover inside
    clipped spans. Deliberately large travel: the owner has rejected
    invisible animation twice. The root renders with initial={false}, so
@@ -64,8 +66,8 @@ const heroContainerV: Variants = {
 };
 
 const heroItemV: Variants = {
-  hidden: { opacity: 0, y: 48 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.85, ease: EASE_OUT } },
+  hidden: { opacity: 0, y: 48, filter: "blur(6px)" },
+  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.85, ease: EASE_OUT } },
 };
 
 const heroLineV: Variants = {
@@ -152,6 +154,9 @@ export function HudHero() {
       initial={false}
       animate={heroControls}
     >
+      {/* Hero glow: the faint red wash behind the panel's top-right
+          corner, fading in with the load sequence. Pure CSS. */}
+      <div className="cf-hero-glow" aria-hidden="true" />
 
       {/* ── Top strip: corner readouts ─────────────────────────────── */}
       <motion.div
@@ -239,12 +244,12 @@ export function HudHero() {
                 negative-margin pair gives the "g" descender room inside
                 the clip box without moving the layout. */}
             <span className="block overflow-hidden" style={{ paddingBottom: "0.12em", marginBottom: "-0.12em" }}>
-              <motion.span variants={heroLineV} className="block">
+              <motion.span variants={heroLineV} className="block cf-shimmer-paper">
                 Raghav
               </motion.span>
             </span>
             <span className="block overflow-hidden" style={{ paddingBottom: "0.12em", marginBottom: "-0.12em" }}>
-              <motion.span variants={heroLineV} className="block" style={{ color: "var(--cf-red)" }}>
+              <motion.span variants={heroLineV} className="block cf-shimmer-red">
                 Mahajan
               </motion.span>
             </span>
@@ -280,21 +285,25 @@ export function HudHero() {
               link the email used to occupy, so the business path stays
               one click away without competing. */}
           <motion.div variants={heroItemV} className="flex flex-wrap items-center gap-4 mt-8">
-            <Link
-              href="/investigations/lab-001-ssh-brute-force"
-              className="cf-btn cf-btn-red"
-              style={{ boxShadow: "5px 5px 0 #F4F1EC" }}
-            >
-              Read the investigation
-            </Link>
-            <a
-              href="/resume.pdf"
-              download="Raghav_Mahajan_Resume.pdf"
-              className="cf-btn-ghost"
-              style={{ borderColor: "#F4F1EC", color: "#F4F1EC", boxShadow: "5px 5px 0 var(--cf-red)" }}
-            >
-              Resume ↓
-            </a>
+            <Magnetic strength={12}>
+              <Link
+                href="/investigations/lab-001-ssh-brute-force"
+                className="cf-btn cf-btn-red"
+                style={{ boxShadow: "5px 5px 0 #F4F1EC" }}
+              >
+                Read the investigation
+              </Link>
+            </Magnetic>
+            <Magnetic strength={12}>
+              <a
+                href="/resume.pdf"
+                download="Raghav_Mahajan_Resume.pdf"
+                className="cf-btn-ghost"
+                style={{ borderColor: "#F4F1EC", color: "#F4F1EC", boxShadow: "5px 5px 0 var(--cf-red)" }}
+              >
+                Resume ↓
+              </a>
+            </Magnetic>
             <Link
               href="/estimate"
               className="cf-mono font-bold text-[13.5px] uppercase"

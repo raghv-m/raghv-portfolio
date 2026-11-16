@@ -832,16 +832,25 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
    48px rise, 6px blur sharpening, 0.85s, 0.1s stagger steps via --cf-d;
    the name lines uncover inside their clips over 0.9s. The uncover runs
    on its own middle span so it never fights the shimmer animation on
-   the name text itself (one element, one animation shorthand). */
-.rv-js .cf-hero-in { opacity: 0; animation: cf-hero-safety 0.01s linear 5s forwards; }
-@keyframes cf-hero-safety { to { opacity: 1; } }
+   the name text itself (one element, one animation shorthand).
+   Pointer events stay OFF each block until its own rise completes
+   (pointer-events flips to auto in the last 1% of cf-hero-rise, and
+   the 5s safety restores it too): hover must never latch while a block
+   is still hidden, or the latch spends the button sheen's one-shot
+   sweep invisibly and steady hover then shows nothing. Verified Nov 15
+   on the real app: a pointer parked over the hero button during the
+   entrance left the sheen parked at its end state. Reduced motion
+   forces pointer events back on in the kill switch below. */
+.rv-js .cf-hero-in { opacity: 0; pointer-events: none; animation: cf-hero-safety 0.01s linear 5s forwards; }
+@keyframes cf-hero-safety { to { opacity: 1; pointer-events: auto; } }
 .rv-js .cf-hero-go .cf-hero-in {
   animation: cf-hero-rise 0.85s var(--cf-ease) both;
   animation-delay: var(--cf-d, 0s);
 }
 @keyframes cf-hero-rise {
-  from { opacity: 0; transform: translateY(48px); filter: blur(6px); }
-  to { opacity: 1; transform: translateY(0); filter: blur(0px); }
+  from { opacity: 0; transform: translateY(48px); filter: blur(6px); pointer-events: none; }
+  99% { pointer-events: none; }
+  to { opacity: 1; transform: translateY(0); filter: blur(0px); pointer-events: auto; }
 }
 .rv-js .cf-hero-line { transform: translateY(112%); animation: cf-hero-line-safety 0.01s linear 5s forwards; }
 @keyframes cf-hero-line-safety { to { transform: translateY(0); } }
@@ -1159,7 +1168,7 @@ html[data-theme="dark"] .cf-spot::before {
   .cf-load, .cf-load-fade { opacity: 1 !important; animation: none !important; }
   /* Hero entrance: the pre-go hidden states must never survive here
      (the go class is never added under reduced motion). */
-  .cf-hero-in { opacity: 1 !important; animation: none !important; transform: none !important; filter: none !important; }
+  .cf-hero-in { opacity: 1 !important; animation: none !important; transform: none !important; filter: none !important; pointer-events: auto !important; }
   .cf-hero-line { transform: none !important; animation: none !important; }
   .cf-rule-draw { transform: scaleX(1) !important; animation: none !important; }
   .cf-rv[data-cf="pre"] { opacity: 1 !important; transform: none !important; filter: none !important; }

@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useAnimationControls, type Variants } from "framer-motion";
 
 import { ProgIndicator } from "./Prog";
 import { Magnetic } from "./Magnetic";
-import { EASE_OUT } from "./motion";
 import { bootLoaderWillPlay } from "../motion/bootGate";
 
 /**
@@ -23,9 +21,9 @@ import { bootLoaderWillPlay } from "../motion/bootGate";
  * blinks, a red scan line sweeps the panel on an 8s loop, the clock and
  * the session timer tick once a second. On top of that, the entrance
  * choreography (feat/hero-animation-2026-11) rises the panel's blocks
- * in a framer-motion stagger timed to the home page's boot loader; see
- * heroItemV below. Under prefers-reduced-motion every line is printed
- * in full and nothing moves.
+ * in a CSS stagger timed to the home page's boot loader; see the
+ * entrance note below. Under prefers-reduced-motion every line is
+ * printed in full and nothing moves.
  *
  * Readouts stay honest: the meters use numbers printed elsewhere on this
  * site (TryHackMe SOC Level 1 at 65% is from the About narrative; SC-200
@@ -53,27 +51,27 @@ function pad(n: number) {
 
 /* Entrance choreography (feat/hero-animation-2026-11): the panel's
    blocks rise 48px, fade in, and sharpen from a 6px blur on the shared
-   expo-out curve, staggered
-   a tenth of a second apart, and the two name lines uncover inside
-   clipped spans. Deliberately large travel: the owner has rejected
-   invisible animation twice. The root renders with initial={false}, so
-   server HTML and no-JS visits are fully visible; the hidden pose is
-   only ever applied from the mount effect below, and never under
-   prefers-reduced-motion. */
-const heroContainerV: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
-};
+   expo-out curve, staggered a tenth of a second apart, and the two name
+   lines uncover inside clipped spans. Deliberately large travel: the
+   owner has rejected invisible animation twice.
+   The choreography is CSS-keyed, not framer-motion: the blocks carry
+   .cf-hero-in (hidden from the first paint whenever the rv-js class is
+   present, i.e. whenever JS runs at all) and this component only adds
+   the .cf-hero-go class once mounted, after the boot-loader delay. The
+   old mechanism (initial={false} plus controls.set("hidden") in a mount
+   effect) painted the finished hero, then snapped it hidden and
+   re-animated: the site appeared, then the animation happened. Hidden
+   from the first paint, the animation IS the arrival. No-JS visits
+   never get rv-js, so the hero is simply there; the reduced-motion kill
+   switch in case-file.css forces everything visible; a 5s safety
+   animation guarantees nothing can stay hidden if the go class never
+   lands. The keyframes live in case-file.css next to the other entrance
+   machinery. */
+const HERO_DELAYS = ["0s", "0.1s", "0.2s", "0.3s", "0.4s", "0.5s", "0.6s", "0.7s", "0.8s"] as const;
 
-const heroItemV: Variants = {
-  hidden: { opacity: 0, y: 48, filter: "blur(6px)" },
-  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.85, ease: EASE_OUT } },
-};
-
-const heroLineV: Variants = {
-  hidden: { y: "112%" },
-  show: { y: "0%", transition: { duration: 0.9, ease: EASE_OUT } },
-};
+function heroDelay(slot: number): CSSProperties {
+  return { "--cf-d": HERO_DELAYS[slot] } as CSSProperties;
+}
 
 function Meter({ label, on, note }: { label: string; on: number; note: string }) {
   return (
@@ -92,19 +90,21 @@ export function HudHero() {
   const [boot, setBoot] = useState(BOOT_LINES.join("\n"));
   const [clock, setClock] = useState("--:--:--");
   const [session, setSession] = useState("00:00:00");
-  const heroControls = useAnimationControls();
+  const [go, setGo] = useState(false);
 
   // Entrance timing: when the boot loader is playing (same session
   // predicate the loader itself uses, read before the loader writes its
-  // flag on exit), the reveal holds ~1.15s so it starts as the wipe
-  // lifts; on repeat visits it starts almost at once. Reduced motion
-  // skips the hidden pose entirely and the panel is simply there.
+  // flag on exit), the go class holds ~1.15s so the rise starts as the
+  // wipe lifts; on repeat visits it lands almost at once. The blocks
+  // are already hidden by CSS from the first paint, so this only ever
+  // STARTS the animation, never hides finished content. Reduced motion
+  // never adds the class: the kill switch shows the panel as-is.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const delay = bootLoaderWillPlay() ? 1.15 : 0.1;
-    heroControls.set("hidden");
-    void heroControls.start("show", { delay });
-  }, [heroControls]);
+    const t = setTimeout(() => setGo(true), delay * 1000);
+    return () => clearTimeout(t);
+  }, []);
 
   // Boot sequence: retype the readout lines once on load. SSR and
   // reduced-motion keep the full text from the initial state. Audit-fix:
@@ -147,22 +147,18 @@ export function HudHero() {
   }, []);
 
   return (
-    <motion.section
-      className="cf-hud"
+    <section
+      className={go ? "cf-hud cf-hero-go" : "cf-hud"}
       aria-label="Raghav Mahajan · readout"
-      variants={heroContainerV}
-      initial={false}
-      animate={heroControls}
     >
       {/* Hero glow: the faint red wash behind the panel's top-right
           corner, fading in with the load sequence. Pure CSS. */}
       <div className="cf-hero-glow" aria-hidden="true" />
 
       {/* ── Top strip: corner readouts ─────────────────────────────── */}
-      <motion.div
-        variants={heroItemV}
-        className="grid gap-x-6 gap-y-2 px-5 py-4 sm:grid-cols-[1fr_auto_1fr] items-start"
-        style={{ borderBottom: "2px solid #3A3A38" }}
+      <div
+        className="cf-hero-in grid gap-x-6 gap-y-2 px-5 py-4 sm:grid-cols-[1fr_auto_1fr] items-start"
+        style={{ ...heroDelay(0), borderBottom: "2px solid #3A3A38" }}
       >
         <div className="cf-mono uppercase" style={{ letterSpacing: "0.14em" }}>
           <p className="text-[12.5px] font-bold" style={{ color: "#F4F1EC" }}>
@@ -189,11 +185,11 @@ export function HudHero() {
             Local {clock} · Session {session}
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* ── Main deck: photograph | headline + index ───────────────── */}
       <div className="grid lg:grid-cols-[5fr_7fr]">
-        <motion.div variants={heroItemV} className="p-5 sm:p-6">
+        <div className="cf-hero-in p-5 sm:p-6" style={heroDelay(1)}>
           <div
             className="cf-scanlines"
             style={{ border: "3px solid #F4F1EC", boxShadow: "8px 8px 0 var(--cf-red)" }}
@@ -221,50 +217,50 @@ export function HudHero() {
               </span>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         <div className="cf-hud-main p-5 sm:p-7 lg:py-7">
           {/* Boot readout */}
-          <motion.div
-            variants={heroItemV}
-            className="cf-mono text-[12px] leading-[1.9]"
-            style={{ color: "#9A968C", whiteSpace: "pre-wrap", minHeight: 84 }}
+          <div
+            className="cf-hero-in cf-mono text-[12px] leading-[1.9]"
+            style={{ ...heroDelay(2), color: "#9A968C", whiteSpace: "pre-wrap", minHeight: 84 }}
             aria-label={BOOT_LINES.join(". ")}
           >
             <span aria-hidden="true">{boot}</span>
             <span className="cf-cursor" aria-hidden="true" style={{ marginLeft: 6 }} />
-          </motion.div>
+          </div>
 
-          <motion.h1
-            variants={heroItemV}
-            className="cf-display"
-            style={{ fontSize: "clamp(54px, 7.4vw, 106px)", lineHeight: 0.94, marginTop: 10, color: "#F4F1EC" }}
+          <h1
+            className="cf-hero-in cf-display"
+            style={{ ...heroDelay(3), fontSize: "clamp(54px, 7.4vw, 106px)", lineHeight: 0.94, marginTop: 10, color: "#F4F1EC" }}
           >
             {/* Each line uncovers inside a clipped span. The padding /
                 negative-margin pair gives the "g" descender room inside
-                the clip box without moving the layout. */}
+                the clip box without moving the layout. The uncover runs
+                on its own middle span so it never fights the shimmer
+                animation on the name text itself. */}
             <span className="block overflow-hidden" style={{ paddingBottom: "0.12em", marginBottom: "-0.12em" }}>
-              <motion.span variants={heroLineV} className="block cf-shimmer-paper">
-                Raghav
-              </motion.span>
+              <span className="block cf-hero-line" style={heroDelay(3)}>
+                <span className="block cf-shimmer-paper">Raghav</span>
+              </span>
             </span>
             <span className="block overflow-hidden" style={{ paddingBottom: "0.12em", marginBottom: "-0.12em" }}>
-              <motion.span variants={heroLineV} className="block cf-shimmer-red">
-                Mahajan
-              </motion.span>
+              <span className="block cf-hero-line" style={heroDelay(3)}>
+                <span className="block cf-shimmer-red">Mahajan</span>
+              </span>
             </span>
-          </motion.h1>
+          </h1>
 
           {/* J1 (forensic-fix pass, owner decision: reverses U1): the
               outcome line is SOC-first. Every fact in it is printed
               elsewhere on this page: the four-node Wazuh lab (bottom
               strip), the documented runs (homepage), and the open-to-SOC
               status (top strip). */}
-          <motion.p variants={heroItemV} className="cf-lede" style={{ color: "#D8D3C6", marginTop: 18, maxWidth: "46ch" }}>
+          <p className="cf-hero-in cf-lede" style={{ ...heroDelay(4), color: "#D8D3C6", marginTop: 18, maxWidth: "46ch" }}>
             I investigate attacks in a four-node home SOC lab and document every run. Open to SOC roles across Canada.
-          </motion.p>
+          </p>
 
-          <motion.nav variants={heroItemV} className="cf-hud-nav mt-7" aria-label="Sections">
+          <nav className="cf-hero-in cf-hud-nav mt-7" style={heroDelay(5)} aria-label="Sections">
             {NAV.map((item) => (
               <Link key={item.href} href={item.href}>
                 <span className="cf-hud-nav-no">{item.no}</span>
@@ -276,7 +272,7 @@ export function HudHero() {
                 </span>
               </Link>
             ))}
-          </motion.nav>
+          </nav>
 
           {/* J1 (forensic-fix pass, owner decision: reverses U1): ONE
               primary action, SOC-first. The filled block is now the
@@ -284,7 +280,7 @@ export function HudHero() {
               secondary; the estimator is demoted to the small mono text
               link the email used to occupy, so the business path stays
               one click away without competing. */}
-          <motion.div variants={heroItemV} className="flex flex-wrap items-center gap-4 mt-8">
+          <div className="cf-hero-in flex flex-wrap items-center gap-4 mt-8" style={heroDelay(6)}>
             <Magnetic strength={12}>
               <Link
                 href="/investigations/lab-001-ssh-brute-force"
@@ -317,19 +313,18 @@ export function HudHero() {
             >
               Need a website? Run the estimator →
             </Link>
-          </motion.div>
-          <motion.p
-            variants={heroItemV}
-            className="cf-mono cf-hud-dim text-[10.5px] uppercase mt-5"
-            style={{ letterSpacing: "0.1em" }}
+          </div>
+          <p
+            className="cf-hero-in cf-mono cf-hud-dim text-[10.5px] uppercase mt-5"
+            style={{ ...heroDelay(7), letterSpacing: "0.1em" }}
           >
             ↑ Recruiters: the resume is one click. No form. No funnel.
-          </motion.p>
+          </p>
         </div>
       </div>
 
       {/* ── Bottom strip: bio under a rule, then the data cells ────── */}
-      <motion.div variants={heroItemV} className="px-5 sm:px-6 py-6" style={{ borderTop: "2px solid #3A3A38" }}>
+      <div className="cf-hero-in px-5 sm:px-6 py-6" style={{ ...heroDelay(8), borderTop: "2px solid #3A3A38" }}>
         <p className="text-[15.5px] leading-[1.7] max-w-3xl" style={{ color: "#D8D3C6" }}>
           By day, Raghav builds websites for small businesses. By night, he hunts intruders in a home
           SOC lab. <span className="cf-u-red">Currently open to SOC analyst roles</span> anywhere in
@@ -364,7 +359,7 @@ export function HudHero() {
             </dd>
           </div>
         </dl>
-      </motion.div>
-    </motion.section>
+      </div>
+    </section>
   );
 }

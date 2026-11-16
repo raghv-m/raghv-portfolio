@@ -52,11 +52,16 @@
   --cf-ease-spring: cubic-bezier(0.34, 1.45, 0.46, 1);
   --cf-ease-inout: cubic-bezier(0.77, 0, 0.175, 1);
   --cf-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  /* The reference motion's expo-out, used ONLY by the page-head
+     entrance (cf-rise): the heading rise matches the reference curve
+     exactly, while the rest of the system keeps --cf-ease. */
+  --cf-ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
   /* Motion system, formalized. One vocabulary for every animation in the
      dossier scope; new code uses ONLY these tokens.
        feedback  150-250ms — direct manipulation response (hover, press, focus)
        reveal    800ms     — scroll-triggered entrances, LARGE travel (48px)
-       entrance  850ms     — first-paint choreography (hero, page heads)
+       entrance  700ms     — page-head choreography: blur-to-sharp rise,
+                           staggered 75ms steps, settling inside ~0.85s
        page      280ms     — route-to-route transition (never above 300ms)
        ambient   16s       — environmental loop, perceptible within seconds
      Stagger rule: 75ms per item (band 60-90ms), capped at 450ms total,
@@ -64,7 +69,7 @@
   --cf-dur-feedback: 180ms;
   --cf-dur-ui: 250ms;
   --cf-dur-reveal: 800ms;
-  --cf-dur-entrance: 850ms;
+  --cf-dur-entrance: 700ms;
   --cf-dur-page: 280ms;
   --cf-dur-ambient: 16s;
   --cf-stagger: 75ms;
@@ -791,25 +796,62 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
 .cf-scope .legal strong { color: var(--cf-ink) !important; }
 
 /* ── Entrance + scroll reveal machinery ──────────────────────────────────── */
+/* Page-head entrance (cf-load): the reference motion's riseIn, a
+   blur-to-sharp rise on the reference expo-out curve, staggered through
+   --cf-d. It starts at navigation time (t=0), never delayed: the
+   animation runs CONCURRENTLY with the view-transition snapshot rise
+   (400ms + 40ms beat), so the heading is visibly arriving with the page
+   and settles ~0.85s after the click. A previous version pushed every
+   delay 0.44s past the snapshot (the .cf-vt-settling shift); that left
+   the hero blank for the whole transition and then faded the heading in
+   late, 1.6s after the click. The shift is gone on purpose: do not
+   re-add a post-snapshot delay here. The snapshot is one flat image, so
+   the per-element blur/rise/stagger lives on the live DOM, timed to the
+   transition window, not after it. */
 @keyframes cf-rise {
-  from { opacity: 0; transform: translateY(36px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0px); }
 }
 @keyframes cf-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cf-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.cf-load { opacity: 0; animation: cf-rise var(--cf-dur-entrance) var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
+.cf-load { opacity: 0; animation: cf-rise var(--cf-dur-entrance) var(--cf-ease-rise) forwards; animation-delay: var(--cf-d, 0s); }
 .cf-load-fade { opacity: 0; animation: cf-fade var(--cf-dur-entrance) var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
-/* Route-change settle: on client-side navigations the template adds
-   .cf-vt-settling, which pushes every load-in delay past the 440ms
-   view-transition snapshot (400ms enter + 40ms beat), so the heading
-   stagger plays visibly after the new page rises in instead of running
-   hidden under the snapshot. The existing --cf-d steps keep their
-   relative stagger; first paint is unaffected (no class on first
-   mount), and the reduced-motion kill switch below still forces these
-   elements visible with no animation. */
-.cf-vt-settling .cf-load,
-.cf-vt-settling .cf-load-fade {
-  animation-delay: calc(var(--cf-d, 0s) + 0.44s);
+
+/* Home hero entrance: hidden from the FIRST paint, animated by CSS,
+   started by JS. The old mechanism (framer-motion initial={false} plus
+   controls.set("hidden") in a mount effect) painted the finished hero,
+   then snapped it hidden and re-animated: the site appeared, then the
+   animation happened. These rules invert it. With JS present (the rv-js
+   class, set by the before-paint script in layout.tsx) the blocks start
+   at opacity 0 in the served HTML; HudHero adds .cf-hero-go once mounted
+   (after the boot-loader delay when the loader plays, ~0.1s otherwise),
+   which starts the CSS rise. Without JS the class never lands and the
+   hero is simply there. The 5s safety animations guarantee nothing can
+   stay hidden if the go class never lands (the same dead-man's-switch
+   philosophy as Reveal's timer). Timing mirrors the old choreography:
+   48px rise, 6px blur sharpening, 0.85s, 0.1s stagger steps via --cf-d;
+   the name lines uncover inside their clips over 0.9s. The uncover runs
+   on its own middle span so it never fights the shimmer animation on
+   the name text itself (one element, one animation shorthand). */
+.rv-js .cf-hero-in { opacity: 0; animation: cf-hero-safety 0.01s linear 5s forwards; }
+@keyframes cf-hero-safety { to { opacity: 1; } }
+.rv-js .cf-hero-go .cf-hero-in {
+  animation: cf-hero-rise 0.85s var(--cf-ease) both;
+  animation-delay: var(--cf-d, 0s);
+}
+@keyframes cf-hero-rise {
+  from { opacity: 0; transform: translateY(48px); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0px); }
+}
+.rv-js .cf-hero-line { transform: translateY(112%); animation: cf-hero-line-safety 0.01s linear 5s forwards; }
+@keyframes cf-hero-line-safety { to { transform: translateY(0); } }
+.rv-js .cf-hero-go .cf-hero-line {
+  animation: cf-hero-line-up 0.9s var(--cf-ease) both;
+  animation-delay: var(--cf-d, 0s);
+}
+@keyframes cf-hero-line-up {
+  from { transform: translateY(112%); }
+  to { transform: translateY(0); }
 }
 .cf-rule-draw {
   transform: scaleX(0); transform-origin: left center;
@@ -1115,6 +1157,10 @@ html[data-theme="dark"] .cf-spot::before {
     transition-delay: 0s !important;
   }
   .cf-load, .cf-load-fade { opacity: 1 !important; animation: none !important; }
+  /* Hero entrance: the pre-go hidden states must never survive here
+     (the go class is never added under reduced motion). */
+  .cf-hero-in { opacity: 1 !important; animation: none !important; transform: none !important; filter: none !important; }
+  .cf-hero-line { transform: none !important; animation: none !important; }
   .cf-rule-draw { transform: scaleX(1) !important; animation: none !important; }
   .cf-rv[data-cf="pre"] { opacity: 1 !important; transform: none !important; filter: none !important; }
   .cf-stamp-slam { opacity: max(var(--o, 0.9), 0.9) !important; animation: none !important; }

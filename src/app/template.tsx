@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -25,13 +24,15 @@ import { ViewTransition } from "@/components/casefile/ViewTransition";
  * props close that gap, and the universal and root selectors in
  * ux-pass.css cover the fallback cases.
  *
- * The settling wrapper delays the page's own load-in stagger (cf-load)
- * until the transition snapshot lifts, so the heading steps play visibly
- * after the rise instead of running hidden under the snapshot. The
- * cfHasMounted latch keeps the first paint untouched: the class only
- * appears on client-side navigations, never on the first mount. It is
- * module state, so it survives template remounts; it only flips inside
- * an effect, so server renders and hydration always see it unset.
+ * The page's own heading entrance (cf-load) is deliberately NOT delayed
+ * past this transition: its CSS animation starts at navigation time and
+ * runs concurrently with the snapshot rise, so the heading arrives WITH
+ * the page and settles ~0.85s after the click. A previous version added
+ * a .cf-vt-settling wrapper that pushed every load-in delay 0.44s past
+ * the snapshot; that left the hero blank for the whole transition and
+ * then faded the heading in late. Do not re-add a post-snapshot delay:
+ * the snapshot is one flat image, so per-element effects live on the
+ * live DOM, timed to the transition window, not after it.
  *
  * History, because the previous version of this file claimed otherwise:
  * React's <ViewTransition> IS available to the App Router (its React build
@@ -43,19 +44,12 @@ import { ViewTransition } from "@/components/casefile/ViewTransition";
  * App areas (admin, portal, auth) render bare: no wrapper, no animation.
  */
 
-// Flips true after the first client mount and stays true. See the comment
-// above: the settling shift is for navigations only, never first paint.
-let cfHasMounted = false;
-
 export default function Template({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  useEffect(() => {
-    cfHasMounted = true;
-  }, []);
   if (isAppArea(pathname)) return <>{children}</>;
   return (
     <ViewTransition enter="cf-vt" exit="cf-vt" update="cf-vt" default="cf-vt">
-      <div className={cfHasMounted ? "cf-vt-settling" : undefined}>{children}</div>
+      {children}
     </ViewTransition>
   );
 }

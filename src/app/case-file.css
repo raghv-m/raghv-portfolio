@@ -346,17 +346,19 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
    system. The sweep is clipped by overflow: hidden on the button; the
    hard offset shadow is unaffected (shadows ignore overflow). Filled
    buttons sweep paper-white; ghost buttons sweep the poster's red, so
-   the sheen reads on paper and on ink alike. Hover-capable pointers
-   only; the reduced-motion kill switch hides it. */
+   the sheen reads on paper and on ink alike. The block is wide (45%)
+   and strong (0.32 filled, 0.28 ghost) and the sweep runs 0.75s, so
+   the pass reads plainly instead of flashing past unseen.
+   Hover-capable pointers only; the reduced-motion kill switch hides it. */
 .cf-btn, .cf-btn-ghost { overflow: hidden; }
 .cf-btn-ghost { position: relative; }
 .cf-btn::after, .cf-btn-ghost::after {
-  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 34%;
-  background: #F4F1EC; opacity: 0.16; pointer-events: none;
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%;
+  background: #F4F1EC; opacity: 0.32; pointer-events: none;
   transform: translateX(-160%) skewX(-18deg);
-  transition: transform 0.55s var(--cf-ease);
+  transition: transform 0.75s var(--cf-ease);
 }
-.cf-btn-ghost::after { background: var(--cf-red); opacity: 0.14; }
+.cf-btn-ghost::after { background: var(--cf-red); opacity: 0.28; }
 @media (hover: hover) and (pointer: fine) {
   .cf-btn:hover::after, .cf-btn-ghost:hover::after { transform: translateX(340%) skewX(-18deg); }
 }
@@ -821,8 +823,12 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
   opacity: 0; transform: translateX(-40px); filter: blur(5px);
   clip-path: inset(0 100% 0 0);
 }
+/* Settled state carries filter: none, not blur(0): a live filter on the
+   wrapper flattens 3D descendants, which hid the pointer tilt on cards
+   wrapped by Reveal. None renders exactly like blur(0), and the
+   sharpen transition from the pre-state still runs. */
 .cf-rv[data-cf="in"] {
-  opacity: 1; transform: translateY(0); filter: blur(0);
+  opacity: 1; transform: translateY(0); filter: none;
   transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease), filter var(--cf-dur-reveal) var(--cf-ease);
   transition-delay: var(--cf-d, 0s);
 }
@@ -860,14 +866,18 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
 }
 
 /* Pointer wash for document surfaces (credentials wall, case cards): a
-   FLAT red tint that follows the pointer BEHIND the documents (z-index -1
-   inside an isolated wrapper), so text and paper never lose contrast. The
-   wash is a hard-edged 240px disc clipped by a hard-stop mask around the
-   pointer (--mx/--my, set by SpotWrap on rAF): flat colour, no gradient
-   falloff, so the brutalist rule holds. Coarse pointers never see it. */
+   FLAT red tint that follows the pointer across the card face. The wash
+   sits ABOVE the card fill (z-index 1 inside an isolated wrapper): the
+   first version parked it at z-index -1, where the card's own opaque
+   background covered it completely, so no disc ever showed. It stays a
+   hard-edged 240px disc clipped by a hard-stop mask around the pointer
+   (--mx/--my, set by SpotWrap on rAF): flat colour, no gradient
+   falloff, so the brutalist rule holds. Pointer events pass through
+   it, and at 7% (10% dark) the tint never costs the text its contrast.
+   Coarse pointers never see it. */
 .cf-spot { position: relative; isolation: isolate; }
 .cf-spot::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   opacity: 0; transition: opacity var(--cf-dur-ui) var(--cf-ease);
   background: rgba(173, 1, 23, 0.07);
   -webkit-mask-image: radial-gradient(circle 120px at var(--mx, 50%) var(--my, 50%), #000 0 119px, transparent 120px);

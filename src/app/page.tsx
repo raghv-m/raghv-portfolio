@@ -302,8 +302,8 @@ export default function HomePage() {
                   STEP {step.no} / 03
                 </p>
               </div>
-              <Reveal variant="left">
-                <TiltWrap>
+              <TiltWrap>
+                <Reveal variant="left">
                   <SpotWrap>
                     <div
                       className="cf-panel"
@@ -318,8 +318,8 @@ export default function HomePage() {
                       </div>
                     </div>
                   </SpotWrap>
-                </TiltWrap>
-              </Reveal>
+                </Reveal>
+              </TiltWrap>
             </div>
           ))}
         </div>

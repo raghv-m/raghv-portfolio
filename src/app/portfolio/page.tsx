@@ -482,9 +482,13 @@ export default function ProjectsPage() {
 
         {/* Featured: the live client site */}
         {showVic && (
-          <Reveal delay={0.05} className="mb-14">
-            <FeaturedVic project={vic} />
-          </Reveal>
+          <TiltWrap>
+            <SpotWrap>
+              <Reveal delay={0.05} className="mb-14">
+                <FeaturedVic project={vic} />
+              </Reveal>
+            </SpotWrap>
+          </TiltWrap>
         )}
 
         {/* Storyboard rail: every remaining case on one line, in file order */}

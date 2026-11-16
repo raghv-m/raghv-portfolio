@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { Callout } from "@/components/blog/Callout";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/config/site";
@@ -195,7 +196,7 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="lg:grid lg:grid-cols-4 lg:gap-10">
           {/* Sticky TOC sidebar — desktop */}
           {headings.length > 0 && (
-            <aside className="hidden lg:block">
+            <aside className="hidden lg:block cf-load" style={{ "--cf-d": "0.2s" } as CSSProperties}>
               <div className="sticky" style={{ top: "36px" }}>
                 <p className="cf-kicker mb-3" style={{ fontSize: "10.5px" }}>
                   ON THIS PAGE
@@ -225,7 +226,7 @@ export default async function BlogPostPage({ params }: Props) {
             )}
 
             {/* Filed document head */}
-            <header>
+            <header className="cf-load" style={{ "--cf-d": "0.12s" } as CSSProperties}>
               <div
                 className="cf-mono flex flex-wrap items-center gap-x-3 gap-y-1 mb-5"
                 style={{ fontSize: "11.5px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cf-muted)" }}
@@ -275,7 +276,7 @@ export default async function BlogPostPage({ params }: Props) {
             )}
 
             {/* MDX Content */}
-            <div className="cf-prose max-w-[72ch]">
+            <div className="cf-prose max-w-[72ch] cf-load" style={{ "--cf-d": "0.28s" } as CSSProperties}>
               <MDXRemote source={post.content} components={components} />
             </div>
 

@@ -19,6 +19,7 @@ export type ViewTransitionProps = {
   name?: string;
   enter?: ViewTransitionClass;
   exit?: ViewTransitionClass;
+  update?: ViewTransitionClass;
   share?: ViewTransitionClass;
   default?: ViewTransitionClass;
   className?: string;

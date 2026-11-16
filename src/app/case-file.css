@@ -52,11 +52,16 @@
   --cf-ease-spring: cubic-bezier(0.34, 1.45, 0.46, 1);
   --cf-ease-inout: cubic-bezier(0.77, 0, 0.175, 1);
   --cf-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  /* The reference motion's expo-out, used ONLY by the page-head
+     entrance (cf-rise): the heading rise matches the reference curve
+     exactly, while the rest of the system keeps --cf-ease. */
+  --cf-ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
   /* Motion system, formalized. One vocabulary for every animation in the
      dossier scope; new code uses ONLY these tokens.
        feedback  150-250ms — direct manipulation response (hover, press, focus)
        reveal    800ms     — scroll-triggered entrances, LARGE travel (48px)
-       entrance  850ms     — first-paint choreography (hero, page heads)
+       entrance  700ms     — page-head choreography: blur-to-sharp rise,
+                           staggered 75ms steps, settling inside ~0.85s
        page      280ms     — route-to-route transition (never above 300ms)
        ambient   16s       — environmental loop, perceptible within seconds
      Stagger rule: 75ms per item (band 60-90ms), capped at 450ms total,
@@ -64,7 +69,7 @@
   --cf-dur-feedback: 180ms;
   --cf-dur-ui: 250ms;
   --cf-dur-reveal: 800ms;
-  --cf-dur-entrance: 850ms;
+  --cf-dur-entrance: 700ms;
   --cf-dur-page: 280ms;
   --cf-dur-ambient: 16s;
   --cf-stagger: 75ms;
@@ -339,6 +344,43 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
   cursor: pointer;
 }
 .cf-btn-ghost:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--cf-shadow); }
+
+/* ── Button sheen ──────────────────────────────────────────────────────
+   A hard-edged light block sweeping across the face on hover: the
+   reference motion's sheen, kept flat (no gradient) for the brutalist
+   system. The sweep is clipped by overflow: hidden on the button; the
+   hard offset shadow is unaffected (shadows ignore overflow). Filled
+   buttons sweep paper-white; ghost buttons sweep the poster's red, so
+   the sheen reads on paper and on ink alike. The block is wide (45%)
+   and strong (0.32 filled, 0.28 ghost) and the sweep runs 0.75s, so
+   the pass reads plainly instead of flashing past unseen.
+   Travel is just past the button's own width: the block parks fully
+   hidden at -120% (its skewed top corner clears the left edge) and ends
+   fully hidden at +240% (its skewed bottom corner clears the right
+   edge), so the band is ON the face for nearly the whole 0.75s. The
+   earlier -160%/+340% travel sent the block 550px across a ~250px
+   button, and the front-loaded ease spent most of the 0.75s with the
+   block off the face: pixel sampling showed it visible for only ~140ms,
+   which read as "no sheen at all" in hover checks. Do not widen the
+   travel again without re-checking the on-face window in pixels.
+   The timing is linear, not the system expo-out ease: a sweep must
+   cross at constant speed, and the fast-out ease compressed even the
+   shortened travel into the first third of the 0.75s (pixel-verified).
+   Linear keeps the band on the face, moving steadily, for the full
+   pass in both directions.
+   Hover-capable pointers only; the reduced-motion kill switch hides it. */
+.cf-btn, .cf-btn-ghost { overflow: hidden; }
+.cf-btn-ghost { position: relative; }
+.cf-btn::after, .cf-btn-ghost::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%;
+  background: #F4F1EC; opacity: 0.32; pointer-events: none;
+  transform: translateX(-120%) skewX(-18deg);
+  transition: transform 0.75s linear;
+}
+.cf-btn-ghost::after { background: var(--cf-red); opacity: 0.28; }
+@media (hover: hover) and (pointer: fine) {
+  .cf-btn:hover::after, .cf-btn-ghost:hover::after { transform: translateX(240%) skewX(-18deg); }
+}
 
 .cf-ulink {
   color: var(--cf-ink); font-weight: 700;
@@ -768,14 +810,72 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
 .cf-scope .legal strong { color: var(--cf-ink) !important; }
 
 /* ── Entrance + scroll reveal machinery ──────────────────────────────────── */
+/* Page-head entrance (cf-load): the reference motion's riseIn, a
+   blur-to-sharp rise on the reference expo-out curve, staggered through
+   --cf-d. It starts at navigation time (t=0), never delayed: the
+   animation runs CONCURRENTLY with the view-transition snapshot rise
+   (400ms + 40ms beat), so the heading is visibly arriving with the page
+   and settles ~0.85s after the click. A previous version pushed every
+   delay 0.44s past the snapshot (the .cf-vt-settling shift); that left
+   the hero blank for the whole transition and then faded the heading in
+   late, 1.6s after the click. The shift is gone on purpose: do not
+   re-add a post-snapshot delay here. The snapshot is one flat image, so
+   the per-element blur/rise/stagger lives on the live DOM, timed to the
+   transition window, not after it. */
 @keyframes cf-rise {
-  from { opacity: 0; transform: translateY(36px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0px); }
 }
 @keyframes cf-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cf-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-.cf-load { opacity: 0; animation: cf-rise var(--cf-dur-entrance) var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
+.cf-load { opacity: 0; animation: cf-rise var(--cf-dur-entrance) var(--cf-ease-rise) forwards; animation-delay: var(--cf-d, 0s); }
 .cf-load-fade { opacity: 0; animation: cf-fade var(--cf-dur-entrance) var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
+
+/* Home hero entrance: hidden from the FIRST paint, animated by CSS,
+   started by JS. The old mechanism (framer-motion initial={false} plus
+   controls.set("hidden") in a mount effect) painted the finished hero,
+   then snapped it hidden and re-animated: the site appeared, then the
+   animation happened. These rules invert it. With JS present (the rv-js
+   class, set by the before-paint script in layout.tsx) the blocks start
+   at opacity 0 in the served HTML; HudHero adds .cf-hero-go once mounted
+   (after the boot-loader delay when the loader plays, ~0.1s otherwise),
+   which starts the CSS rise. Without JS the class never lands and the
+   hero is simply there. The 5s safety animations guarantee nothing can
+   stay hidden if the go class never lands (the same dead-man's-switch
+   philosophy as Reveal's timer). Timing mirrors the old choreography:
+   48px rise, 6px blur sharpening, 0.85s, 0.1s stagger steps via --cf-d;
+   the name lines uncover inside their clips over 0.9s. The uncover runs
+   on its own middle span so it never fights the shimmer animation on
+   the name text itself (one element, one animation shorthand).
+   Pointer events stay OFF each block until its own rise completes
+   (pointer-events flips to auto in the last 1% of cf-hero-rise, and
+   the 5s safety restores it too): hover must never latch while a block
+   is still hidden, or the latch spends the button sheen's one-shot
+   sweep invisibly and steady hover then shows nothing. Verified Nov 15
+   on the real app: a pointer parked over the hero button during the
+   entrance left the sheen parked at its end state. Reduced motion
+   forces pointer events back on in the kill switch below. */
+.rv-js .cf-hero-in { opacity: 0; pointer-events: none; animation: cf-hero-safety 0.01s linear 5s forwards; }
+@keyframes cf-hero-safety { to { opacity: 1; pointer-events: auto; } }
+.rv-js .cf-hero-go .cf-hero-in {
+  animation: cf-hero-rise 0.85s var(--cf-ease) both;
+  animation-delay: var(--cf-d, 0s);
+}
+@keyframes cf-hero-rise {
+  from { opacity: 0; transform: translateY(48px); filter: blur(6px); pointer-events: none; }
+  99% { pointer-events: none; }
+  to { opacity: 1; transform: translateY(0); filter: blur(0px); pointer-events: auto; }
+}
+.rv-js .cf-hero-line { transform: translateY(112%); animation: cf-hero-line-safety 0.01s linear 5s forwards; }
+@keyframes cf-hero-line-safety { to { transform: translateY(0); } }
+.rv-js .cf-hero-go .cf-hero-line {
+  animation: cf-hero-line-up 0.9s var(--cf-ease) both;
+  animation-delay: var(--cf-d, 0s);
+}
+@keyframes cf-hero-line-up {
+  from { transform: translateY(112%); }
+  to { transform: translateY(0); }
+}
 .cf-rule-draw {
   transform: scaleX(0); transform-origin: left center;
   animation: cf-draw 0.8s var(--cf-ease) forwards; animation-delay: var(--cf-d, 0.4s);
@@ -785,28 +885,34 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
    no-JS and SSR renders are fully visible. Travel is LARGE on purpose
    (56px rise + a scale settle, or a full clip wipe for section heads):
    the owner has rejected invisible animation twice, so entrances here
-   are built to be seen from across the room. Variants share the reveal
-   duration token; only the pre-state pose differs. */
-.cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(56px) scale(0.96); }
-.cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(56px) scale(0.92); }
+   are built to be seen from across the room. The pre-state also blurs
+   5px and sharpens on arrival (the reference motion's blur-to-sharp).
+   Variants share the reveal duration token; only the pre-state pose
+   differs. */
+.cf-rv[data-cf="pre"] { opacity: 0; transform: translateY(56px) scale(0.96); filter: blur(5px); }
+.cf-rv[data-variant="scale"][data-cf="pre"] { transform: translateY(56px) scale(0.92); filter: blur(5px); }
 /* The "left" variant slides in laterally again: index and credential
    rows travel the x axis, 56px, no settle. */
-.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateX(-56px); }
+.cf-rv[data-variant="left"][data-cf="pre"] { transform: translateX(-56px); filter: blur(5px); }
 /* Wipe: section heads are uncovered left-to-right while sliding in, like
    a poster being pasted up. */
 .cf-rv[data-variant="wipe"][data-cf="pre"] {
-  opacity: 0; transform: translateX(-40px);
+  opacity: 0; transform: translateX(-40px); filter: blur(5px);
   clip-path: inset(0 100% 0 0);
 }
+/* Settled state carries filter: none, not blur(0): a live filter on the
+   wrapper flattens 3D descendants, which hid the pointer tilt on cards
+   wrapped by Reveal. None renders exactly like blur(0), and the
+   sharpen transition from the pre-state still runs. */
 .cf-rv[data-cf="in"] {
-  opacity: 1; transform: translateY(0);
-  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease);
+  opacity: 1; transform: translateY(0); filter: none;
+  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease), filter var(--cf-dur-reveal) var(--cf-ease);
   transition-delay: var(--cf-d, 0s);
 }
 .cf-rv[data-variant="wipe"][data-cf="in"] {
   transform: translateX(0);
   clip-path: inset(0 0 0 0);
-  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease), clip-path var(--cf-dur-reveal) var(--cf-ease);
+  transition: opacity var(--cf-dur-reveal) var(--cf-ease), transform var(--cf-dur-reveal) var(--cf-ease), clip-path var(--cf-dur-reveal) var(--cf-ease), filter var(--cf-dur-reveal) var(--cf-ease);
   transition-delay: var(--cf-d, 0s);
 }
 /* A scale-variant reveal ends at scale(1), not translateY(0) alone. */
@@ -836,17 +942,23 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
   100% { transform: scale(1.9); opacity: 0; }
 }
 
-/* Pointer wash for document surfaces (credentials wall): a FLAT red tint
-   that follows the pointer BEHIND the documents (z-index -1 inside an
-   isolated wrapper), so text and paper never lose contrast. It was a soft
-   radial spotlight in earlier systems; the brutalist system admits no
-   gradients, so the wash is a hard-edged flat field clipped to a block
-   around the pointer. Set --mx/--my from JS; coarse pointers never see it. */
+/* Pointer wash for document surfaces (credentials wall, case cards): a
+   FLAT red tint that follows the pointer across the card face. The wash
+   sits ABOVE the card fill (z-index 1 inside an isolated wrapper): the
+   first version parked it at z-index -1, where the card's own opaque
+   background covered it completely, so no disc ever showed. It stays a
+   hard-edged 240px disc clipped by a hard-stop mask around the pointer
+   (--mx/--my, set by SpotWrap on rAF): flat colour, no gradient
+   falloff, so the brutalist rule holds. Pointer events pass through
+   it, and at 7% (10% dark) the tint never costs the text its contrast.
+   Coarse pointers never see it. */
 .cf-spot { position: relative; isolation: isolate; }
 .cf-spot::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   opacity: 0; transition: opacity var(--cf-dur-ui) var(--cf-ease);
   background: rgba(173, 1, 23, 0.07);
+  -webkit-mask-image: radial-gradient(circle 120px at var(--mx, 50%) var(--my, 50%), #000 0 119px, transparent 120px);
+  mask-image: radial-gradient(circle 120px at var(--mx, 50%) var(--my, 50%), #000 0 119px, transparent 120px);
 }
 html[data-theme="dark"] .cf-spot::before {
   background: rgba(173, 1, 23, 0.1);
@@ -869,7 +981,7 @@ html[data-theme="dark"] .cf-spot::before {
   .cf-navlink:hover::after { transform: scaleX(1); }
 }
 .cf-navlink[aria-current="page"] { color: var(--cf-ink); }
-/* The current page's rule is a framer-motion span that SLIDES between links
+/* The current page's rule is a framer-motion span keyed per link
    (layoutId in Navbar), so the CSS underline stands down for it. */
 .cf-navlink[aria-current="page"]::after { transform: scaleX(0); }
 
@@ -920,10 +1032,51 @@ html[data-theme="dark"] .cf-spot::before {
    come from the theme tokens, so on the dark ground it reads as a paper-
    framed block with a red offset. */
 .cf-hud {
-  position: relative; overflow: hidden;
+  /* isolation: the hero glow is a negative-z child and must paint above
+     this panel's own background, not behind it. */
+  position: relative; overflow: hidden; isolation: isolate;
   background: #141414; color: #F4F1EC;
   border: 3px solid var(--cf-ink);
   box-shadow: 14px 14px 0 var(--cf-shadow);
+}
+
+/* ── Hero glow + name shimmer (kenny-motion) ──────────────────────────
+   The reference motion's hero glow: a faint red radial wash behind the
+   HUD panel's top-right corner, fading in over 1.4s with the load
+   sequence. It is a negative-z child of the isolated .cf-hud, so it
+   paints above the panel's ink background and below every content
+   block, and overflow: hidden clips it to the panel. Under reduced
+   motion the kill switch snaps the fade to its end state: a static
+   wash, which is the point. */
+.cf-hero-glow {
+  position: absolute; z-index: -1; pointer-events: none;
+  width: 480px; height: 480px; right: -110px; top: -140px;
+  background: radial-gradient(closest-side, rgba(173, 1, 23, 0.22), rgba(173, 1, 23, 0) 72%);
+  animation: cf-glow-in 1.4s var(--cf-ease) 0.15s both;
+}
+@keyframes cf-glow-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Name shimmer: the reference motion's slow gradient sweep across the
+   clipped name text. The gradient is the name's own colour with one
+   lighter band, so the name reads its flat colour whenever the sweep
+   is off-screen. 7s loop, 1.2s delay, like the reference. The
+   reduced-motion kill switch removes the gradient and restores the
+   flat colours outright. */
+.cf-shimmer-paper, .cf-shimmer-red {
+  background-clip: text; -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  background-size: 200% 100%;
+  animation: cf-name-sweep 7s linear 1.2s infinite;
+}
+.cf-shimmer-paper {
+  background-image: linear-gradient(100deg, #F4F1EC 0%, #F4F1EC 40%, #FFFFFF 50%, #F4F1EC 60%, #F4F1EC 100%);
+}
+.cf-shimmer-red {
+  background-image: linear-gradient(100deg, var(--cf-red) 0%, var(--cf-red) 40%, #FF6B5E 50%, var(--cf-red) 60%, var(--cf-red) 100%);
+}
+@keyframes cf-name-sweep {
+  from { background-position: 200% 0; }
+  to { background-position: 0% 0; }
 }
 .cf-hud-dim { color: #9A968C; }
 .cf-hud-line { border-color: #3A3A38; }
@@ -1027,8 +1180,12 @@ html[data-theme="dark"] .cf-spot::before {
     transition-delay: 0s !important;
   }
   .cf-load, .cf-load-fade { opacity: 1 !important; animation: none !important; }
+  /* Hero entrance: the pre-go hidden states must never survive here
+     (the go class is never added under reduced motion). */
+  .cf-hero-in { opacity: 1 !important; animation: none !important; transform: none !important; filter: none !important; pointer-events: auto !important; }
+  .cf-hero-line { transform: none !important; animation: none !important; }
   .cf-rule-draw { transform: scaleX(1) !important; animation: none !important; }
-  .cf-rv[data-cf="pre"] { opacity: 1 !important; transform: none !important; }
+  .cf-rv[data-cf="pre"] { opacity: 1 !important; transform: none !important; filter: none !important; }
   .cf-stamp-slam { opacity: max(var(--o, 0.9), 0.9) !important; animation: none !important; }
   .cf-strike::after { transform: scaleX(1) !important; transition: none !important; }
   .cf-exhibit-frame { transition: none !important; }
@@ -1043,6 +1200,9 @@ html[data-theme="dark"] .cf-spot::before {
   .cf-live-dot { animation: none !important; }
   .cf-spot::before { display: none !important; }
   .cf-photo-scan { display: none !important; }
+  .cf-btn::after, .cf-btn-ghost::after { display: none !important; }
+  .cf-shimmer-paper { animation: none !important; background: none !important; color: #F4F1EC !important; -webkit-text-fill-color: #F4F1EC !important; }
+  .cf-shimmer-red { animation: none !important; background: none !important; color: var(--cf-red) !important; -webkit-text-fill-color: var(--cf-red) !important; }
   .cf-companion-tag i { animation: none !important; }
   .cf-rv[data-variant="wipe"][data-cf="pre"] { clip-path: none !important; }
 }

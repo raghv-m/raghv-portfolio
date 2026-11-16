@@ -10,6 +10,7 @@ import { ParallaxLayer } from "@/components/casefile/ParallaxLayer";
 import { ExhibitZoom } from "@/components/casefile/ExhibitZoom";
 import { PinnedDocs } from "@/components/casefile/PinnedDocs";
 import { SpotWrap } from "@/components/casefile/SpotWrap";
+import { TiltWrap } from "@/components/casefile/TiltWrap";
 import { BlockRule } from "@/components/casefile/Ornaments";
 import { HudHero } from "@/components/casefile/HudHero";
 import { CountUp } from "@/components/casefile/CountUp";
@@ -301,20 +302,24 @@ export default function HomePage() {
                   STEP {step.no} / 03
                 </p>
               </div>
-              <Reveal variant="left">
-                <div
-                  className="cf-panel"
-                  style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}
-                >
-                  <div className="h-[3px] w-full" style={{ background: "var(--cf-ink)" }} />
-                  <div className="p-6">
-                    <h3 className="cf-display" style={{ fontSize: 22, letterSpacing: "0.02em" }}>
-                      {step.title}
-                    </h3>
-                    <p className="cf-body mt-3">{step.body}</p>
-                  </div>
-                </div>
-              </Reveal>
+              <TiltWrap>
+                <Reveal variant="left">
+                  <SpotWrap>
+                    <div
+                      className="cf-panel"
+                      style={{ border: "2px solid var(--cf-ink)", background: "var(--cf-paper-2)" }}
+                    >
+                      <div className="h-[3px] w-full" style={{ background: "var(--cf-ink)" }} />
+                      <div className="p-6">
+                        <h3 className="cf-display" style={{ fontSize: 22, letterSpacing: "0.02em" }}>
+                          {step.title}
+                        </h3>
+                        <p className="cf-body mt-3">{step.body}</p>
+                      </div>
+                    </div>
+                  </SpotWrap>
+                </Reveal>
+              </TiltWrap>
             </div>
           ))}
         </div>

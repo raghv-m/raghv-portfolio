@@ -122,6 +122,15 @@ export const viewport: Viewport = {
  */
 const THEME_SCRIPT = `(function(){try{var v=localStorage.getItem("cf-theme");var m=(v==="light"||v==="dark")?v:"auto";var t=m;if(m==="auto"){var h=new Date().getHours();t=(h>=7&&h<19)?"light":"dark";}var d=document.documentElement;d.dataset.theme=t;d.dataset.themeMode=m;}catch(e){document.documentElement.dataset.theme="light";document.documentElement.dataset.themeMode="auto";}})();`;
 
+/**
+ * JS presence, set before first paint: the home hero's entrance blocks
+ * start hidden in the served HTML (see .cf-hero-in in case-file.css) and
+ * only animate once React mounts and adds the go class. Without JS this
+ * class never lands and the hero is simply visible. Same before-paint
+ * mechanism as the theme script above.
+ */
+const JS_SCRIPT = `(function(){document.documentElement.classList.add("rv-js");})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -134,6 +143,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-[var(--bg)] text-[var(--text)] antialiased">
         <Script id="cf-theme-init" strategy="beforeInteractive">
           {THEME_SCRIPT}
+        </Script>
+        <Script id="rv-js-init" strategy="beforeInteractive">
+          {JS_SCRIPT}
         </Script>
         {/* Google Tag Manager, loaded once the page has finished loading (lazyOnload) so its
             117 KB never competes with the page's own code. GTM's "tag checker" may say the

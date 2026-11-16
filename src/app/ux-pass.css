@@ -6,32 +6,45 @@
 
 /* ── View transitions ─────────────────────────────────────────────────────
    template.tsx wraps every public page in React's <ViewTransition> with
-   enter="cf-vt-enter" exit="cf-v-exit" (classes land on the transition
-   pseudo-elements). The old page leaves in 180ms, fading and slightly
-   up; the new one rises 14px and settles from scale 0.994 over 400ms
-   after a 40ms beat, the same move the old .cf-page-enter entrance
-   made, now with a real exit phase and the reference motion's timing.
-   The navbar is a named participant pinned in place: a sliding header
-   would break the reader's one fixed reference point. */
+   one class, cf-vt, on all four class props (enter, exit, update,
+   default): a route change reconciles as an UPDATE of the boundary, not
+   a mount/unmount, so enter/exit alone did not reliably fire, and the
+   old default="none" left the browser's plain 250ms crossfade in charge,
+   which is why no rise was ever visible. The universal and root
+   selectors below are the safety net: however the boundary is named or
+   grouped, the same move still runs. The old page leaves in 180ms,
+   fading and slightly up; the new one rises 28px and settles from scale
+   0.994 over 400ms after a 40ms beat, the reference motion's timing
+   with a rise built to be seen on camera. The navbar is a named
+   participant pinned in place: a sliding header would break the
+   reader's one fixed reference point. The universal selectors match
+   every group, and the site-header rules after them win by source
+   order at equal specificity, so the header stays static. */
 ::view-transition {
   pointer-events: none;
 }
-::view-transition-old(.cf-vt-exit) {
+::view-transition-old(*),
+::view-transition-old(.cf-vt),
+::view-transition-old(.cf-vt-exit),
+::view-transition-old(root) {
   animation: 180ms cubic-bezier(0.5, 0, 0.75, 0) both cf-vt-old;
 }
-::view-transition-new(.cf-vt-enter) {
+::view-transition-new(*),
+::view-transition-new(.cf-vt),
+::view-transition-new(.cf-vt-enter),
+::view-transition-new(root) {
   animation: 400ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both cf-vt-new;
 }
 @keyframes cf-vt-old {
   to {
     opacity: 0;
-    transform: translateY(-8px) scale(0.996);
+    transform: translateY(-10px) scale(0.996);
   }
 }
 @keyframes cf-vt-new {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.994);
+    transform: translateY(28px) scale(0.994);
   }
   to {
     opacity: 1;

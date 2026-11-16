@@ -799,6 +799,18 @@ html[data-theme="dark"] .cf-kicker { color: var(--cf-ink); }
 @keyframes cf-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 .cf-load { opacity: 0; animation: cf-rise var(--cf-dur-entrance) var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
 .cf-load-fade { opacity: 0; animation: cf-fade var(--cf-dur-entrance) var(--cf-ease) forwards; animation-delay: var(--cf-d, 0s); }
+/* Route-change settle: on client-side navigations the template adds
+   .cf-vt-settling, which pushes every load-in delay past the 440ms
+   view-transition snapshot (400ms enter + 40ms beat), so the heading
+   stagger plays visibly after the new page rises in instead of running
+   hidden under the snapshot. The existing --cf-d steps keep their
+   relative stagger; first paint is unaffected (no class on first
+   mount), and the reduced-motion kill switch below still forces these
+   elements visible with no animation. */
+.cf-vt-settling .cf-load,
+.cf-vt-settling .cf-load-fade {
+  animation-delay: calc(var(--cf-d, 0s) + 0.44s);
+}
 .cf-rule-draw {
   transform: scaleX(0); transform-origin: left center;
   animation: cf-draw 0.8s var(--cf-ease) forwards; animation-delay: var(--cf-d, 0.4s);
@@ -904,7 +916,7 @@ html[data-theme="dark"] .cf-spot::before {
   .cf-navlink:hover::after { transform: scaleX(1); }
 }
 .cf-navlink[aria-current="page"] { color: var(--cf-ink); }
-/* The current page's rule is a framer-motion span that SLIDES between links
+/* The current page's rule is a framer-motion span keyed per link
    (layoutId in Navbar), so the CSS underline stands down for it. */
 .cf-navlink[aria-current="page"]::after { transform: scaleX(0); }
 

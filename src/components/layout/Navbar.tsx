@@ -13,9 +13,12 @@ import { EASE_DRAWER, EASE_OUT } from "@/components/casefile/motion";
  * One raw bar (Nov 2026 brutalist rebuild). Bare logo left, six primary
  * links in letterspaced grotesque capitals, one red CTA block right, and a
  * 3px ink rule under the whole bar: the structure is the decoration.
- * Active page = red underline only, and it slides between links (framer
- * layoutId). The mobile panel is a full ink block in both themes, its
- * active link carried on a red block, poster-style.
+ * Active page = red underline only, keyed per link (the framer layoutId
+ * carries the href), so it never slides: during a view transition the
+ * header is a pinned snapshot, and a sliding rule was caught mid-flight
+ * under the wrong link, or doubled, in the snapshot. The underline always
+ * sits under the settled route. The mobile panel is a full ink block in
+ * both themes, its active link carried on a red block, poster-style.
  */
 const LINKS = [
   { href: "/about", label: "About" },
@@ -121,7 +124,7 @@ export default function Navbar() {
                     {link.label}
                     {active && (
                       <motion.span
-                        layoutId="cf-nav-rule"
+                        layoutId={`cf-nav-rule-${link.href}`}
                         transition={
                           reduceMotion
                             ? { duration: 0 }

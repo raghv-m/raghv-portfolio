@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, Search, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/casefile/ThemeToggle";
+import { SoundToggle } from "@/components/layout/SoundToggle";
 import { Magnetic } from "@/components/casefile/Magnetic";
 import { EASE_DRAWER, EASE_OUT } from "@/components/casefile/motion";
 
@@ -170,9 +171,13 @@ export default function Navbar() {
               <span className="opacity-60 hover:opacity-100 transition-opacity hidden sm:block">
                 <ThemeToggle />
               </span>
+              <span className="opacity-60 hover:opacity-100 transition-opacity hidden sm:block">
+                <SoundToggle />
+              </span>
               <Magnetic strength={14} className="hidden md:inline-block">
                 <Link
                   href="/contact"
+                  data-sound-hover
                   aria-current={pathname === "/contact" ? "page" : undefined}
                   className="inline-flex items-center whitespace-nowrap"
                   style={{
@@ -309,7 +314,10 @@ export default function Navbar() {
               <span style={{ fontFamily: "var(--font-jetbrains), monospace", fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", color: "#F4F1EC" }}>
                 Edmonton, Alberta
               </span>
-              <ThemeToggle />
+              <span className="flex items-center gap-3">
+                <SoundToggle />
+                <ThemeToggle />
+              </span>
             </div>
           </motion.div>
         )}

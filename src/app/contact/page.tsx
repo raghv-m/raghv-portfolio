@@ -7,6 +7,7 @@ import { Stamp } from "@/components/casefile/Stamp";
 import { motion } from "framer-motion";
 import { Send, Mail, MapPin, Globe, Lock, CheckCircle, Download } from "lucide-react";
 import { EASE_OUT } from "@/components/casefile/motion";
+import { playUiSound } from "@/lib/ui-sounds";
 
 const GithubIcon = () => (
   <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
@@ -48,10 +49,12 @@ export default function ContactPage() {
     const errors = validate();
     setFieldErrors(errors);
     if (Object.keys(errors).length) {
+      playUiSound("error");
       focusFirstInvalid(formRef.current);
       return;
     }
     setState("sending");
+    playUiSound("send");
     setError("");
     try {
       const res = await fetch("/api/contact", {
@@ -60,13 +63,16 @@ export default function ContactPage() {
         body: JSON.stringify({ ...form, _csrf: csrf }),
       });
       if (res.ok) {
+        playUiSound("success");
         setState("done");
       } else {
         const d = await res.json();
+        playUiSound("error");
         setError(typeof d.error === "string" ? d.error : "Your message couldn't be sent. Please try again, or email hello@raghv.dev.");
         setState("error");
       }
     } catch {
+      playUiSound("error");
       setError("Couldn't reach the server. Check your connection and try again, or email hello@raghv.dev.");
       setState("error");
     }

@@ -3,6 +3,7 @@ import { useId, useRef, useState } from "react";
 import { Mail, CheckCircle } from "lucide-react";
 
 import { FieldError, focusFirstInvalid, invalidProps } from "@/components/ui/FieldError";
+import { playUiSound } from "@/lib/ui-sounds";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -29,11 +30,13 @@ export default function SubscribeWidget({
     e.preventDefault();
     setError("");
     if (!EMAIL.test(email.trim())) {
+      playUiSound("error");
       setError("Enter a valid email address, like you@example.com.");
       focusFirstInvalid(formRef.current);
       return;
     }
     setLoading(true);
+    playUiSound("send");
     try {
       const res = await fetch("/api/subscribe", {
         method: "POST",
@@ -42,13 +45,16 @@ export default function SubscribeWidget({
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
+        playUiSound("error");
         setError(typeof j.error === "string" ? j.error : "Couldn't subscribe you. Please try again.");
         focusFirstInvalid(formRef.current);
         return;
       }
+      playUiSound("success");
       setDone(true);
       onSuccess?.();
     } catch {
+      playUiSound("error");
       setError("Couldn't reach the server. Check your connection and try again.");
     } finally {
       setLoading(false);

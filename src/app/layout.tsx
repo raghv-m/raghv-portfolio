@@ -28,6 +28,7 @@ import { AvatarCompanion } from "@/components/casefile/AvatarCompanion";
 import { CommandMenu } from "@/components/casefile/CommandMenu";
 import { SiteJsonLd } from "@/components/seo/JsonLd";
 import { PageviewTracker } from "@/components/analytics/PageviewTracker";
+import UiSounds from "@/components/layout/UiSounds";
 import { site } from "@/config/site";
 
 const inter = Inter({
@@ -203,6 +204,10 @@ gtag('config', '${GA_ID}');`}
         {/* GA4 pageviews for client-side route changes (the config call
             above only counts the initial load). */}
         <PageviewTracker />
+        {/* UI sound effects (uisfx, Minimal pack): delegated listeners for
+            clicks, links, toggles and primary-CTA hovers, plus the mute
+            toggle in the navbar. Renders nothing itself. */}
+        <UiSounds />
       </body>
     </html>
   );

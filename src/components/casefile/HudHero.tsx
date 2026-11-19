@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ProgIndicator } from "./Prog";
 import { Magnetic } from "./Magnetic";
 import { bootLoaderWillPlay } from "../motion/bootGate";
+import { playUiSound } from "@/lib/ui-sounds";
 
 /**
  * The HUD hero: the terminal readout card the owner picked, rebuilt in the
@@ -111,6 +112,13 @@ export function HudHero() {
   // the typing plays once per browser session, a return view in the same
   // session keeps the full text instead of retyping (the flag is set when
   // the sequence starts; storage failures just let it replay).
+  // Sound: each keystroke ticks ("typing") and each landed line blips
+  // robotic static ("scanning"), both Minimal pack through playUiSound,
+  // so the Sound toggle mute applies. Browsers block audio before the
+  // first gesture, so on a fresh load the ticks stay silent until the
+  // visitor clicks, taps or presses a key (clicking to skip the loader
+  // unlocks it and the rest of the typing is audible); muted visitors
+  // hear nothing.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     try {
@@ -125,7 +133,26 @@ export function HudHero() {
     const id = setInterval(() => {
       i += 1;
       setBoot(full.slice(0, i));
-      if (i >= full.length) clearInterval(id);
+      const ch = full[i - 1];
+      if (ch === "\n") {
+        // A status line just landed: robotic static blip as the readout
+        // runs down beside the portrait.
+        playUiSound("scanning", { volume: 0.45 });
+      } else {
+        // Keystroke tick. One tick per 16ms char would buzz, so the
+        // player throttles to one tick per ~48ms and each tick gets a
+        // slightly different pitch, like real typing.
+        playUiSound("typing", {
+          volume: 0.35,
+          cooldownMs: 48,
+          playbackRate: 0.92 + Math.random() * 0.16,
+        });
+      }
+      if (i >= full.length) {
+        clearInterval(id);
+        // Final line landed.
+        playUiSound("scanning", { volume: 0.45 });
+      }
     }, 16);
     return () => clearInterval(id);
   }, []);

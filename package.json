@@ -43,6 +43,7 @@
     "speakeasy": "^2.0.0",
     "tailwind-merge": "^3.6.0",
     "three": "^0.184.0",
+    "uisfx": "^0.4.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -249,7 +249,7 @@ export default function HomePage() {
               </p>
               <div className="mt-6">
                 <Magnetic strength={18}>
-                  <Link href="/estimate" className="cf-btn">
+                  <Link href="/estimate" data-sound-hover className="cf-btn">
                     Run the estimator
                   </Link>
                 </Magnetic>
@@ -421,10 +421,10 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4">
-              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" className="cf-btn cf-btn-red">
+              <a href="/resume.pdf" download="Raghav_Mahajan_Resume.pdf" data-sound-hover className="cf-btn cf-btn-red">
                 Download the resume
               </a>
-              <Link href="/investigations/lab-001-ssh-brute-force" className="cf-btn-ghost">
+              <Link href="/investigations/lab-001-ssh-brute-force" data-sound-hover className="cf-btn-ghost">
                 Read the investigation
               </Link>
             </div>

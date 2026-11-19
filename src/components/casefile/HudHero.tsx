@@ -284,6 +284,7 @@ export function HudHero() {
             <Magnetic strength={12}>
               <Link
                 href="/investigations/lab-001-ssh-brute-force"
+                data-sound-hover
                 className="cf-btn cf-btn-red"
                 style={{ boxShadow: "5px 5px 0 #F4F1EC" }}
               >
@@ -294,6 +295,7 @@ export function HudHero() {
               <a
                 href="/resume.pdf"
                 download="Raghav_Mahajan_Resume.pdf"
+                data-sound-hover
                 className="cf-btn-ghost"
                 style={{ borderColor: "#F4F1EC", color: "#F4F1EC", boxShadow: "5px 5px 0 var(--cf-red)" }}
               >

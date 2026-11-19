@@ -10,6 +10,7 @@ import { submitEstimateAction } from "@/app/estimate/actions";
 import { FieldError, invalidProps } from "@/components/ui/FieldError";
 import { estimatorConfig } from "@/config/estimator";
 import { formatDollars, priceEstimate, type EstimateResult, type PricingItem } from "@/lib/estimator/engine";
+import { playUiSound } from "@/lib/ui-sounds";
 import { BUDGET_LABELS, TIMELINE_LABELS } from "@/lib/estimator/schema";
 
 import { AddressAutocomplete, type Address } from "./AddressAutocomplete";
@@ -126,9 +127,11 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
     setFieldErrors(errors);
     const first = (["name", "email", "consent"] as const).find((k) => errors[k]);
     if (first) {
+      playUiSound("error");
       requestAnimationFrame(() => document.getElementById(first === "consent" ? "consent" : first)?.focus());
       return;
     }
+    playUiSound("send");
     startTransition(async () => {
       const result = await submitEstimateAction({
         ...form,
@@ -150,9 +153,13 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
           /* the rotated state value below still applies */
         }
         setIdemKey(nextKey);
+        playUiSound("success");
         setSubmitted(result);
         window.scrollTo({ top: 0, behavior: "smooth" });
-      } else setError(result.error);
+      } else {
+        playUiSound("error");
+        setError(result.error);
+      }
     });
   }
 
@@ -319,7 +326,7 @@ export function EstimateWizard({ catalog }: { catalog: PricingItem[] }) {
                 {step >= 2 && step <= 4 && !(step === 2 ? form.features.length : step === 3 ? form.integrations.length : 1) ? "Skip" : "Continue"}
               </button>
             ) : (
-              <button type="button" disabled={pending} onClick={submit} className="btn-solid-gold inline-flex items-center gap-2">
+              <button type="button" disabled={pending} onClick={submit} data-sound-hover className="btn-solid-gold inline-flex items-center gap-2">
                 {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />} {pending ? "Sending…" : "Email me my estimate"}
               </button>
             )}
